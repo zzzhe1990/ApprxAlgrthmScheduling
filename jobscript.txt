@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+#PBS -l select=ncpus=16:mem=90GB:cpu_model=E5-2665
+#PBS -m ea
+
+./paroutT16F301 0.3 4 301
