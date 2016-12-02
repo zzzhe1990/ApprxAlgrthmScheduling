@@ -27,3 +27,21 @@ Complete:
 
 To do:
 1. Compile code and debug.
+
+
+
+****************************************
+Dec 1 2016
+****************************************
+Complete:
+1. Create header files for .cpp, so that .cu can include the header file to identify vector.
+2. Move all cudaMalloc and cudaMemcpy to .cu file.
+3. Move the While loop from DPFunction2 (in .cpp originally) to .cu.
+4. Fix bugs on parameters.
+
+Add:
+1. makefile
+
+Problem:
+1. bugs about ifstream.
+2. makefile problem.
