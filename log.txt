@@ -1,0 +1,29 @@
+****************************************
+Nov 27 2016
+****************************************
+Complete:
+1. Initialize the device's array size of NSsubsets and optVector.
+2. Initialize some device variables: dev_AllTableElemets_size, powK, 
+3. Fix the problem of using incorrect sizes. In gpu_generate2(), the second parameter should be pow(k,2) instead of dev_ATE_elm_size.
+4. Fix the problem of memory copy to device. Move memcpy() out of while() loop, which is in DPFunction2().
+5. Add memcpy() from device to host for arrays: dev_counterVec, dev_ATE_NSsubsets, dev_ATE_optVector, dev_ATE_Csubsets. Copy these device arrays into "AllTableElemets" object.
+
+Problem:
+1. What is the real size of Csubsets()? Have to check the iteration of generate2() and CWhole.size() to see if the data size in 
+	cudaMemcpy(AllTableElemets[i].Csubsets, &dev_ATE_Csubsets, DeviceToHost) is correct.
+
+
+
+****************************************
+Nov 28 2016
+****************************************
+Fixed Problem:
+1. Nov 27 2016, Problem 1: Csubsets has a size of [Cwhole.size()][pow(k,2)]
+
+Complete:
+1. declaration of GPU functions.
+2. first draft of initialization for all GPU functions.
+3. update comments to make array sizes more explicit.
+
+To do:
+1. Compile code and debug.
