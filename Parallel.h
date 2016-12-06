@@ -15,7 +15,7 @@
 #include <string>
 #include <unistd.h>
 #include <sys/time.h>
-#include <omp.h>
+//#include <omp.h>
 
 using namespace std;
 
@@ -53,11 +53,5 @@ public:
     vector<int> LongRoundJobsTable;
     double roundCriteriaTable;
 };
-
-
-vector <DynamicTable> NSTableElements;
-vector <DynamicTable> AllTableElemets;
-vector<int> tempOptVector;
-vector < FinalTableINFO > AllProbData;
 
 #endif

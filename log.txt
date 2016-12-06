@@ -45,3 +45,11 @@ Add:
 Problem:
 1. bugs about ifstream.
 2. makefile problem.
+
+
+****************************************
+Dec 5 2016
+****************************************
+Complete:
+1. solve the error of multiple definition
+2. Make the code compiled correctly

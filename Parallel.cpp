@@ -1,7 +1,12 @@
-#include "Parallel.h"
+//#include "Parallel.h"
 #include "DPCUDA.h"
 
 //  Global defination 
+vector <DynamicTable> NSTableElements;
+vector <DynamicTable> AllTableElemets;
+vector<int> tempOptVector;
+vector < FinalTableINFO > AllProbData;
+
 int optIndex,FinalMakespan;
 int k,T,OPT,LB,UB,s,LB0,UB0;
 double error;
@@ -50,9 +55,9 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 
 
 
-int omp_get_num_threads();
-int omp_get_thread_num();
-int nthreads,nthreads0;
+//int omp_get_num_threads();
+//int omp_get_thread_num();
+//int nthreads,nthreads0;
 
 string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
 
@@ -96,9 +101,9 @@ int main(int argc, char* argv[])
     //error =0.3;
     //th=0;
 
-    nthreads0= Pow(2,th);
+    //nthreads0= Pow(2,th);
      
-    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
+    //solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
 
   char hostname[HOST_NAME_MAX];
     if (! gethostname(hostname, sizeof hostname) == 0)
@@ -122,7 +127,7 @@ int main(int argc, char* argv[])
             str1.append(str5);
             cout<<"Reading File..."<<endl;
             ifstream myfile;
-            myfile.open(str1);
+            myfile.open(str1.c_str());
             if(!myfile)
             {
                 cout << "Error: file could not be opened"  << endl;
@@ -154,7 +159,7 @@ int main(int argc, char* argv[])
             MicroSecondsT = end_total.tv_usec - start_total.tv_usec;
             Elapsed_total = (secondsT * 1000 + MicroSecondsT / 1000.0) + 0.5;
             
-            solution << nthreads << "\t"<< LB0<<"\t"<<UB0<<"\t"<<numShort<<"\t"<<numLong<<"\t"<<Fopt<<"\t"<< FinalMakespan << "\t"<<Elapsed_total<< "\t"<< hostname << endl;
+            solution << LB0<<"\t"<<UB0<<"\t"<<numShort<<"\t"<<numLong<<"\t"<<Fopt<<"\t"<< FinalMakespan << "\t"<<Elapsed_total<< "\t"<< hostname << endl;
 
             
             AllProbData.clear();
@@ -283,7 +288,7 @@ int mainScheduling()
         Fopt=0;
         longF=LongJobs;
         shortF=ShortJobs;
-        nthreads= -1;
+ //       nthreads= -1;
     }
     numShort=shortF.size();
     numLong=longF.size();
@@ -572,14 +577,15 @@ int DPFunction2(vector<int>& Ntemp)
     int powK = pow(k,2);
     
     InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0]);
-    
+    /*
 	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
 		   AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
 		   dev_ATE_NSsubsets_size, Cwhole.size(), dev_zeroVec, dev_ATE_optVector, 
 		   dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
 		   dev_ATE_myMinNSVector, it, ss, NS, maxSumValue, counterVec);
-	
-    
+	*/
+    gpu_DP(AllTableElemets, T, k, powK, AllTableElemets.size(), 
+		   Cwhole.size(), maxSumValue, counterVec);
 
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{

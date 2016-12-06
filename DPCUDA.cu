@@ -1,5 +1,14 @@
 #include "DPCUDA.h"
 
+int *dev_ATE_elm, *dev_ATE_myOPT, *dev_ATE_myOptimalindex, *dev_ATE_myMinNSVector;
+	int *dev_ATE_NSsubsets, *dev_ATE_Csubsets;
+	int *dev_ATE_optVector;
+	int *dev_counterVec;
+	int *dev_ATE_NSsubsets_size;
+	int *dev_ATE_optVector_size;
+	int *dev_zeroVec, *dev_roundVec;
+	int *it, *ss, *NS;
+	
 void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJobs_size, 
 				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec)
 {
@@ -217,13 +226,16 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
             }
 		}//end if (j)
 	}//end FindOPT()
-
+/*
 void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_counterVec, int *dev_roundVec, 
 			const int T, const int k, const int powK, const int dev_AllTableElemets_size,
 			int *dev_ATE_Csubsets, int *dev_ATE_NSsubsets, int *dev_ATE_NSsubsets_size, 
 			int Cwhole_size, int *dev_zeroVec, int *dev_ATE_optVector, int *dev_ATE_optVector_size,
 			int *dev_ATE_myOPT, int *dev_ATE_myOptimalindex, int *dev_ATE_myMinNSVector, 
-			int *it, int *s, int *NS, const int maxSumValue, vector<int> &counterVec)
+			int *it, int *s, int *NS, const int maxSumValue, vector<int> &counterVec)*/
+void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, const int powK, 
+			const int dev_AllTableElemets_size, int Cwhole_size, const int maxSumValue, 
+			vector<int> &counterVec)
 {
     int ii=0;
     int indexomp=0;
@@ -239,7 +251,7 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_co
 								  dev_AllTableElemets_size, dev_ATE_Csubsets, dev_ATE_NSsubsets, 
 								  dev_ATE_NSsubsets_size, Cwhole_size, dev_zeroVec, dev_ATE_optVector, 
 								  dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
-								  dev_ATE_myMinNSVector, ii, it, s, NS);
+								  dev_ATE_myMinNSVector, ii, it, ss, NS);
                 
         cudaMemcpy(&counterVec[0], dev_counterVec, powK * sizeof(int), cudaMemcpyDeviceToHost);
         
@@ -266,6 +278,6 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_co
 	cudaFree(dev_zeroVec);
 	cudaFree(dev_roundVec);
 	cudaFree(it);
-	cudaFree(s);
+	cudaFree(ss);
 	cudaFree(NS);
 }
