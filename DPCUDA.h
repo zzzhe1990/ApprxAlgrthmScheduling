@@ -5,7 +5,7 @@
 
 
 void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJobs_size, 
-				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec);
+				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec, int *counterVec);
 /*
 void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_counterVec, int *dev_roundVec, 
 			const int T, const int k, const int powK, const int dev_AllTableElemets_size,

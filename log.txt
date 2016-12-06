@@ -52,4 +52,6 @@ Dec 5 2016
 ****************************************
 Complete:
 1. solve the error of multiple definition
-2. Make the code compiled correctly
+2. add memory copy from host to device for "counterVec"
+3. correct the calculation on block size "bSize"
+4. Make the code compiled correctly

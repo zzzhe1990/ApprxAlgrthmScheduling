@@ -10,7 +10,7 @@ int *dev_ATE_elm, *dev_ATE_myOPT, *dev_ATE_myOptimalindex, *dev_ATE_myMinNSVecto
 	int *it, *ss, *NS;
 	
 void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJobs_size, 
-				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec)
+				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec, int *counterVec)
 {
 	//arrays on device
 	cudaMalloc((void**)&dev_ATE_Csubsets, AllTableElemets_size * Cwhole_size * powK * sizeof(int));
@@ -39,6 +39,7 @@ void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJo
     
 	cudaMemcpy(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_counterVec, counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_ATE_NSsubsets_size, ATE_NSsubsets_size, AllTableElemets_size * sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_ATE_optVector_size, ATE_optVector_size, AllTableElemets_size * sizeof(int), cudaMemcpyHostToDevice);
 	
@@ -147,8 +148,9 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 						int *dev_ATE_myOptimalindex, int *dev_ATE_myMinNSVector, const int i, int *it, 
 						int *s, int *NS){		
 		int thread = blockDim.x * blockIdx.x + threadIdx.x;
+			printf("thread: %d, i: %d, dev_counterVec[i]: %d\n", thread, i, dev_counterVec[i]);
 		int j = thread + indexomp;
-		if (j < dev_counterVec[i] + indexomp){
+		if (thread < dev_counterVec[i]){
             //vector<vector<int> > Ctemp;
             //vector<vector<int> > NMinusStemp;
             //vector<vector<int> > Cwhole;
@@ -240,21 +242,27 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
     int ii=0;
     int indexomp=0;
 
+	for (int i = 0; i < maxSumValue+1; i++){
+		std::cout << "counterVec[" << i << "]: " << counterVec[i] << std::endl;
+	}
+
 	while (ii < maxSumValue+1)		//number of levels = number of jobs + 1
     {
-		int tSize = 64;
+		int tSize = 32;
 		int bSize = 1;
-		if (tSize > counterVec[ii])
-			bSize = (tSize + counterVec[ii] - 1) / counterVec[ii];
-
+		if (tSize < counterVec[ii]){
+			bSize = (tSize + counterVec[ii] - 1) / tSize;
+		}
+		std::cout << "counterVec[" << ii << "]: " << counterVec[ii] << ", bSize: " << bSize << ", tSize: " << tSize << std::endl;
 		FindOPT<<<bSize, tSize>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec, T, k, powK, 
 								  dev_AllTableElemets_size, dev_ATE_Csubsets, dev_ATE_NSsubsets, 
 								  dev_ATE_NSsubsets_size, Cwhole_size, dev_zeroVec, dev_ATE_optVector, 
 								  dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
 								  dev_ATE_myMinNSVector, ii, it, ss, NS);
-                
-        cudaMemcpy(&counterVec[0], dev_counterVec, powK * sizeof(int), cudaMemcpyDeviceToHost);
         
+               
+        cudaMemcpy(&counterVec[0], dev_counterVec, powK * sizeof(int), cudaMemcpyDeviceToHost);
+
         indexomp+=counterVec[ii];
         ii++;
     }

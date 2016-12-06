@@ -59,8 +59,8 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 //int omp_get_thread_num();
 //int nthreads,nthreads0;
 
-string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
-
+//string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
+string str0 = "/home/yuanzhe/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
 //string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
@@ -73,7 +73,7 @@ string str5=".txt";
 
 //ofstream solution("AllInstances.xls");
 
-ofstream solution("/Users/lalehghalami/Desktop/parallelCode/PTAS-Results-T4F308-5.xls");
+ofstream solution("/home/yuanzhe/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS-Results-T4F308-5.xls");
 
 
 //ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 
     //nthreads0= Pow(2,th);
      
-    //solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
+    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
 
   char hostname[HOST_NAME_MAX];
     if (! gethostname(hostname, sizeof hostname) == 0)
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
     while (nFile<302)
     {
-        for (int f=1; f<21; f++)
+        for (int f=1; f<2; f++)
         {
          //   scheduleFile << "File"<<"\t"<<nFile<<"-"<<f<<endl;
             ostringstream convert;
@@ -576,7 +576,7 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0]);
+    InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0]);
     /*
 	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
 		   AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
