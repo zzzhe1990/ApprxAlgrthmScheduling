@@ -278,19 +278,21 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
         
                
         cudaMemcpy(&counterVec[0], dev_counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyDeviceToHost);
-
+		std::cout << "loop: " << ii << ", FindOPT and cudaMemcpy are done" << std::endl;
         indexomp+=counterVec[ii];
         ii++;
     }
     
 //GPU code to update AllTableElement
-/*	for(int i=0; i < AllTableElemets.size(); i++){
-		cudaMemcpy(&AllTableElemets[i].NSsubsets[0][0], &dev_ATE_NSsubsets[i * Cwhole_size * powK], Cwhole_size * powK, cudaMemcpyDeviceToHost);
+	for(int i=0; i < AllTableElemets.size(); i++){
+		for (int j = 0; j < Cwhole_size; j++){
+			cudaMemcpy(&AllTableElemets[i].NSsubsets[j][0], &dev_ATE_NSsubsets[(i * Cwhole_size + j) * powK], powK, cudaMemcpyDeviceToHost);
+			cudaMemcpy(&AllTableElemets[i].Csubsets[j][0], &dev_ATE_Csubsets[(i * Cwhole_size + j) * powK], powK, cudaMemcpyDeviceToHost);
+		}
 		cudaMemcpy(&AllTableElemets[i].optVector[0], &dev_ATE_optVector[i * powK], powK, cudaMemcpyDeviceToHost);
 		//Csubsets[Cwhole.size()][powK]
-		cudaMemcpy(&AllTableElemets[i].Csubsets[0][0], &dev_ATE_Csubsets[i * Cwhole_size * powK], Cwhole_size * powK, cudaMemcpyDeviceToHost);
 	}
-*/	
+	
 	cudaFree(dev_ATE_Csubsets);
 	cudaFree(dev_ATE_NSsubsets);
 	cudaFree(dev_ATE_elm);

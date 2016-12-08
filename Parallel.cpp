@@ -60,7 +60,7 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 //int nthreads,nthreads0;
 
 //string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
-string str0 = "/home/yuanzhe/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/File";
+string str0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
 //string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
@@ -73,7 +73,7 @@ string str5=".txt";
 
 //ofstream solution("AllInstances.xls");
 
-ofstream solution("/home/yuanzhe/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS-Results-T4F308-5.xls");
+ofstream solution("/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS-Results-T4F308-5.xls");
 
 
 //ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
@@ -209,9 +209,9 @@ int mainScheduling()
 		clearFun();
 		
 		BkID= Bk(LB,UB);
-
+		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << endl;
         if (BkID==-1) {
-          //  cout << "BkID==-1" <<endl;
+			cout << "BkID==-1" <<endl;
             break;
         }
         
