@@ -16,7 +16,7 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_co
 */			
 void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, const int powK, 
 			const int dev_AllTableElemets_size, int Cwhole_size, const int maxSumValue, 
-			vector<int> &counterVec);
+			vector<int> &counterVec, const int LongJobs_size);
 
 /*
 __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int *dev_roundVec, 

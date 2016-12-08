@@ -55,3 +55,12 @@ Complete:
 2. add memory copy from host to device for "counterVec"
 3. correct the calculation on block size "bSize"
 4. Make the code compiled correctly
+
+
+****************************************
+Dec 7 2016
+****************************************
+Complete:
+1. Change the size of "optVec" and "NSsubsets" from fix value to dynamic. Size for mallocation is still fixed, but an array of size for different dimensionns are also recorded.
+2. Add cudafree() for optVec_size and NSsubsets_size.
+3. Change the size of cudaMemcpy for dev_counterVec from device to host. 

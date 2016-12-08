@@ -1,1 +1,2 @@
  nFile  	f	 njobs 	 nMachines 	 Error  	 nThreads 	LB0	UB0	 Num Short	Num Long	OPT	makespan	 Total Time getTimeofday	Host Name
+1	1	21	10	0.3	31	50	2	19	1	286	30875	yuanzhe-ubuntu

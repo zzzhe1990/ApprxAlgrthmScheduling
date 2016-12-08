@@ -585,7 +585,7 @@ int DPFunction2(vector<int>& Ntemp)
 		   dev_ATE_myMinNSVector, it, ss, NS, maxSumValue, counterVec);
 	*/
     gpu_DP(AllTableElemets, T, k, powK, AllTableElemets.size(), 
-		   Cwhole.size(), maxSumValue, counterVec);
+		   Cwhole.size(), maxSumValue, counterVec, LongJobs.size());
 
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
