@@ -71,36 +71,6 @@ public:
     double roundCriteriaTable;
 };
 
-
-vector <DynamicTable> NSTableElements;
-vector <DynamicTable> AllTableElemets;
-vector<int> tempOptVector;
-vector < FinalTableINFO > AllProbData;
-
-//  Global defination
-int optIndex,FinalMakespan;
-int k,T,OPT,LB,UB,s,LB0,UB0;
-double error;
-long Elapsed_total, secondsT, MicroSecondsT;
-int nJobs,nMachines,nFile;
-int iwhile;
-int roundCriteria;
-int f,th;
-int numShort, numLong;
-int Fopt;
-
-
-//vector< vector <int> > RoundedOptimalSchedule;
-//vector< vector <int> > OptimalSchedule;
-vector<int> roundVec;
-vector<int> ProcTimeJob;
-vector<int> ShortJobs;
-vector<int> LongJobs;
-vector<int> LongRoundJobs;
-vector<int> Ntemp;
-vector<int> zeroVec;
-//vector<int> machineTimes;
-
 // function declarations
 bool increase(const vector<int>& nVector, vector<int>& it);
 int Pow(int x, int p);
@@ -116,7 +86,6 @@ void print(int iwhile);
 void findScheduleFun(vector<vector<int> >& FinalMachineConfiguration);
 void findScheduleFun2(vector<vector<int> >& FinalMachineConfiguration, vector< vector <int> >& RoundedOptimalSchedule);
 void findScheduleFun3(vector<vector<int> >& FinalMachineConfiguration, vector< vector <int> >& RoundedOptimalSchedule);
-
 void generate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole);
 void generate2(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp);
 void printFunFile(vector<int> v);
@@ -125,34 +94,5 @@ void readInputFile(int nFile);
 void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machinetimes, vector<int>& longF,vector<int>& shortF, int Fopt);
 
 void finish_gpu_work();
-
-int nthreads,nthreads0;
-
-//string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
-string str0= "File";
-
-//string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
-//string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
-//string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
-string str1;
-string str2;
-string str3 ="-";
-string str4;
-string str5=".txt";
-
-
-ofstream solution("AllInstances.xls");
-
-//ofstream solution("/Users/lalehghalami/Desktop/parallelCode/PTAS-Results-T4F308-5.xls");
-
-
-//ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
-//ofstream scheduleFile("/wsu/home/ff/ff96/ff9687/Results-8Sep/PTAS-Schedule-T16F40.xls");
-//ofstream output("/wsu/home/ff/ff96/ff9687/Results-9Aug/Par-Output-File300.xls");
-
-GpuDynamicTable *h_AllGpuTableElements;
-GpuDynamicTable *d_AllGpuTableElements;
-int             *h_counterVec;
-int							*d_counterVec;
 
 #endif /* PARRALEL_PTAS */

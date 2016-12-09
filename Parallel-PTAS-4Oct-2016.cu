@@ -1,6 +1,54 @@
 #include "Parallel-PTAS-4Oct-2016.hh"
 #include "DPCuda.hh"
 
+vector <DynamicTable> NSTableElements;
+vector <DynamicTable> AllTableElemets;
+vector<int> tempOptVector;
+vector < FinalTableINFO > AllProbData;
+
+//  Global defination
+int optIndex,FinalMakespan;
+int k,T,OPT,LB,UB,s,LB0,UB0;
+double error;
+long Elapsed_total, secondsT, MicroSecondsT;
+int nJobs,nMachines,nFile;
+int iwhile;
+int roundCriteria;
+int f,th;
+int numShort, numLong;
+int Fopt;
+//vector< vector <int> > RoundedOptimalSchedule;
+//vector< vector <int> > OptimalSchedule;
+vector<int> roundVec;
+vector<int> ProcTimeJob;
+vector<int> ShortJobs;
+vector<int> LongJobs;
+vector<int> LongRoundJobs;
+vector<int> Ntemp;
+vector<int> zeroVec;
+//vector<int> machineTimes;
+
+int nthreads,nthreads0;
+
+//string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
+string str0= "File";
+//string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
+//string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
+//string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
+
+string str1;
+string str2;
+string str3 ="-";
+string str4;
+string str5=".txt";
+
+
+ofstream solution("AllInstances.xls");
+//ofstream solution("/Users/lalehghalami/Desktop/parallelCode/PTAS-Results-T4F308-5.xls");
+//ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
+//ofstream scheduleFile("/wsu/home/ff/ff96/ff9687/Results-8Sep/PTAS-Schedule-T16F40.xls");
+//ofstream output("/wsu/home/ff/ff96/ff9687/Results-9Aug/Par-Output-File300.xls");
+
 // int main(int argc, char* argv[])
 int main()
 {
@@ -506,6 +554,7 @@ int DPFunction2(vector<int>& Ntemp)
 
         init_gpu(AllTableElemets, counterVec);
         // func_name(d_AllGpuTableElements, d_counterVec, indexomp, i);
+        free_gpu(AllTableElemets, counterVec);
         indexomp=indexomp+counterVec[i];
         i++;
     }
