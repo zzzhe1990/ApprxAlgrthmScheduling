@@ -25,10 +25,13 @@ using namespace std;
 class GpuDynamicTable
 {
 public:
-	int *elm;
-  thrust::device_vector<int*> NSsubsets;
-  thrust::device_vector<int*> Csubsets;
-  thrust::device_vector<int> optVector;
+	int 	*elm;
+	int		elm_size;
+	int		NSsubsets_size;
+	int		Csubsets_size;
+	thrust::device_vector<int> *NSsubsets;
+	thrust::device_vector<int> *Csubsets;
+	thrust::device_vector<int> optVector;
 	int myOPT;
   int mySum;
   int myOptimalindex;

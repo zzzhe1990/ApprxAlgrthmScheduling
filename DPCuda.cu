@@ -4,6 +4,8 @@ GpuDynamicTable *h_AllGpuTableElements;
 GpuDynamicTable *d_AllGpuTableElements;
 int             *h_counterVec;
 int							*d_counterVec;
+int             AllTableElemets_size;
+int             counterVec_size;
 
 __global__
 void gpu_dpFunction(GpuDynamicTable *AllGpuTableElements, int *counterVec, int indexomp, int i)
@@ -12,7 +14,7 @@ void gpu_dpFunction(GpuDynamicTable *AllGpuTableElements, int *counterVec, int i
   {
     // vector<vector<int> > Ctemp;
     // vector<vector<int> > NMinusStemp;
-    //vector<vector<int> > Cwhole;
+    // vector<vector<int> > Cwhole;
     // generate2(AllTableElemets[j].elm,Ctemp,NMinusStemp);
     // AllTableElemets[j].NSsubsets=NMinusStemp;
     // AllTableElemets[j].Csubsets=Ctemp;
@@ -57,21 +59,76 @@ void gpu_dpFunction(GpuDynamicTable *AllGpuTableElements, int *counterVec, int i
   }
 }
 
+void gpu_generate2(/*vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp*/)
+{
+
+}
+
 // void func_name(GpuDynamicTable *AllGpuTableElements, int *counterVec, int indexomp, int i)
 // {
 //   gpu_dpFunction<<<0, nthreads0>>>(AllGpuTableElements, counterVec, indexomp, i);
 // }
 
+/*
+  Todo :
+    - copy d_AllGpuTableElements to h_AllGpuTableElements - OK
+    - copy d_counterVec to h_counterVec - OK
+    - free h_AllGpuTableElements - OK
+    - free h_counterVec - OK
+    - free AllTableElemets ?
+    - copy h_AllGpuTableElements to AllTableElemets - KO
+    - copy h_counterVec to counterVec - KO
+*/
+
 void free_gpu(vector<DynamicTable> &AllTableElemets, vector<int> &counterVec)
 {
+  cudaMemcpy(d_AllGpuTableElements, h_AllGpuTableElements, sizeof(GpuDynamicTable) * AllTableElemets_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(d_counterVec, h_counterVec, sizeof(int) * counterVec_size, cudaMemcpyDeviceToHost);
+  cudaFree(d_AllGpuTableElements);
+  cudaFree(d_counterVec);
+  AllTableElemets.clear(); // destroy elements but don't free the memory
+  counterVec.clear();
 
+  for (int i = 0; i < AllTableElemets_size; i++)
+  {
+    DynamicTable *tmpTable = new DynamicTable();
+
+    tmpTable->elm.assign(h_AllGpuTableElements[i].elm, h_AllGpuTableElements[i].elm + h_AllGpuTableElements[i].elm_size);
+
+    // for (size_t j = 0; j < h_AllGpuTableElements[i].NSsubsets_size; j++) {
+    //   for (size_t k = 0; k < h_AllGpuTableElements[i].NSsubsets[j].size(); k++) {
+    //     tmpTable->NSsubsets[j].push_back(*h_AllGpuTableElements[i].NSsubsets[j][k].data().get());
+    //   }
+    // }
+    // std::cout << "---------------------------" << '\n';
+    int tmp;
+    // std::cout << "Csubsets size = " << h_AllGpuTableElements[i].Csubsets_size << '\n';
+    for (size_t j = 0; j < h_AllGpuTableElements[i].Csubsets_size ; j++) {
+      std::cout << h_AllGpuTableElements[j].Csubsets[j].size() << std::endl;
+      for (size_t k = 0; k < h_AllGpuTableElements[j].Csubsets[j].size(); k++) {
+        tmp = h_AllGpuTableElements[i].Csubsets[j][k];
+        tmpTable->Csubsets[j].push_back(tmp);
+        std::cout << "|" << tmpTable->Csubsets[j][k] << ' ';
+      }
+    }
+    std::cout << '\n';
+
+    for (size_t j = 0; j < AllTableElemets[i].optVector.size(); j++)
+      h_AllGpuTableElements[i].optVector.push_back(AllTableElemets[i].optVector[j]);
+
+    tmpTable->myOPT = h_AllGpuTableElements[i].myOPT;
+    tmpTable->mySum = h_AllGpuTableElements[i].mySum;
+    tmpTable->myOptimalindex = h_AllGpuTableElements[i].myOptimalindex;
+    // h_AllGpuTableElements[i].myMinNSVector = &(AllTableElemets[i].myMinNSVector[0]);
+
+    AllTableElemets.push_back(*tmpTable);
+    delete tmpTable;
+  }
+  counterVec.assign(h_counterVec, h_counterVec + counterVec_size);
 }
 
 void init_gpu(vector<DynamicTable> &AllTableElemets, vector<int> &counterVec)
 {
-  int  AllTableElemets_size;
-  int  counterVec_size;
-
   AllTableElemets_size = AllTableElemets.size();
   counterVec_size = counterVec.size();
 
@@ -81,15 +138,26 @@ void init_gpu(vector<DynamicTable> &AllTableElemets, vector<int> &counterVec)
 
   for (int i = 0; i < AllTableElemets_size; i++)
   {
-    h_AllGpuTableElements[i].elm = &(AllTableElemets[i].elm[0]);
+    h_AllGpuTableElements[i].elm = new int[AllTableElemets[i].elm.size()];
+    h_AllGpuTableElements[i].NSsubsets = new thrust::device_vector<int>[AllTableElemets[i].NSsubsets.size()];
+    h_AllGpuTableElements[i].Csubsets = new thrust::device_vector<int>[AllTableElemets[i].Csubsets.size()];
+    for (size_t j = 0; j < AllTableElemets[i].elm.size(); j++) {
+      h_AllGpuTableElements[i].elm[j] = AllTableElemets[i].elm[j];
+    }
 
-    for (size_t j = 0; j < AllTableElemets[i].NSsubsets.size(); j++)
-      h_AllGpuTableElements[i].NSsubsets[j] = &(AllTableElemets[i].NSsubsets[j][0]);
-    for (size_t j = 0; j < AllTableElemets[i].Csubsets.size(); j++)
-      h_AllGpuTableElements[i].Csubsets[j] = &(AllTableElemets[i].Csubsets[j][0]);
-    for (size_t j = 0; j < AllTableElemets[i].optVector.size(); j++)
+    for (size_t j = 0; j < AllTableElemets[i].NSsubsets.size(); j++) {
+      h_AllGpuTableElements[i].NSsubsets[j] = AllTableElemets[i].NSsubsets[j];
+    }
+    for (size_t j = 0; j < AllTableElemets[i].Csubsets.size(); j++) {
+      h_AllGpuTableElements[i].Csubsets[j] = AllTableElemets[i].Csubsets[j];
+    }
+    for (size_t j = 0; j < AllTableElemets[i].optVector.size(); j++) {
       h_AllGpuTableElements[i].optVector.push_back(AllTableElemets[i].optVector[j]);
+    }
 
+    h_AllGpuTableElements[i].elm_size = AllTableElemets[i].elm.size();
+    h_AllGpuTableElements[i].NSsubsets_size = AllTableElemets[i].NSsubsets.size();
+    h_AllGpuTableElements[i].Csubsets_size = AllTableElemets[i].Csubsets.size();
   	h_AllGpuTableElements[i].myOPT = AllTableElemets[i].myOPT;
     h_AllGpuTableElements[i].mySum = AllTableElemets[i].mySum;
     h_AllGpuTableElements[i].myOptimalindex = AllTableElemets[i].myOptimalindex;

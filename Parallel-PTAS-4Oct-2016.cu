@@ -481,6 +481,15 @@ int Bk(int LB, int UB)
 
 }
 
+void print_stuff(vector<DynamicTable> &AllTableElemets, vector<int> &counterVec)
+{
+  std::cout << "AllTableElemets : "<< '\n';
+  for (size_t i = 0; i < AllTableElemets.size(); i++) {
+    std::cout << "NSsubsets size = " << AllTableElemets[i].NSsubsets.size() << '\n';
+  }
+  std::cout << '\n';
+}
+
 int DPFunction2(vector<int>& Ntemp)
 {
 
@@ -547,17 +556,21 @@ int DPFunction2(vector<int>& Ntemp)
     int i=0;
     int indexomp=0;
 
-    while (i < maxSumValue+1)
-    {
+    // while (i < maxSumValue+1)
+    // {
       	// #pragma omp parallel shared (AllTableElemets,indexomp,i,counterVec)  num_threads(nthreads0)
       	// #pragma omp for schedule(static,1)
-
+        std::cout << "-------------------------- BEFORE --------------------------" << '\n';
+        print_stuff(AllTableElemets, counterVec);
         init_gpu(AllTableElemets, counterVec);
         // func_name(d_AllGpuTableElements, d_counterVec, indexomp, i);
+        std::cout << "-------------------------- AFTER --------------------------" << '\n';
         free_gpu(AllTableElemets, counterVec);
-        indexomp=indexomp+counterVec[i];
-        i++;
-    }
+        print_stuff(AllTableElemets, counterVec);
+        std::cout << "-----------------------------------------------------------" << '\n';
+    //     indexomp=indexomp+counterVec[i];
+    //     i++;
+    // }
 
 	for(int i=0; i<NSTableElements.size();i++)
 	{
