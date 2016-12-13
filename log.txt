@@ -64,3 +64,51 @@ Complete:
 1. Change the size of "optVec" and "NSsubsets" from fix value to dynamic. Size for mallocation is still fixed, but an array of size for different dimensionns are also recorded.
 2. Add cudafree() for optVec_size and NSsubsets_size.
 3. Change the size of cudaMemcpy for dev_counterVec from device to host. 
+
+
+****************************************
+Dec 12 2016
+****************************************
+Complete:
+1. Address the problem of incorrect cudaMemcpy, caused by multi-dimensional vector. Copy from CUDA container to STL container directly may cause problems especially when 
+   STL container is in multi-dimensions and not allocated.
+2. Add cudaMemcpy Device to Host for myOPT and myOptimalindex. 
+3. Change the way of copying between host and device; however, there is still heavy overhead on moving data from device (CUDA array) to host (STL vectors).
+
+To do:
+1. Run the original code on GRID to collect data and compare to GPU results.
+2. Try to put all DPFunction2 on GPU to minimize the cost of communication.
+
+Errors:
+1. It shows that data calculated on GPU are not correct, results in the error on dpoptimal (always 2 in GPU code).
+for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
+	{
+		for(int j=0;j<AllTableElemets.size();j++)
+		{	
+			if(NSTableElements[i].elm==AllTableElemets[j].elm)
+			{
+				NSTableElements[i]=AllTableElemets[j];
+				break;
+			}
+		}
+
+	}
+
+
+	for(int i=0; i<NSTableElements.size();i++)
+	{
+		tempOptVector.push_back(NSTableElements[i].myOPT);
+	}
+
+	int dpoptimal;
+	int minN=100000;
+    cout << "NSTableElements size: " << NSTableElements.size() << endl;  
+	for(int mindex=0; mindex<NSTableElements.size();mindex++)
+	{
+		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;
+		if(NSTableElements[mindex].myOPT<minN)
+			minN=NSTableElements[mindex].myOPT;
+	}
+
+	dpoptimal=minN +1;
+

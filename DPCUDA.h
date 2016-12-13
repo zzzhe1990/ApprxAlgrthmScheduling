@@ -2,7 +2,7 @@
 #define	DPCUDA_H
 
 #include "Parallel.h"
-
+#include "iterator"
 
 void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJobs_size, 
 				 vector<DynamicTable> &AllTableElemets, int *zeroVec, int *roundVec, int *counterVec);

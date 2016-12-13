@@ -209,7 +209,6 @@ int mainScheduling()
 		clearFun();
 		
 		BkID= Bk(LB,UB);
-		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << endl;
         if (BkID==-1) {
 			cout << "BkID==-1" <<endl;
             break;
@@ -221,30 +220,31 @@ int mainScheduling()
 			UB=T;
 		if(OPT>nMachines)
 			LB=T+1;
+		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
 		iwhile++;
 	}
 
     
-    //cout << "********************************************************"<<endl;
-    //cout << "OUT of Bk while loop  "<<endl;
-    //cout << "UB    "<< UB<<endl;
-    //cout << "LB    "<< LB<<endl;
-    //cout << "T1    "<< T<<endl;
+    cout << "********************************************************"<<endl;
+    cout << "OUT of Bk while loop  "<<endl;
+    cout << "UB    "<< UB<<endl;
+    cout << "LB    "<< LB<<endl;
+    cout << "T1    "<< T<<endl;
    	double TT;
     TT=(LB+UB)/2;
     T=floor(TT);
-    //cout << "T2    "<< T<<endl;
-    //cout << "OPT   "<< OPT<<endl;
-    //cout << "nMachines   "<< nMachines<<endl;
-    //cout << "AllProbData.size()    "<< AllProbData.size()<<endl;
+    cout << "T2    "<< T<<endl;
+    cout << "OPT   "<< OPT<<endl;
+    cout << "nMachines   "<< nMachines<<endl;
+    cout << "AllProbData.size()    "<< AllProbData.size()<<endl;
     
     
-    //for (int ck=AllProbData.size()-1; ck >= 0; ck--)
-   // {
-     //   cout << "ck :   " << ck << endl;
-       // cout << "AllProbData[ck].Ttable    "<< AllProbData[ck].Ttable <<endl;
+    for (int ck=AllProbData.size()-1; ck >= 0; ck--)
+    {
+       cout << "ck :   " << ck << endl;
+       cout << "AllProbData[ck].Ttable    "<< AllProbData[ck].Ttable <<endl;
 
-    //}
+    }
 
 
     
@@ -608,15 +608,17 @@ int DPFunction2(vector<int>& Ntemp)
 
 	int dpoptimal;
 	int minN=100000;
+    cout << "NSTableElements size: " << NSTableElements.size() << endl;  
 	for(int mindex=0; mindex<NSTableElements.size();mindex++)
 	{
+		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;
 		if(NSTableElements[mindex].myOPT<minN)
 			minN=NSTableElements[mindex].myOPT;
 	}
 
 	dpoptimal=minN +1;
 
-    cout << "dpoptimal" <<dpoptimal << endl;
+    cout << "dpoptimal: " <<dpoptimal << endl;
     if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
     {
         

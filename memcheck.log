@@ -4,16 +4,27 @@ Number of Jobs : 21
 Number of Machines : 10
 ******************************************************************
  LongJobs.size() 19
-dpoptimal20
- LongJobs.size() 16
-dpoptimal17
- LongJobs.size() 15
-dpoptimal16
- LongJobs.size() 15
-dpoptimal16
-optIndex    0
+loop: 0, FindOPT and cudaMemcpy are done
+loop: 1, FindOPT and cudaMemcpy are done
+loop: 2, FindOPT and cudaMemcpy are done
+loop: 3, FindOPT and cudaMemcpy are done
+loop: 4, FindOPT and cudaMemcpy are done
+loop: 5, FindOPT and cudaMemcpy are done
+loop: 6, FindOPT and cudaMemcpy are done
+loop: 7, FindOPT and cudaMemcpy are done
+loop: 8, FindOPT and cudaMemcpy are done
+loop: 9, FindOPT and cudaMemcpy are done
+loop: 10, FindOPT and cudaMemcpy are done
+loop: 11, FindOPT and cudaMemcpy are done
+loop: 12, FindOPT and cudaMemcpy are done
+loop: 13, FindOPT and cudaMemcpy are done
+loop: 14, FindOPT and cudaMemcpy are done
+loop: 15, FindOPT and cudaMemcpy are done
+loop: 16, FindOPT and cudaMemcpy are done
+loop: 17, FindOPT and cudaMemcpy are done
+loop: 18, FindOPT and cudaMemcpy are done
+loop: 19, FindOPT and cudaMemcpy are done
 ========= CUDA-MEMCHECK
 ========= Error: process didn't terminate successfully
-=========        The application may have hit an error when dereferencing Unified Memory from the host. Please rerun the application under cuda-gdb or Nsight Eclipse Edition to catch host side errors.
 ========= Internal error (20)
 ========= No CUDA-MEMCHECK results found
