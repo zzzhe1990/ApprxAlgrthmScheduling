@@ -576,6 +576,12 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
+    cout << "myOPT at begin: ";
+    for (int i = 0; i < AllTableElemets.size(); i++){
+		cout << AllTableElemets[i].myOPT << " ";
+	}
+	cout << endl;
+    
     InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0]);
     /*
 	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
@@ -586,20 +592,27 @@ int DPFunction2(vector<int>& Ntemp)
 	*/
     gpu_DP(AllTableElemets, T, k, powK, AllTableElemets.size(), 
 		   Cwhole.size(), maxSumValue, counterVec, LongJobs.size());
-
+	int count1 = 0;
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
 		for(int j=0;j<AllTableElemets.size();j++)
 		{	
 			if(NSTableElements[i].elm==AllTableElemets[j].elm)
 			{
+				count1++;
+				cout << "copy AllTableElemets to NSTableElements at [" << i << ", " << j << "]." << endl;
 				NSTableElements[i]=AllTableElemets[j];
+				printf("NSTableElements[%d].myOPT: %d, AllTableElemets[%d].myOPT: %d\n", i, NSTableElements[i].myOPT, j, AllTableElemets[j].myOPT);
+				for (int size = 0; size < NSTableElements[i].elm.size(); size++){	
+					cout << NSTableElements[i].elm[size] <<", ";
+				}
+				cout << endl;
 				break;
 			}
 		}
 
 	}
-
+	cout << "A total of " << count1 << " copies from AllTableElemets to NSTableElements." << endl;
 
 	for(int i=0; i<NSTableElements.size();i++)
 	{
@@ -608,7 +621,7 @@ int DPFunction2(vector<int>& Ntemp)
 
 	int dpoptimal;
 	int minN=100000;
-    cout << "NSTableElements size: " << NSTableElements.size() << endl;  
+    cout << "NSTableElements size: " << NSTableElements.size() << ", NSTableElements[0].myOPT: " << NSTableElements[0].myOPT << ", NSTableElements[1].myOPT " << NSTableElements[1].myOPT << endl;  
 	for(int mindex=0; mindex<NSTableElements.size();mindex++)
 	{
 		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;

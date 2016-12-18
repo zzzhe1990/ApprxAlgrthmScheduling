@@ -41,10 +41,12 @@ void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJo
     
 	int *ATE_NSsubsets_size = new int[AllTableElemets_size];
 	int *ATE_optVector_size = new int[AllTableElemets_size];
+	int *ATE_myOPT = new int[AllTableElemets_size];
 	for (int i = 0; i < AllTableElemets_size; i++){
 //		ATE_NSsubsets_size[i] = AllTableElemets[i].NSsubsets.size();
 //		ATE_optVector_size[i] = AllTableElemets[i].optVector.size();
 		gpuErrchk(cudaMemcpy(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice));
+		ATE_myOPT[i] = AllTableElemets[i].myOPT;
 	}
     
 	gpuErrchk(cudaMemcpy(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
@@ -52,9 +54,11 @@ void InitGPUData(int AllTableElemets_size, int Cwhole_size, int powK, int LongJo
 	gpuErrchk(cudaMemcpy(dev_counterVec, counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice));
 	gpuErrchk(cudaMemcpy(dev_ATE_NSsubsets_size, ATE_NSsubsets_size, AllTableElemets_size * sizeof(int), cudaMemcpyHostToDevice));
 	gpuErrchk(cudaMemcpy(dev_ATE_optVector_size, ATE_optVector_size, AllTableElemets_size * sizeof(int), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemcpy(dev_ATE_myOPT, ATE_myOPT, AllTableElemets_size * sizeof(int), cudaMemcpyHostToDevice));
 	
 	delete(ATE_NSsubsets_size);
 	delete(ATE_optVector_size);
+	delete(ATE_myOPT);
 }
 
 
@@ -184,6 +188,7 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 																	// NSTableElements is the table for all previous OPT. Find all subsets(dependency) of selected job
 			int optVecIndex = 0;
 //			for(int h=0; h < dev_ATE_NSsubsets_size[j]; h++)
+			int hit1 = 0, hit2 = 0, hit3 = 0;
 			for(int h=0; h < Cwhole_size; h++)
             {
 //                if(AllTableElemets[j].NSsubsets[h]==zeroVec)   // if subset is zero Vector , its OPT is 0
@@ -193,6 +198,7 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
                     dev_ATE_optVector[j * powK + optVecIndex] = 0;
                     optVecIndex++;
                     dev_ATE_optVector_size[j] = optVecIndex;
+                    hit1++;
                     break;
                 }
                 //if(AllTableElemets[j].NSsubsets[h]==AllTableElemets[j].elm)   // if NSsubsets[h] is equal to NSTableElements[j] (itself) 
@@ -200,6 +206,7 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 																			// check if it is itself, if yes, ignore OPT of job itself.
 				if(gpu_sameVectors(&dev_ATE_NSsubsets[(j * Cwhole_size + h) * powK], &dev_ATE_elm[j * powK], powK) ){
                     dev_ATE_optVector_size[j] = optVecIndex;
+                    hit2++;
                     break;
 				}
                 //for(int r=0; r<AllTableElemets.size();r++)        // to find the match in the NSTableElements for reaching OPT
@@ -207,14 +214,25 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 																//table (AllTableElemets) and find them (matched to AllTableElemets[j].NSsubsets[h]).
 				for (int r = 0; r < dev_AllTableElemets_size; r++)
                 {
-
                     //if(AllTableElemets[j].NSsubsets[h]==AllTableElemets[r].elm)   // if found match of NSsubsets[h], copy its OPT and break 
                     if (gpu_sameVectors(&dev_ATE_NSsubsets[(j * Cwhole_size + h) * powK], &dev_ATE_elm[r * powK], powK))
                     {
+						if (thread%100 == 0){
+					//		printf("thread: %d, j: %d, NSsubsets seg:", thread, j);
+					//		for (int i = 0; i < powK; i++)
+					//			printf(" %d", dev_ATE_NSsubsets[(j*Cwhole_size+h)*powK+i]);
+					//		printf("\n");
+					//		printf("thread: %d, j: %d, Csubsets seg:", thread, j);
+					//		for (int i = 0; i < powK; i++)
+					//			printf(" %d", dev_ATE_elm[r*powK+i]);
+					//		printf("\n");
+					//		printf("thread: %d, j: %d, r: %d, myOPT[%d]: %d\n", thread, j, r, dev_ATE_myOPT[r]);
+						}
                         //AllTableElemets[j].optVector.push_back(AllTableElemets[r].myOPT);
                         dev_ATE_optVector[j * powK + optVecIndex] = dev_ATE_myOPT[r];
                         optVecIndex++;
 						dev_ATE_optVector_size[j] = optVecIndex;
+						hit3++;
                         break;
                     }
                 }
@@ -222,11 +240,12 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
             int minn = 100000;
             int myOptimalindex;
             //for(int pp=0; pp<AllTableElemets[j].optVector.size();pp++)			// find out the OPT from all dependencies.
-#pragma unroll
             for (int pp = 0; pp < dev_ATE_optVector_size[j]; pp++)
             {
        //         cout << AllTableElemets[j].optVector[pp]<<" ";
 //                if(AllTableElemets[j].optVector[pp] < minn)
+				//if (thread == 0)
+				//	printf("j: %d, thread: %d, AllTableElemets[%d].optVector[%d]: %d\n", j, thread, j, pp, dev_ATE_optVector[j*powK+pp]);
 				if (dev_ATE_optVector[j * powK + pp] < minn)
                 {
 //                    minn=AllTableElemets[j].optVector[pp];
@@ -330,6 +349,23 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	gpuErrchk(cudaMemcpy(temp4, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
 	
 	std::cout << "temp1 temp2 is done, AllTableElemets.size: " << AllTableElemets.size() << std::endl;
+	
+	cout << "myOPT: ";
+	for (int i = 0; i < AllTableElemets.size(); i++){
+		cout << temp3[i] << ", ";
+	}
+	cout << endl;
+/*	
+	cout << "NSsubsets of AllTableElemets[0]: ";
+	for (int i = 0; i < Cwhole_size * powK; i++){
+		cout << temp1[i] << ", ";
+	}
+	cout << endl << "Csubsets of AllTableElemets[0]: ";
+	for (int i = 0; i < Cwhole_size * powK; i++) {
+		cout << temp2[i] << ", ";
+	}
+	cout << endl;
+*/	
 	for (int i = 0; i < AllTableElemets.size(); i++)
 	{
 		AllTableElemets[i].myOPT = temp3[i];
