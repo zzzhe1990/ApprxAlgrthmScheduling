@@ -576,11 +576,6 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    cout << "myOPT at begin: ";
-    for (int i = 0; i < AllTableElemets.size(); i++){
-		cout << AllTableElemets[i].myOPT << " ";
-	}
-	cout << endl;
     
     InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0]);
     /*

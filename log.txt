@@ -116,5 +116,20 @@ for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For exa
 *********************************************
 Dec 17 2016
 *********************************************
-Problem found:
+Problem solved:
 1. Have to copy AllTableElemets[i].myOPT to GPU because it is not initialized to 0 but the number of total jobs.
+
+Problem detected and still remain:
+1. The update of optVector always hits the condition of NSsubsets == zeroVec. Problem might be caused by the updates on NSsubsets that some reserved elements (initial to 0) 
+	are not updated (should not be used) but they are somehow used or compared to in GPU code. In cpp code, since it is a vector, there is no redudent elements, but in GPU code,
+	size of arrays are reserved to MAX.
+	
+			if(gpu_sameVectors(&dev_ATE_NSsubsets[(j * Cwhole_size + h) * powK], dev_zeroVec, powK))
+                {
+                    //AllTableElemets[j].optVector.push_back(0);
+                    dev_ATE_optVector[j * powK + optVecIndex] = 0;
+                    optVecIndex++;
+                    dev_ATE_optVector_size[j] = optVecIndex;
+                    hit1++;
+                    break;
+                }
