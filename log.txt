@@ -150,3 +150,6 @@ Completed:
 2. Change the update for NSsubsets_size in gpu_generate2(). Now NSsubsets_size[] stores the value (??) of the first dimension of dev_NSsubsets[??][pow(k,2)].
 3. The size of NSsubsets_size[] and dev_NSsubsets[] are calculated by using maxSubsetsSize instead of Cwhole_size.
 4. The size of dev_NSsubsets is calculated by using maxSubsetsSize instead of Cwhole_size.
+
+To do:
+1. Add ostream to .cpp file and compare myOPT in .cpp to what is in .cu
