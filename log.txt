@@ -143,3 +143,10 @@ New found:
    is 6 + 6*3 + 6*3*2 + 6*3*2*5. This value can be calculated between generate() and generate2().
 2. AllTableElemets[j].NSsubsets[xxx].size() is constant to pow(k,2).
 3. AllTableElemets[j].elm.size() is constant to pow(k,2).
+4. The size of the first dimension of Csubsets is always equal to the max size of the first dimension of NSsubsets.
+
+Completed:
+1. Change NSsubsets_size to NSsubsets_size[max][pow(k,2)], where max is refered above.
+2. Change the update for NSsubsets_size in gpu_generate2(). Now NSsubsets_size[] stores the value (??) of the first dimension of dev_NSsubsets[??][pow(k,2)].
+3. The size of NSsubsets_size[] and dev_NSsubsets[] are calculated by using maxSubsetsSize instead of Cwhole_size.
+4. The size of dev_NSsubsets is calculated by using maxSubsetsSize instead of Cwhole_size.
