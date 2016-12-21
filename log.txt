@@ -133,3 +133,13 @@ Problem detected and still remain:
                     hit1++;
                     break;
                 }
+                
+                
+*********************************************
+Dec 20
+*********************************************
+New found:
+1. AllTableElemets[j].NSsubsets.size() is not constant, it is not the same to  AllTableElemets.size(). Find AllTableElemets[max].elm, for example: it is 0 0 5 2 3 0 6 0 0. Thus max NSsubsets.size()
+   is 6 + 6*3 + 6*3*2 + 6*3*2*5. This value can be calculated between generate() and generate2().
+2. AllTableElemets[j].NSsubsets[xxx].size() is constant to pow(k,2).
+3. AllTableElemets[j].elm.size() is constant to pow(k,2).

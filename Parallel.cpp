@@ -576,8 +576,7 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    
-    InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0]);
+    int maxNSsubsetsSize = InitGPUData(AllTableElemets.size(), Cwhole.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0]);
     /*
 	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
 		   AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
@@ -586,7 +585,7 @@ int DPFunction2(vector<int>& Ntemp)
 		   dev_ATE_myMinNSVector, it, ss, NS, maxSumValue, counterVec);
 	*/
     gpu_DP(AllTableElemets, T, k, powK, AllTableElemets.size(), 
-		   Cwhole.size(), maxSumValue, counterVec, LongJobs.size());
+		   Cwhole.size(), maxSumValue, counterVec, LongJobs.size(), maxNSsubsetsSize);
 	int count1 = 0;
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
