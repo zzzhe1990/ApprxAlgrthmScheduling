@@ -153,3 +153,13 @@ Completed:
 
 To do:
 1. Add ostream to .cpp file and compare myOPT in .cpp to what is in .cu
+
+**********************************************
+Dec 21
+**********************************************
+1. GPU returns same minn as .cpp's from DPFunction2; however, NSTableElements[i].myOPT is constant to 6 when it is on GPU which is either 6 or 7 in .cpp's run.
+
+Changed but caused other problem:
+1. when doing cudaMemcpy from Device to Host, changes are made to dev_NSsubsets because the vector "NSsubsets" only requires the elements within the scope of dev_NSsubsets_Size. 
+2. Execution errors that cudaMalloc is out of memory. Or it complains about the cudaMemcpyDeviceToHost for counterVec.
+3. cudaMemcpyDeviceToHost for counterVec can be removed by placing dev_counterVec on device permenantly and updated on device.

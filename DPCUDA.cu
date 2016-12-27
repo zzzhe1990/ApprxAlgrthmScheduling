@@ -314,43 +314,18 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
     }
     
 //GPU code to update AllTableElement
-	int *temp1, *temp2, *temp3, *temp4;
-	temp1 = new int[AllTableElemets.size() * maxSubsetsSize * powK];
-	temp2 = new int[AllTableElemets.size() * maxSubsetsSize * powK];
-	temp3 = new int[AllTableElemets.size()];
-	temp4 = new int[AllTableElemets.size()];
-	/*
-	for(int i=0; i < AllTableElemets.size(); i++){
-		AllTableElemets[i].NSsubsets.resize(maxSubsetsSize);
-		AllTableElemets[i].Csubsets.resize(maxSubsetsSize);
-		AllTableElemets[i].optVector.resize(powK);
-		for (int j = 0; j < maxSubsetsSize; j++){
-			AllTableElemets[i].NSsubsets[j].resize(powK);
-			AllTableElemets[i].Csubsets[j].resize(powK);
-//			cudaMemcpy(&AllTableElemets[i].NSsubsets[j][0], &dev_ATE_NSsubsets[(i * maxSubsetsSize + j) * powK], powK, cudaMemcpyDeviceToHost);
-//			cudaMemcpy(&AllTableElemets[i].Csubsets[j][0], &dev_ATE_Csubsets[(i * maxSubsetsSize + j) * powK], powK, cudaMemcpyDeviceToHost);
-			gpuErrchk(cudaMemcpy(temp1, &dev_ATE_NSsubsets[(i * maxSubsetsSize + j) * powK], powK * sizeof(int), cudaMemcpyDeviceToHost));
-			gpuErrchk(cudaMemcpy(temp2, &dev_ATE_Csubsets[(i * maxSubsetsSize + j) * powK], powK * sizeof(int), cudaMemcpyDeviceToHost));
-//			std::copy(temp1, temp1+powK, std::back_inserter(AllTableElemets[i].NSsubsets));
-//			std::copy(temp2, temp2+powK, std::back_inserter(AllTableElemets[i].Csubsets));
-//			AllTableElemets[i].NSsubsets[j].insert(AllTableElemets[i].NSsubsets[j].begin(), temp1, temp1+powK);
-//			AllTableElemets[i].Csubsets[j].insert(AllTableElemets[i].Csubsets[j].begin(), temp2, temp2+powK);
-			for (int p = 0; p < powK; p++){
-				AllTableElemets[i].NSsubsets[j][p] = temp1[p];
-				AllTableElemets[i].Csubsets[j][p] = temp2[p];
-			}
-			std::cout << "memcpy of NSsubsets and Csubsets for dimension: " << j << " of AllTableElemets[" << i <<"] is done." << std::endl;
-		}
-		gpuErrchk(cudaMemcpy(&AllTableElemets[i].optVector[0], &dev_ATE_optVector[i * powK], powK * sizeof(int), cudaMemcpyDeviceToHost));
-		//Csubsets[Cwhole.size()][powK]
-	}
-	*/
-	gpuErrchk(cudaMemcpy(temp1, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpy(temp2, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpy(temp3, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpy(temp4, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
+	int *temp_NSsubsets, *temp_Csubsets, *temp_myOPT, *temp_myOptIndex;
+	temp_NSsubsets = new int[AllTableElemets.size() * maxSubsetsSize * powK];
+	temp_Csubsets = new int[AllTableElemets.size() * maxSubsetsSize * powK];
+	temp_myOPT = new int[AllTableElemets.size()];
+	temp_myOptIndex = new int[AllTableElemets.size()];
+
+	gpuErrchk(cudaMemcpy(temp_NSsubsets, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
+	gpuErrchk(cudaMemcpy(temp_Csubsets, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
+	gpuErrchk(cudaMemcpy(temp_myOPT, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
+	gpuErrchk(cudaMemcpy(temp_myOptIndex, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
 	
-	std::cout << "temp1 temp2 is done, AllTableElemets.size: " << AllTableElemets.size() << std::endl;
+	std::cout << "memcpy from device to host are done, AllTableElemets.size: " << AllTableElemets.size() << std::endl;
 /*	
 	cout << "myOPT: ";
 	for (int i = 0; i < AllTableElemets.size(); i++){
@@ -370,26 +345,26 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 */	
 	for (int i = 0; i < AllTableElemets.size(); i++)
 	{
-		AllTableElemets[i].myOPT = temp3[i];
-		AllTableElemets[i].myOptimalindex = temp4[i];
+		AllTableElemets[i].myOPT = temp_myOPT[i];
+		AllTableElemets[i].myOptimalindex = temp_myOptIndex[i];
 		AllTableElemets[i].NSsubsets.resize(maxSubsetsSize);
 		AllTableElemets[i].Csubsets.resize(maxSubsetsSize);
 		AllTableElemets[i].optVector.resize(powK);
 		int begin = 0, end = maxSubsetsSize * powK;
 		while (begin != end)
 		{
-			AllTableElemets[i].NSsubsets.push_back(std::vector<int>(&temp1[(i * maxSubsetsSize) * powK], &temp1[(i * maxSubsetsSize + 1) * powK]));
-			AllTableElemets[i].Csubsets.push_back(std::vector<int>(&temp2[(i * maxSubsetsSize) * powK], &temp2[(i * maxSubsetsSize + 1) * powK]));
+			AllTableElemets[i].NSsubsets.push_back(std::vector<int>(&temp_NSsubsets[(i * maxSubsetsSize) * powK], &temp_NSsubsets[(i * maxSubsetsSize + 1) * powK]));
+			AllTableElemets[i].Csubsets.push_back(std::vector<int>(&temp_Csubsets[(i * maxSubsetsSize) * powK], &temp_Csubsets[(i * maxSubsetsSize + 1) * powK]));
 			begin += powK;
 		}
 		gpuErrchk(cudaMemcpy(&AllTableElemets[i].optVector[0], &dev_ATE_optVector[i * powK], powK * sizeof(int), cudaMemcpyDeviceToHost));
 	}
 	
 	
-	free(temp1);
-	free(temp2);
-	free(temp3);
-	free(temp4);
+	free(temp_NSsubsets);
+	free(temp_Csubsets);
+	free(temp_myOPT);
+	free(temp_myOptIndex);
 	cudaFree(dev_ATE_Csubsets);
 	cudaFree(dev_ATE_NSsubsets);
 	cudaFree(dev_ATE_elm);
