@@ -576,9 +576,6 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    int maxSubsetsSize;
-	
-	InitGPUData(AllTableElemets.size(), powK, LongJobs.size(), AllTableElemets, &zeroVec[0], &roundVec[0], &counterVec[0], maxSubsetsSize);
     /*
 	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
 		   AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
@@ -586,7 +583,8 @@ int DPFunction2(vector<int>& Ntemp)
 		   dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
 		   dev_ATE_myMinNSVector, it, ss, NS, maxSumValue, counterVec);
 	*/
-    gpu_DP(AllTableElemets, T, k, powK, AllTableElemets.size(), maxSumValue, counterVec, LongJobs.size(), maxSubsetsSize);
+    gpu_DP(AllTableElemets, T, k, powK, maxSumValue, counterVec, LongJobs.size(), &zeroVec[0], &roundVec[0]);
+    
 	int count1 = 0;
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
@@ -595,12 +593,12 @@ int DPFunction2(vector<int>& Ntemp)
 			if(NSTableElements[i].elm==AllTableElemets[j].elm)
 			{
 				count1++;
-				cout << "copy AllTableElemets to NSTableElements at [" << i << ", " << j << "]." << endl;
+//				cout << "copy AllTableElemets to NSTableElements at [" << i << ", " << j << "]." << endl;
 				NSTableElements[i]=AllTableElemets[j];
-				printf("NSTableElements[%d].myOPT: %d, AllTableElemets[%d].myOPT: %d\n", i, NSTableElements[i].myOPT, j, AllTableElemets[j].myOPT);
-				for (int size = 0; size < NSTableElements[i].elm.size(); size++){	
-					cout << NSTableElements[i].elm[size] <<", ";
-				}
+//				printf("NSTableElements[%d].myOPT: %d, AllTableElemets[%d].myOPT: %d\n", i, NSTableElements[i].myOPT, j, AllTableElemets[j].myOPT);
+//				for (int size = 0; size < NSTableElements[i].elm.size(); size++){	
+//					cout << NSTableElements[i].elm[size] <<", ";
+//				}
 				cout << endl;
 				break;
 			}
@@ -619,7 +617,7 @@ int DPFunction2(vector<int>& Ntemp)
     cout << "NSTableElements size: " << NSTableElements.size() << ", NSTableElements[0].myOPT: " << NSTableElements[0].myOPT << ", NSTableElements[1].myOPT " << NSTableElements[1].myOPT << endl;  
 	for(int mindex=0; mindex<NSTableElements.size();mindex++)
 	{
-		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;
+//		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;
 		if(NSTableElements[mindex].myOPT<minN)
 			minN=NSTableElements[mindex].myOPT;
 	}

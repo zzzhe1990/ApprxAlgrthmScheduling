@@ -163,3 +163,18 @@ Changed but caused other problem:
 1. when doing cudaMemcpy from Device to Host, changes are made to dev_NSsubsets because the vector "NSsubsets" only requires the elements within the scope of dev_NSsubsets_Size. 
 2. Execution errors that cudaMalloc is out of memory. Or it complains about the cudaMemcpyDeviceToHost for counterVec.
 3. cudaMemcpyDeviceToHost for counterVec can be removed by placing dev_counterVec on device permenantly and updated on device.
+
+
+**********************************************
+Dec 28
+**********************************************
+New found:
+1. Don't need to memcpy dev_counterVec back to counterVec because it is not changed on GPU.
+
+Problem resolved:
+1. AllTableElemets[maxIndex].elm.end() returns invalid big number, it is known that using vector<int>::const_iterator pt sometimes return invalid value which implies that iterator pt
+   sometimes access memory location which is out of bound. Work around: Instead of using vector<int>::const iterator, using index.
+   
+Problem detected:
+1. Sometimes cuda API complains about the out of bounds error on memcpy(temp_NSsubsets, dev_NSsubsets, size, DeviceToHost), even if the size of dev_NSsubsets is only around 0.5 GB.
+2. Problem of myOPT still exists and impact the GPU results.
