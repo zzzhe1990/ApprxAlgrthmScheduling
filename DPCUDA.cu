@@ -99,14 +99,12 @@ __device__ int gpu_sameVectors(int *vecA, int *vecB, int size)
 	return same;
 }
 
-__device__ int gpu_increase(const int *Ntemp, int *it, int Ntemp_size, int thread, int counter)
+__device__ int gpu_increase(int *Ntemp, int *it, int Ntemp_size)
 {
-	
-	printf("At the beginning of gpu_increase, thread: %d, counter: %d\n", thread, counter);
-	
-	for (int i = 0, size = Ntemp_size; i != size; ++i) 
+	int index;
+	for (int i = 0; i < Ntemp_size; i++) 
 	{
-		const int index = size - 1 - i;
+		index = Ntemp_size - 1 - i;
 		++it[index];
 		if (it[index] > Ntemp[index]) {
 			it[index] = 0;
@@ -121,7 +119,7 @@ __device__ int gpu_increase(const int *Ntemp, int *it, int Ntemp_size, int threa
 __device__ int gpu_sumFun(int *A, int *B, const int powK)
 {
 	int summ=0.0;
-#pragma unroll
+//#pragma unroll
 	for(int i=0; i<powK; i++)
 	{
 		summ= summ + A[i]*B[i];
@@ -131,26 +129,17 @@ __device__ int gpu_sumFun(int *A, int *B, const int powK)
 
 __device__ void gpu_generate2(int *Ntemp, const int Ntemp_size, int *Ctemp, int *NMinusStemp, int *dev_roundVec, 
 							  const int T, const int powK, int *it, int *s, int *NS, int *subsets_size, const int thread){
-	
-	//Ntemp_size = pow(k,2)
-	
 	//vector<int> it(Ntemp.size(), 0);
 	//int it[Ntemp_size];
 	int counter = 0;
-#pragma unroll
+
 	for (int i = 0; i < Ntemp_size; i++)
 	{
 		it[i] = 0;
 	}
-		
-//	if (thread == 0)
-	{
-		printf("In gpu_generate2 before do while loop, thread: %d.\n", thread);
-	}
-	
+
     do {
         //int s[Ntemp_size];
-#pragma unroll
         for (int i = 0; i < Ntemp_size; i++)
         {
 			s[i] = it[i];
@@ -161,12 +150,6 @@ __device__ void gpu_generate2(int *Ntemp, const int Ntemp_size, int *Ctemp, int 
         //}
         //Cwhole.push_back(s);
         int sSum=gpu_sumFun(s, dev_roundVec, powK);
-		
-		
-//        if(thread == 0)
-        {
-			printf("In gpu_generate2 in do while loop, counter: %d, thread: %d\n", counter, thread);
-		}
 			
         if(sSum <= T)
         {
@@ -176,36 +159,15 @@ __device__ void gpu_generate2(int *Ntemp, const int Ntemp_size, int *Ctemp, int 
 			}
             //Ctemp.push_back(s);
             
-//            if(thread == 0)
-            {
-				printf("Ctemp is updated successfully, counter: %d, thread: %d\n", counter, thread);
-            }
-            
             //int NS[Ntemp_size];
             for(int j=0; j<powK; j++)
             {
                 NS[j] = Ntemp[j]-s[j];
             }
-            
-//            if(thread == 0)
-            {
-				printf("NS is updated successfully, counter: %d, thread: %d\n", counter, thread);
-            }
+           
             
             if(gpu_sameVectors(NS, Ntemp, Ntemp_size)){
-				
-//				if(thread == 0)
-				{
-					printf("sameVector returns true, counter: %d, thread: %d\n", counter, thread);
-				}
-				
                 continue;
-			}
-			
-			
-//			if(thread == 0)
-			{
-				printf("sameVector returns false, counter: %d, thread: %d\n", counter, thread);
 			}
 			
 			for (int i = 0; i < Ntemp_size; i++)
@@ -213,19 +175,12 @@ __device__ void gpu_generate2(int *Ntemp, const int Ntemp_size, int *Ctemp, int 
 				NMinusStemp[counter * Ntemp_size + i] = NS[i];
 			}
             //NMinusStemp.push_back(NS);
-            
-//            if(thread == 0)
-            {
-				printf("NMinusStemp is updated successfully, counter: %d, thread: %d\n", counter, thread);
-			}
-				
+			
 			counter++;
         }
-    }while (gpu_increase(Ntemp, it, Ntemp_size, thread, counter));
+    }while (gpu_increase(Ntemp, it, Ntemp_size));
     
     *subsets_size = counter;
-    
-    printf("At the end of gpu_generate2, thread: %d\n", thread);
 }
 
 //for(int j=indexomp;j< (counterVec[i] + indexomp) ;j++)			// this is to determine the job for each level
@@ -237,23 +192,23 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 						int *dev_ATE_myOptimalindex, int *dev_ATE_myMinNSVector, const int i, int *it, 
 						int *s, int *NS, const int maxSubsetsSize){		
 		int thread = blockDim.x * blockIdx.x + threadIdx.x;
-		
+				
 		int j = thread + indexomp;
 		if (thread < dev_counterVec[i]){
             //vector<vector<int> > Ctemp;
             //vector<vector<int> > NMinusStemp;
             //vector<vector<int> > Cwhole;
             //generate2(AllTableElemets[j].elm,Ctemp,NMinusStemp);
-            
-//            if (thread == 0)
-				printf("Before gpu_generate2, counterVec[%d]: %d, thread: %d\n", i, dev_counterVec[i], thread);
+			
             gpu_generate2(&dev_ATE_elm[j * powK], powK, &dev_ATE_Csubsets[j * maxSubsetsSize * powK], &dev_ATE_NSsubsets[j * maxSubsetsSize * powK],
-						  dev_roundVec, T, powK, &it[j * powK], &s[j * powK], &NS[j * powK], &dev_ATE_NSsubsets_size[j], thread);     //dev_ATE_elm_size[j] = Ntemp.size() = powK
+						  dev_roundVec, T, powK, &it[thread * powK], &s[thread * powK], &NS[thread * powK], &dev_ATE_NSsubsets_size[j], thread);     //dev_ATE_elm_size[j] = Ntemp.size() = powK
 			
 			__syncthreads();
 			
 //			if (thread == 0)
-				printf("gpu_generate2 completed successfully. NSsubsets_size[%d]: %d, thread: %d\n", j, dev_ATE_NSsubsets_size[j], thread);
+//				printf("gpu_generate2 completed successfully. NSsubsets_size[%d]: %d, thread: %d\n", j, dev_ATE_NSsubsets_size[j], thread);
+
+
 //            AllTableElemets[j].NSsubsets=NMinusStemp; 	//ni-si
 //            AllTableElemets[j].Csubsets=Ctemp;		//configurations
             
@@ -291,22 +246,10 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
                     //if(AllTableElemets[j].NSsubsets[h]==AllTableElemets[r].elm)   // if found match of NSsubsets[h], copy its OPT and break 
                     if (gpu_sameVectors(&dev_ATE_NSsubsets[(j * maxSubsetsSize + h) * powK], &dev_ATE_elm[r * powK], powK))
                     {
-						
-						if (thread == 0 && i == 19)
-						{
-							printf("level 3 starts. j: %d, optVecIndex: %d\n", j, optVecIndex);
-						}
-						
                         //AllTableElemets[j].optVector.push_back(AllTableElemets[r].myOPT);
                         dev_ATE_optVector[j * powK + optVecIndex] = dev_ATE_myOPT[r];
                         optVecIndex++;
 						dev_ATE_optVector_size[j] = optVecIndex;
-						
-						
-						if (thread == 0 && i == 19)
-						{
-							printf("level 3 complete. h: %d, r: %d\n", h, r);
-						}			
 				
                         break;
                     }
@@ -340,7 +283,7 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 			if (dev_ATE_NSsubsets_size[j] > 0)
             {
 //                AllTableElemets[j].myMinNSVector=AllTableElemets[j].NSsubsets[myOptimalindex];
-#pragma unroll
+//#pragma unroll
 				for (int i = 0; i < powK; i++){
 					dev_ATE_myMinNSVector[j * powK + i] = dev_ATE_NSsubsets[(j * maxSubsetsSize + myOptimalindex) * powK + i];
 				}
@@ -359,6 +302,8 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	InitGPUData(powK, LongJobs_size, AllTableElemets, zeroVec, roundVec, &counterVec[0], maxSubsetsSize, maxSumValue, counterVec.size());
 
 	cout << ", LongJob size: " << LongJobs_size << ", maxSumValue: " << maxSumValue << endl;
+	
+		
 	while (ii < maxSumValue+1)		//number of levels = number of jobs + 1
     {
 		int tSize = 32;

@@ -207,8 +207,12 @@ Problem resolved:
 Problem detected:
 1. Debug mode completes successfully even if it returns incorrect result, but release mode still crashes.
 	The divergence in gpu_increase() causes the error of "hardware stack overflow"
+    Resolved!!!
 	
 *************************************************
 Dec 31
 *************************************************
-
+Problem resolved:
+1. Debug mode completes successfully even if it returns incorrect result, but release mode still crashes.
+	The divergence in gpu_increase() causes the error of "hardware stack overflow"	
+	Solution: the first parameter of gpu_increase() is a pointer, but it was declared as "const int*" which causes the "warp hardware stack overflow" error.
