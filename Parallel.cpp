@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
     while (nFile<302)
     {
-        for (int f=1; f<2; f++)
+        for (int f=1; f<21; f++)
         {
          //   scheduleFile << "File"<<"\t"<<nFile<<"-"<<f<<endl;
             ostringstream convert;
@@ -576,15 +576,14 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    /*
-	gpu_DP(AllTableElemets, dev_ATE_elm, dev_counterVec, dev_roundVec, T, k, powK, 
-		   AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
-		   dev_ATE_NSsubsets_size, Cwhole.size(), dev_zeroVec, dev_ATE_optVector, 
-		   dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
-		   dev_ATE_myMinNSVector, it, ss, NS, maxSumValue, counterVec);
-	*/
+    clock_t t;
+    t = clock();
+
     gpu_DP(AllTableElemets, T, k, powK, maxSumValue, counterVec, LongJobs.size(), &zeroVec[0], &roundVec[0]);
-    
+	
+	t = clock() - t;
+	cout << "Runtime: " << (float)t / CLOCKS_PER_SEC << endl;
+	
 	int count1 = 0;
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
@@ -599,7 +598,7 @@ int DPFunction2(vector<int>& Ntemp)
 //				for (int size = 0; size < NSTableElements[i].elm.size(); size++){	
 //					cout << NSTableElements[i].elm[size] <<", ";
 //				}
-				cout << endl;
+//				cout << endl;
 				break;
 			}
 		}

@@ -164,17 +164,51 @@ Changed but caused other problem:
 2. Execution errors that cudaMalloc is out of memory. Or it complains about the cudaMemcpyDeviceToHost for counterVec.
 3. cudaMemcpyDeviceToHost for counterVec can be removed by placing dev_counterVec on device permenantly and updated on device.
 
+Undo the changes by restoring the previous commit.
+
 
 **********************************************
 Dec 28
 **********************************************
 New found:
 1. Don't need to memcpy dev_counterVec back to counterVec because it is not changed on GPU.
+	This memcpy is removed.
 
 Problem resolved:
-1. AllTableElemets[maxIndex].elm.end() returns invalid big number, it is known that using vector<int>::const_iterator pt sometimes return invalid value which implies that iterator pt
+1. Sometimes cuda API complains about the out of bounds error on memcpy(temp_NSsubsets, dev_NSsubsets, size, DeviceToHost), even if the size of dev_NSsubsets is only around 0.5 GB.
+   Resolved:  AllTableElemets[maxIndex].elm.end() returns invalid big number, it is known that using vector<int>::const_iterator pt sometimes return invalid value which implies that iterator pt
    sometimes access memory location which is out of bound. Work around: Instead of using vector<int>::const iterator, using index.
    
 Problem detected:
-1. Sometimes cuda API complains about the out of bounds error on memcpy(temp_NSsubsets, dev_NSsubsets, size, DeviceToHost), even if the size of dev_NSsubsets is only around 0.5 GB.
-2. Problem of myOPT still exists and impact the GPU results.
+2. Problem of myOPT still exists and impact the GPU results. On GPU, NSTableElemets.myOPT is different from CPU implementation.
+3. Sometimes "unspecified launch failure", error returned by API calls like memcpy and cudaDeviceSynchronize. The first error returned by memcpy(NSsubset, DeviceToHost)
+    Resolved!
+***********************************************
+Dec 29
+************************************************
+Problem resolved:
+1. myMinNSVector is not copied back to CPU from Device.
+	Resolved: copy it back to cpu.
+	
+2. IN the if statement "if (NSTableElemets.elm == AllTableElemets.elm)", the AllTableElemets that identical to the NSTableElemets.elm on GPU are at different indexes comparing to on CPU's.
+	Resolved: Running on different machines would result in different elm. When ruuning on lab's machine, CPU has the same index as got from GPU. Reason is still unknown.
+
+Problem detected:
+1. At the last iteration, which is the iteration that LB == UB, GPU implementation failed to call CUDA API. "Unknown specified launch failure" on memcpy device to host.
+	Resolved!!
+
+*************************************************
+Dec 30
+**************************************************
+Problem resolved:
+1. At the last iteration, which is the iteration that LB == UB, GPU implementation failed to call CUDA API. "Unknown specified launch failure" on memcpy device to host.
+	Solution: dev_ATE_optVector was initialized to AllTableElemets.size() * powK, which is not correct and should be AllTableElemets.size() * (maxSumValue + 1).
+
+Problem detected:
+1. Debug mode completes successfully even if it returns incorrect result, but release mode still crashes.
+	The divergence in gpu_increase() causes the error of "hardware stack overflow"
+	
+*************************************************
+Dec 31
+*************************************************
+
