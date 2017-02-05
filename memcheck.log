@@ -4,7 +4,6 @@ Number of Jobs : 21
 Number of Machines : 10
 ******************************************************************
  LongJobs.size() 19
-At the beginning of InitGPUData. maxSubsetsSize: 0
 Update maxSubsetsSize, current: 0, a: 6
 Update maxSubsetsSize, current: 6, a: 12
 Update maxSubsetsSize, current: 18, a: 36
@@ -12,11 +11,235 @@ Update maxSubsetsSize, current: 54, a: 180
 Update maxSubsetsSize, current: 234, a: 540
 AllTableSize: 2016, maxSubsetsSize: 774, powK: 16, tempSize: 5
 , LongJob size: 19, maxSumValue: 19
-ThreadGetLimit thread stack size: 1024
-DeviceGetLimit thread stack size: 1024
 FindOPT recursion is done. Start memcpy from Device to Host.
 AllTableSize: 2016, maxSubsetsSize: 774, powK: 16
-========= CUDA-MEMCHECK
-========= Error: process didn't terminate successfully
-========= Internal error (20)
-========= No CUDA-MEMCHECK results found
+memcpy from device to host are done, AllTableElemets.size: 2016
+GPU kernel and memcpy Runtime: 6.43728
+memory transfer to vectors Runtime: 1.76406
+NSTableElements size: 35, NSTableElements[0].myOPT: 7, NSTableElements[1].myOPT 7
+index: 0, NSTableElements.myOPT: 7, minN: 100000
+index: 1, NSTableElements.myOPT: 7, minN: 7
+index: 2, NSTableElements.myOPT: 7, minN: 7
+index: 3, NSTableElements.myOPT: 7, minN: 7
+index: 4, NSTableElements.myOPT: 7, minN: 7
+index: 5, NSTableElements.myOPT: 7, minN: 7
+index: 6, NSTableElements.myOPT: 7, minN: 7
+index: 7, NSTableElements.myOPT: 7, minN: 7
+index: 8, NSTableElements.myOPT: 7, minN: 7
+index: 9, NSTableElements.myOPT: 6, minN: 7
+index: 10, NSTableElements.myOPT: 7, minN: 6
+index: 11, NSTableElements.myOPT: 7, minN: 6
+index: 12, NSTableElements.myOPT: 6, minN: 6
+index: 13, NSTableElements.myOPT: 7, minN: 6
+index: 14, NSTableElements.myOPT: 7, minN: 6
+index: 15, NSTableElements.myOPT: 7, minN: 6
+index: 16, NSTableElements.myOPT: 7, minN: 6
+index: 17, NSTableElements.myOPT: 7, minN: 6
+index: 18, NSTableElements.myOPT: 7, minN: 6
+index: 19, NSTableElements.myOPT: 6, minN: 6
+index: 20, NSTableElements.myOPT: 7, minN: 6
+index: 21, NSTableElements.myOPT: 6, minN: 6
+index: 22, NSTableElements.myOPT: 7, minN: 6
+index: 23, NSTableElements.myOPT: 7, minN: 6
+index: 24, NSTableElements.myOPT: 7, minN: 6
+index: 25, NSTableElements.myOPT: 7, minN: 6
+index: 26, NSTableElements.myOPT: 7, minN: 6
+index: 27, NSTableElements.myOPT: 7, minN: 6
+index: 28, NSTableElements.myOPT: 7, minN: 6
+index: 29, NSTableElements.myOPT: 7, minN: 6
+index: 30, NSTableElements.myOPT: 7, minN: 6
+index: 31, NSTableElements.myOPT: 7, minN: 6
+index: 32, NSTableElements.myOPT: 7, minN: 6
+index: 33, NSTableElements.myOPT: 6, minN: 6
+index: 34, NSTableElements.myOPT: 7, minN: 6
+dpoptimal: 7
+BKID: 0, LB: 31, UB: 40, OPT: 7
+ LongJobs.size() 21
+Update maxSubsetsSize, current: 0, a: 6
+Update maxSubsetsSize, current: 6, a: 12
+Update maxSubsetsSize, current: 18, a: 36
+Update maxSubsetsSize, current: 54, a: 180
+Update maxSubsetsSize, current: 234, a: 900
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
+, LongJob size: 21, maxSumValue: 21
+FindOPT recursion is done. Start memcpy from Device to Host.
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
+memcpy from device to host are done, AllTableElemets.size: 3024
+GPU kernel and memcpy Runtime: 7.70117
+memory transfer to vectors Runtime: 4.46463
+NSTableElements size: 23, NSTableElements[0].myOPT: 8, NSTableElements[1].myOPT 8
+index: 0, NSTableElements.myOPT: 8, minN: 100000
+index: 1, NSTableElements.myOPT: 8, minN: 8
+index: 2, NSTableElements.myOPT: 8, minN: 8
+index: 3, NSTableElements.myOPT: 9, minN: 8
+index: 4, NSTableElements.myOPT: 8, minN: 8
+index: 5, NSTableElements.myOPT: 9, minN: 8
+index: 6, NSTableElements.myOPT: 9, minN: 8
+index: 7, NSTableElements.myOPT: 9, minN: 8
+index: 8, NSTableElements.myOPT: 8, minN: 8
+index: 9, NSTableElements.myOPT: 9, minN: 8
+index: 10, NSTableElements.myOPT: 9, minN: 8
+index: 11, NSTableElements.myOPT: 9, minN: 8
+index: 12, NSTableElements.myOPT: 9, minN: 8
+index: 13, NSTableElements.myOPT: 8, minN: 8
+index: 14, NSTableElements.myOPT: 9, minN: 8
+index: 15, NSTableElements.myOPT: 9, minN: 8
+index: 16, NSTableElements.myOPT: 9, minN: 8
+index: 17, NSTableElements.myOPT: 8, minN: 8
+index: 18, NSTableElements.myOPT: 9, minN: 8
+index: 19, NSTableElements.myOPT: 9, minN: 8
+index: 20, NSTableElements.myOPT: 8, minN: 8
+index: 21, NSTableElements.myOPT: 9, minN: 8
+index: 22, NSTableElements.myOPT: 9, minN: 8
+dpoptimal: 9
+BKID: 0, LB: 31, UB: 35, OPT: 9
+ LongJobs.size() 21
+Update maxSubsetsSize, current: 0, a: 6
+Update maxSubsetsSize, current: 6, a: 12
+Update maxSubsetsSize, current: 18, a: 36
+Update maxSubsetsSize, current: 54, a: 180
+Update maxSubsetsSize, current: 234, a: 900
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
+, LongJob size: 21, maxSumValue: 21
+FindOPT recursion is done. Start memcpy from Device to Host.
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
+memcpy from device to host are done, AllTableElemets.size: 3024
+GPU kernel and memcpy Runtime: 6.98162
+memory transfer to vectors Runtime: 4.34166
+NSTableElements size: 20, NSTableElements[0].myOPT: 9, NSTableElements[1].myOPT 9
+index: 0, NSTableElements.myOPT: 9, minN: 100000
+index: 1, NSTableElements.myOPT: 9, minN: 9
+index: 2, NSTableElements.myOPT: 9, minN: 9
+index: 3, NSTableElements.myOPT: 9, minN: 9
+index: 4, NSTableElements.myOPT: 9, minN: 9
+index: 5, NSTableElements.myOPT: 9, minN: 9
+index: 6, NSTableElements.myOPT: 9, minN: 9
+index: 7, NSTableElements.myOPT: 9, minN: 9
+index: 8, NSTableElements.myOPT: 9, minN: 9
+index: 9, NSTableElements.myOPT: 9, minN: 9
+index: 10, NSTableElements.myOPT: 9, minN: 9
+index: 11, NSTableElements.myOPT: 9, minN: 9
+index: 12, NSTableElements.myOPT: 9, minN: 9
+index: 13, NSTableElements.myOPT: 9, minN: 9
+index: 14, NSTableElements.myOPT: 9, minN: 9
+index: 15, NSTableElements.myOPT: 9, minN: 9
+index: 16, NSTableElements.myOPT: 9, minN: 9
+index: 17, NSTableElements.myOPT: 9, minN: 9
+index: 18, NSTableElements.myOPT: 9, minN: 9
+index: 19, NSTableElements.myOPT: 9, minN: 9
+dpoptimal: 10
+BKID: 0, LB: 31, UB: 33, OPT: 10
+ LongJobs.size() 21
+Update maxSubsetsSize, current: 0, a: 6
+Update maxSubsetsSize, current: 6, a: 12
+Update maxSubsetsSize, current: 18, a: 36
+Update maxSubsetsSize, current: 54, a: 180
+Update maxSubsetsSize, current: 234, a: 900
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
+, LongJob size: 21, maxSumValue: 21
+FindOPT recursion is done. Start memcpy from Device to Host.
+AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
+memcpy from device to host are done, AllTableElemets.size: 3024
+GPU kernel and memcpy Runtime: 6.97727
+memory transfer to vectors Runtime: 4.33505
+NSTableElements size: 20, NSTableElements[0].myOPT: 9, NSTableElements[1].myOPT 9
+index: 0, NSTableElements.myOPT: 9, minN: 100000
+index: 1, NSTableElements.myOPT: 9, minN: 9
+index: 2, NSTableElements.myOPT: 9, minN: 9
+index: 3, NSTableElements.myOPT: 9, minN: 9
+index: 4, NSTableElements.myOPT: 9, minN: 9
+index: 5, NSTableElements.myOPT: 9, minN: 9
+index: 6, NSTableElements.myOPT: 9, minN: 9
+index: 7, NSTableElements.myOPT: 9, minN: 9
+index: 8, NSTableElements.myOPT: 9, minN: 9
+index: 9, NSTableElements.myOPT: 9, minN: 9
+index: 10, NSTableElements.myOPT: 9, minN: 9
+index: 11, NSTableElements.myOPT: 9, minN: 9
+index: 12, NSTableElements.myOPT: 9, minN: 9
+index: 13, NSTableElements.myOPT: 9, minN: 9
+index: 14, NSTableElements.myOPT: 9, minN: 9
+index: 15, NSTableElements.myOPT: 9, minN: 9
+index: 16, NSTableElements.myOPT: 9, minN: 9
+index: 17, NSTableElements.myOPT: 9, minN: 9
+index: 18, NSTableElements.myOPT: 9, minN: 9
+index: 19, NSTableElements.myOPT: 9, minN: 9
+dpoptimal: 10
+BKID: 0, LB: 31, UB: 32, OPT: 10
+ LongJobs.size() 21
+Update maxSubsetsSize, current: 0, a: 8
+Update maxSubsetsSize, current: 8, a: 24
+Update maxSubsetsSize, current: 32, a: 96
+Update maxSubsetsSize, current: 128, a: 96
+Update maxSubsetsSize, current: 224, a: 288
+Update maxSubsetsSize, current: 512, a: 576
+AllTableSize: 4320, maxSubsetsSize: 1088, powK: 16, tempSize: 6
+, LongJob size: 21, maxSumValue: 21
+FindOPT recursion is done. Start memcpy from Device to Host.
+AllTableSize: 4320, maxSubsetsSize: 1088, powK: 16
+memcpy from device to host are done, AllTableElemets.size: 4320
+GPU kernel and memcpy Runtime: 19.7051
+memory transfer to vectors Runtime: 6.09469
+NSTableElements size: 26, NSTableElements[0].myOPT: 9, NSTableElements[1].myOPT 10
+index: 0, NSTableElements.myOPT: 9, minN: 100000
+index: 1, NSTableElements.myOPT: 10, minN: 9
+index: 2, NSTableElements.myOPT: 10, minN: 9
+index: 3, NSTableElements.myOPT: 10, minN: 9
+index: 4, NSTableElements.myOPT: 10, minN: 9
+index: 5, NSTableElements.myOPT: 10, minN: 9
+index: 6, NSTableElements.myOPT: 10, minN: 9
+index: 7, NSTableElements.myOPT: 10, minN: 9
+index: 8, NSTableElements.myOPT: 9, minN: 9
+index: 9, NSTableElements.myOPT: 9, minN: 9
+index: 10, NSTableElements.myOPT: 9, minN: 9
+index: 11, NSTableElements.myOPT: 9, minN: 9
+index: 12, NSTableElements.myOPT: 9, minN: 9
+index: 13, NSTableElements.myOPT: 10, minN: 9
+index: 14, NSTableElements.myOPT: 9, minN: 9
+index: 15, NSTableElements.myOPT: 9, minN: 9
+index: 16, NSTableElements.myOPT: 9, minN: 9
+index: 17, NSTableElements.myOPT: 10, minN: 9
+index: 18, NSTableElements.myOPT: 9, minN: 9
+index: 19, NSTableElements.myOPT: 9, minN: 9
+index: 20, NSTableElements.myOPT: 9, minN: 9
+index: 21, NSTableElements.myOPT: 10, minN: 9
+index: 22, NSTableElements.myOPT: 9, minN: 9
+index: 23, NSTableElements.myOPT: 9, minN: 9
+index: 24, NSTableElements.myOPT: 10, minN: 9
+index: 25, NSTableElements.myOPT: 10, minN: 9
+dpoptimal: 10
+BKID: 0, LB: 31, UB: 31, OPT: 10
+********************************************************
+OUT of Bk while loop  
+UB    31
+LB    31
+T1    31
+T2    31
+OPT   10
+nMachines   10
+AllProbData.size()    5
+ck :   4
+AllProbData[ck].Ttable    31
+ck :   3
+AllProbData[ck].Ttable    32
+ck :   2
+AllProbData[ck].Ttable    33
+ck :   1
+AllProbData[ck].Ttable    35
+ck :   0
+AllProbData[ck].Ttable    40
+optIndex    0
+
+
+
+
+
+
+
+
+
+
+Final OptimalSchedule
+FinalMakespan34
+Main Scheduling is Done
+File 1-1 is Done.
+******************************

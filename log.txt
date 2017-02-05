@@ -133,7 +133,7 @@ Problem detected and still remain:
                     hit1++;
                     break;
                 }
-                
+Solved!                
                 
 *********************************************
 Dec 20
@@ -181,6 +181,7 @@ Problem resolved:
    
 Problem detected:
 2. Problem of myOPT still exists and impact the GPU results. On GPU, NSTableElemets.myOPT is different from CPU implementation.
+Not solved.
 3. Sometimes "unspecified launch failure", error returned by API calls like memcpy and cudaDeviceSynchronize. The first error returned by memcpy(NSsubset, DeviceToHost)
     Resolved!
 ***********************************************
@@ -216,3 +217,28 @@ Problem resolved:
 1. Debug mode completes successfully even if it returns incorrect result, but release mode still crashes.
 	The divergence in gpu_increase() causes the error of "hardware stack overflow"	
 	Solution: the first parameter of gpu_increase() is a pointer, but it was declared as "const int*" which causes the "warp hardware stack overflow" error.
+	
+*************************************************
+Jan 16
+*************************************************
+Problem remain:
+1. myOPT does not match
+	Cause detected: somme AllTableElemets[j].myOPT on GPU do not match CPU's
+2. CPU crashes
+
+**************************************************
+Jan 22
+***************************************************
+Problem Resolved:
+1. myOPT does not match
+	AllTableElemets[j].optVector was initialized to maxSumValue, which is not appropraite. Now it is hard-code to 64. Also, to access this array, the gap should be 64 instead of powK.
+	
+*************************************************
+Jan 31
+*************************************************
+Problem detected:
+1. CPU crashes when doing memory copy from vectors to "instance", which is created to store the latest feasible solution. Since the size of vector is unknown, all data including none-useful data are 
+	copying back to the vectors from GPU. Therefore, the vectors' sizes are too large and takes so long time to do memory copy on CPU.
+	
+	Reason: For GPU implementation, arrays on GPU takes so much memory because it does not support vector, and these arrays are copied to CPU and store in vectors which still contain huge extra 
+			memory that are not taken in MPI code. 

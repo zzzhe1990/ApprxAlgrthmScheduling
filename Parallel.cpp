@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
         nFile=atoi(argv[3]);
     }
     
-    //nFile=100;
+    //nFile=301;
     //error =0.3;
     //th=0;
 
@@ -109,9 +109,9 @@ int main(int argc, char* argv[])
     if (! gethostname(hostname, sizeof hostname) == 0)
       perror("gethostname");
 
-    while (nFile<302)
+    while (nFile<2)
     {
-        for (int f=1; f<21; f++)
+        for (int f=1; f<2; f++)
         {
          //   scheduleFile << "File"<<"\t"<<nFile<<"-"<<f<<endl;
             ostringstream convert;
@@ -204,8 +204,18 @@ int mainScheduling()
 
 	iwhile=1;
     int BkID;
-
+	
+	clock_t st, lt, tempt, LUBt;
+	st = clock();
+	lt = clock();
+	LUBt = 0;
+	
+	
 	while(LB<UB){
+		
+		tempt = clock();
+		
+		
 		clearFun();
 		
 		BkID= Bk(LB,UB);
@@ -220,12 +230,20 @@ int mainScheduling()
 			UB=T;
 		if(OPT>nMachines)
 			LB=T+1;
+		
+		lt = clock() - tempt;
+		LUBt += lt;
+		
 		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
+		cout << "Execution time between LB and UB is: " << (float)lt/CLOCKS_PER_SEC << endl; 
+		cout << "By far, all LB UB calculation runtime: " << (float)LUBt/CLOCKS_PER_SEC << endl;
 		iwhile++;
 	}
 
+	lt = clock() - st;
     
     cout << "********************************************************"<<endl;
+    cout << "Total execution on UB and LB is: " << (float)lt/CLOCKS_PER_SEC << endl;
     cout << "OUT of Bk while loop  "<<endl;
     cout << "UB    "<< UB<<endl;
     cout << "LB    "<< LB<<endl;
@@ -246,11 +264,13 @@ int mainScheduling()
 
     }
 
-
+	lt = clock() - st;
+	cout << "All scheduling execution is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
     
     cout << "optIndex    "<< optIndex<<endl;
 
 
+	tempt = clock();
     
     vector<int> temp;
 	for(int i=0;i<nMachines;i++)
@@ -262,6 +282,11 @@ int mainScheduling()
 		machineTimes.push_back(0);
 	}
     
+    lt = clock() - tempt;
+	cout << "optimalSchedule and machineTimes are done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
+    
+    
+    tempt = clock();
     
     if(BkID==0) // number of long jobs are more than 0
     {
@@ -294,6 +319,9 @@ int mainScheduling()
     numLong=longF.size();
     
     
+    lt = clock() - tempt;
+	cout << "if BkID == 0 or not is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
+    
 /*    scheduleFile << "Fopt"<<"\t"<<Fopt<<endl;
     scheduleFile << "Long Jobs:"<<endl;
     for (int i=0; i < longF.size(); i++)
@@ -308,6 +336,9 @@ int mainScheduling()
     }
     scheduleFile << endl;
   */  
+
+	tempt = clock();
+
 
 	if(longF.size()!=0)
     {
@@ -353,7 +384,7 @@ int mainScheduling()
 			}
             cout<<endl;
 		}
-
+	
 		for(int i=0;i<OptimalSchedule.size();i++)
 		{
 			int ss=0;
@@ -363,11 +394,16 @@ int mainScheduling()
 			}
 			machineTimes[i]=ss;
 		}
-
+		
+		
 		int makespan;
 		makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
+		
 	}
-
+	
+	lt = clock() - tempt;
+	cout << "if longF.size()!=0 is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
+	
     
     //cout << "Machine Times" <<endl;
     //for (int ck=0; ck< machineTimes.size();ck++) {
@@ -377,19 +413,32 @@ int mainScheduling()
 
 	if(shortF.size()!=0){
 		ListSchedulingFun(shortF,OptimalSchedule,machineTimes,OPT);
+		
+		
+		
+		lt = clock() - lt;
+		cout << "if shortF.size()!=0 is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
+	
       //  cout << "Short jobs has been aded"<<endl;
 	}
-
+	
+	
     //cout << "Machine Times" <<endl;
     //for (int ck=0; ck< machineTimes.size();ck++) {
       //  cout << machineTimes[ck] <<"  ";
     //}
     //cout<<endl;
 
+	tempt = clock();
+
 	int makespan;
 	makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
 	FinalMakespan = machineTimes[makespan];
     
+    
+    
+	lt = clock() - tempt;
+	cout << "Calculate makespan and FinalMakespan is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
     
     
     cout << "Final OptimalSchedule" << endl;
@@ -410,9 +459,17 @@ int mainScheduling()
     scheduleFile << endl;
   */  
     
+    tempt = clock();
+    
+    
     cout << "FinalMakespan" << FinalMakespan<< endl;
     printFinalSchedule( OptimalSchedule, machineTimes, longF,shortF,Fopt);
     
+    
+    
+	lt = clock() - tempt;
+	cout << "Print FinalSchedule takes time: " << (float)lt/CLOCKS_PER_SEC << endl;
+    tempt = clock();
     
 	NSTableElements.clear();
 	AllTableElemets.clear();
@@ -428,6 +485,11 @@ int mainScheduling()
 	machineTimes.clear();
     shortF.clear();
     longF.clear();
+    
+    
+	lt = clock() - tempt;
+	cout << "Clear all vectors takes time: " << (float)lt/CLOCKS_PER_SEC << endl;
+    
     
     cout <<"Main Scheduling is Done"<<endl;
 	return 0;
@@ -576,35 +638,22 @@ int DPFunction2(vector<int>& Ntemp)
     
     int powK = pow(k,2);
     
-    clock_t t;
-    t = clock();
 
     gpu_DP(AllTableElemets, T, k, powK, maxSumValue, counterVec, LongJobs.size(), &zeroVec[0], &roundVec[0]);
 	
-	t = clock() - t;
-	cout << "Runtime: " << (float)t / CLOCKS_PER_SEC << endl;
 	
-	int count1 = 0;
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
 		for(int j=0;j<AllTableElemets.size();j++)
 		{	
 			if(NSTableElements[i].elm==AllTableElemets[j].elm)
 			{
-				count1++;
-//				cout << "copy AllTableElemets to NSTableElements at [" << i << ", " << j << "]." << endl;
 				NSTableElements[i]=AllTableElemets[j];
-//				printf("NSTableElements[%d].myOPT: %d, AllTableElemets[%d].myOPT: %d\n", i, NSTableElements[i].myOPT, j, AllTableElemets[j].myOPT);
-//				for (int size = 0; size < NSTableElements[i].elm.size(); size++){	
-//					cout << NSTableElements[i].elm[size] <<", ";
-//				}
-//				cout << endl;
 				break;
 			}
 		}
 
 	}
-	cout << "A total of " << count1 << " copies from AllTableElemets to NSTableElements." << endl;
 
 	for(int i=0; i<NSTableElements.size();i++)
 	{
@@ -613,10 +662,9 @@ int DPFunction2(vector<int>& Ntemp)
 
 	int dpoptimal;
 	int minN=100000;
-    cout << "NSTableElements size: " << NSTableElements.size() << ", NSTableElements[0].myOPT: " << NSTableElements[0].myOPT << ", NSTableElements[1].myOPT " << NSTableElements[1].myOPT << endl;  
+	 
 	for(int mindex=0; mindex<NSTableElements.size();mindex++)
 	{
-//		cout << "index: " << mindex << ", NSTableElements.myOPT: " << NSTableElements[mindex].myOPT << ", minN: " << minN << endl;
 		if(NSTableElements[mindex].myOPT<minN)
 			minN=NSTableElements[mindex].myOPT;
 	}
@@ -624,6 +672,10 @@ int DPFunction2(vector<int>& Ntemp)
 	dpoptimal=minN +1;
 
     cout << "dpoptimal: " <<dpoptimal << endl;
+    
+    clock_t ttt = clock();
+    
+    
     if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
     {
         
@@ -642,6 +694,9 @@ int DPFunction2(vector<int>& Ntemp)
         
         AllProbData.push_back(instance);
     }
+
+	ttt = clock() - ttt;
+	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
 
 	sumVec.clear();
 	Cwhole.clear();
