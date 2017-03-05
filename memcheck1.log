@@ -3,137 +3,62 @@ File 1-1 is read.
 Number of Jobs : 21
 Number of Machines : 10
 ******************************************************************
- LongJobs.size() 19
-Update maxSubsetsSize, current: 0, a: 6
-Update maxSubsetsSize, current: 6, a: 12
-Update maxSubsetsSize, current: 18, a: 36
-Update maxSubsetsSize, current: 54, a: 180
-Update maxSubsetsSize, current: 234, a: 540
-AllTableSize: 2016, maxSubsetsSize: 774, powK: 16, tempSize: 5
-, LongJob size: 19, maxSumValue: 19
-FindOPT recursion is done. Start memcpy from Device to Host.
-AllTableSize: 2016, maxSubsetsSize: 774, powK: 16
-memcpy from device to host are done, AllTableElemets.size: 2016
-GPU kernel and memcpy Runtime: 6.45
-memory transfer to vectors Runtime: 1.77018
+Iteration: 1, UB: 50, LB: 31
+thread: 0, MlBk is called with LB: 31, UB: 35thread: thread: thread: 13, MlBk is called with LB: , MlBk is called with LB: 3646, UB: , UB: 4050
+
+2, MlBk is called with LB: 41, UB: 45
+thread: 1, Ntemp size: 
+16
+ thread: 1, LongJobs.size() 21
+thread: 3, Ntemp size: 16
+thread: 0, Ntemp size:  thread: 163
+thread: , LongJobs.size()  thread: 0, LongJobs.size() 212
+, Ntemp size: 16
+15 thread: 2, LongJobs.size() 19
+
+dpoptimal: 5
 dpoptimal: 7
-copy the latest feasible solution to instance takes time: 1.24133
-BKID: 0, LB: 31, UB: 40, OPT: 7
-Execution time between LB and UB is: 9.51655
-By far, all LB UB calculation runtime: 9.51655
- LongJobs.size() 21
-Update maxSubsetsSize, current: 0, a: 6
-Update maxSubsetsSize, current: 6, a: 12
-Update maxSubsetsSize, current: 18, a: 36
-Update maxSubsetsSize, current: 54, a: 180
-Update maxSubsetsSize, current: 234, a: 900
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
-, LongJob size: 21, maxSumValue: 21
-FindOPT recursion is done. Start memcpy from Device to Host.
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
-memcpy from device to host are done, AllTableElemets.size: 3024
-GPU kernel and memcpy Runtime: 7.71108
-memory transfer to vectors Runtime: 4.48043
-dpoptimal: 9
-copy the latest feasible solution to instance takes time: 3.31422
-BKID: 0, LB: 31, UB: 35, OPT: 9
-Execution time between LB and UB is: 15.762
-By far, all LB UB calculation runtime: 25.2785
- LongJobs.size() 21
-Update maxSubsetsSize, current: 0, a: 6
-Update maxSubsetsSize, current: 6, a: 12
-Update maxSubsetsSize, current: 18, a: 36
-Update maxSubsetsSize, current: 54, a: 180
-Update maxSubsetsSize, current: 234, a: 900
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
-, LongJob size: 21, maxSumValue: 21
-FindOPT recursion is done. Start memcpy from Device to Host.
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
-memcpy from device to host are done, AllTableElemets.size: 3024
-GPU kernel and memcpy Runtime: 6.98643
-memory transfer to vectors Runtime: 4.36682
 dpoptimal: 10
-copy the latest feasible solution to instance takes time: 4.71417
-BKID: 0, LB: 31, UB: 33, OPT: 10
-Execution time between LB and UB is: 16.5878
-By far, all LB UB calculation runtime: 41.8663
- LongJobs.size() 21
-Update maxSubsetsSize, current: 0, a: 6
-Update maxSubsetsSize, current: 6, a: 12
-Update maxSubsetsSize, current: 18, a: 36
-Update maxSubsetsSize, current: 54, a: 180
-Update maxSubsetsSize, current: 234, a: 900
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16, tempSize: 5
-, LongJob size: 21, maxSumValue: 21
-FindOPT recursion is done. Start memcpy from Device to Host.
-AllTableSize: 3024, maxSubsetsSize: 1134, powK: 16
-memcpy from device to host are done, AllTableElemets.size: 3024
-GPU kernel and memcpy Runtime: 6.98608
-memory transfer to vectors Runtime: 4.36178
+dpoptimal: 8
+iteration: 1, status of each seg are: -1 -1 -1 -1 
+iteration: 1, dirc[0]: -1, LB = 31UB = 33
+BKID: 0, LB: 31, UB: 33, OPT: 0
+Execution time between LB and UB is: 36.8444
+By far, all LB UB calculation runtime: 36.8444
+Iteration: 2, UB: 33, LB: 31
+thread: 0, MlBk is called with LB: 31, UB: 31
+thread: 2, MlBk is called with LB: 33, UB: 33
+thread: 0, Ntemp size: 16
+ thread: 0, LongJobs.size() 21
+thread: 2, Ntemp size: 16
+ thread: 2, LongJobs.size() 21
+thread: 1, MlBk is called with LB: 32, UB: 32
+thread: 1, Ntemp size: 16
+ thread: 1, LongJobs.size() 21
 dpoptimal: 10
-copy the latest feasible solution to instance takes time: 2.39609
-BKID: 0, LB: 31, UB: 32, OPT: 10
-Execution time between LB and UB is: 14.2647
-By far, all LB UB calculation runtime: 56.131
- LongJobs.size() 21
-Update maxSubsetsSize, current: 0, a: 8
-Update maxSubsetsSize, current: 8, a: 24
-Update maxSubsetsSize, current: 32, a: 96
-Update maxSubsetsSize, current: 128, a: 96
-Update maxSubsetsSize, current: 224, a: 288
-Update maxSubsetsSize, current: 512, a: 576
-AllTableSize: 4320, maxSubsetsSize: 1088, powK: 16, tempSize: 6
-, LongJob size: 21, maxSumValue: 21
-FindOPT recursion is done. Start memcpy from Device to Host.
-AllTableSize: 4320, maxSubsetsSize: 1088, powK: 16
-memcpy from device to host are done, AllTableElemets.size: 4320
-GPU kernel and memcpy Runtime: 19.7472
-memory transfer to vectors Runtime: 6.12944
 dpoptimal: 10
-copy the latest feasible solution to instance takes time: 13.2761
-BKID: 0, LB: 31, UB: 31, OPT: 10
-Execution time between LB and UB is: 39.7
-By far, all LB UB calculation runtime: 95.8309
+dpoptimal: 10
+iteration: 2, status of each seg are: -1 -1 -1 
+iteration: 2, dirc[0]: -1, LB = 31UB = 31
+BKID: 0, LB: 31, UB: 31, OPT: 0
+Execution time between LB and UB is: 56.5296
+By far, all LB UB calculation runtime: 93.374
 ********************************************************
-Total execution on UB and LB is: 95.831
+Total execution on UB and LB is: 93.3742
 OUT of Bk while loop  
 UB    31
 LB    31
-T1    31
+T1    0
 T2    31
-OPT   10
+OPT   0
 nMachines   10
-AllProbData.size()    5
-ck :   4
-AllProbData[ck].Ttable    31
-ck :   3
-AllProbData[ck].Ttable    32
-ck :   2
-AllProbData[ck].Ttable    33
-ck :   1
-AllProbData[ck].Ttable    35
-ck :   0
-AllProbData[ck].Ttable    40
-All scheduling execution is done, runtime: 95.8311
+AllProbData.size()    0
+All scheduling execution is done, runtime: 93.3742
 optIndex    0
-optimalSchedule and machineTimes are done, runtime: 0.000255
-if BkID == 0 or not is done, runtime: 3e-06
-
-
-
-
-
-
-
-
-
-
-if longF.size()!=0 is done, runtime: 0.006262
-Calculate makespan and FinalMakespan is done, runtime: 1e-06
-Final OptimalSchedule
-FinalMakespan34
-Print FinalSchedule takes time: 5e-06
-Clear all vectors takes time: 4.39728
+optimalSchedule and machineTimes are done, runtime: 2.7e-05
+if BkID == 0 or not is done, runtime: 1e-06
+if longF.size()!=0 is done, runtime: 1e-06
+Clear all vectors takes time: 1.37771
 Main Scheduling is Done
 File 1-1 is Done.
 ******************************

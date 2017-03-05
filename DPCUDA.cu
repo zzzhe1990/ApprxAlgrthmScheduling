@@ -2,6 +2,9 @@
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
 
+const int maxStreamNum = 8;
+cudaStream_t streams[maxStreamNum];
+
 	
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
@@ -11,14 +14,17 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
       if (abort) exit(code);
    }
 }
+
 	
 void InitGPUData(int powK, int LongJobs_size, vector<DynamicTable> &AllTableElemets, int *zeroVec, 
-				 int *roundVec, int *counterVec, int &maxSubsetsSize, const int maxSumValue, 
-				 const int counterVecSize, int *dev_ATE_elm, int *dev_ATE_myOPT, int *dev_ATE_myOptimalindex, 
-				 int *dev_ATE_myMinNSVector, int *dev_ATE_NSsubsets, int *dev_ATE_Csubsets, int *dev_ATE_optVector,
-				 int *dev_counterVec, int *dev_ATE_NSsubsets_size, int *dev_ATE_optVector_size, int *dev_zeroVec, 
-				 int *dev_roundVec,	int *it, int *ss, int *NS)
+				 int *roundVec, int *counterVec, int &maxSubsetsSize, const int optVectorSize, 
+				 const int counterVecSize, int **dev_ATE_elm, int **dev_ATE_myOPT, int **dev_ATE_myOptimalindex, 
+				 int **dev_ATE_myMinNSVector, int **dev_ATE_NSsubsets, int **dev_ATE_Csubsets, int **dev_ATE_optVector,
+				 int **dev_counterVec, int **dev_ATE_NSsubsets_size, int **dev_ATE_optVector_size, int **dev_zeroVec, 
+				 int **dev_roundVec, int **it, int **ss, int **NS)
 {	
+	//cout << "Beginning of InitGPUData, thread: " << omp_get_thread_num() << ", dev_roundVec address: " << *dev_roundVec << endl;
+	
 	int maxIndex = AllTableElemets.size() - 1;
 	int maxCounterVec = 0;
 	vector<int> temp;
@@ -49,38 +55,41 @@ void InitGPUData(int powK, int LongJobs_size, vector<DynamicTable> &AllTableElem
 	cout << "AllTableSize: " << AllTableElemets.size() << ", maxSubsetsSize: " << maxSubsetsSize << ", powK: " << powK << ", tempSize: " << temp.size() << endl;
 	
 	//arrays on device
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_elm, AllTableElemets.size() * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOPT, AllTableElemets.size() * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector, AllTableElemets.size() * 128 * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_counterVec, (LongJobs_size + 1) * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_zeroVec, (powK) * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_roundVec, (powK) * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&it, maxCounterVec * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&ss, maxCounterVec * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&NS, maxCounterVec * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_ATE_NSsubsets_size, AllTableElemets.size() * sizeof(int)));
-    gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector_size, AllTableElemets.size() * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_elm, AllTableElemets.size() * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_myOPT, AllTableElemets.size() * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_counterVec, (LongJobs_size + 1) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_zeroVec, (powK) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_roundVec, (powK) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&it, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&ss, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&NS, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void***)&dev_ATE_NSsubsets_size, AllTableElemets.size() * sizeof(int)));
+    gpuErrchk(cudaMalloc((void***)&dev_ATE_optVector_size, AllTableElemets.size() * sizeof(int)));
     
     
-	cout << "thread: " << omp_get_thread_num() << ", cuda initial is done." << " Start memcpy! AllTableElemets.size: " << AllTableElemets.size() << endl;
+	//cout << "thread: " << omp_get_thread_num() << ", cuda initial is done." << " Start memcpy! AllTableElemets.size: " << AllTableElemets.size() << endl;
+    
     
 	int *ATE_myOPT = new int[AllTableElemets.size()];
+	
 	for (int i = 0; i < AllTableElemets.size(); i++){
-		gpuErrchk(cudaMemcpyAsync(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice));
+		gpuErrchk(cudaMemcpyAsync(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice, 0));
 		ATE_myOPT[i] = AllTableElemets[i].myOPT;
 	}
 	
-	gpuErrchk(cudaMemcpyAsync(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
-	gpuErrchk(cudaMemcpyAsync(dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice));
-	gpuErrchk(cudaMemcpyAsync(dev_counterVec, counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice));
-	gpuErrchk(cudaMemcpyAsync(dev_ATE_myOPT, ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyHostToDevice));
+	//gpuErrchk(cudaMemcpyAsync(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemset(*dev_zeroVec, 0, powK*sizeof(int)));	
+	gpuErrchk(cudaMemcpy(*dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemcpy(*dev_counterVec, counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemcpy(*dev_ATE_myOPT, ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyHostToDevice));
 	
 	delete[] ATE_myOPT;
-	
+	//cout << "End of InitGPUData, thread: " << omp_get_thread_num() << ", dev_roundVec address: " << *dev_roundVec << endl;
 }
 
 
@@ -295,80 +304,139 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 }//end FindOPT()
 
 void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, const int powK, const int maxSumValue, 
-			vector<int> &counterVec, const int LongJobs_size, int *zeroVec, int *roundVec, int thread)
+			vector<int> &counterVec, const int LongJobs_size, int *zeroVec, int *roundVec)
 {
 	cudaSetDevice(0);
 	
-	int *dev_ATE_elm = NULL, *dev_ATE_myOPT = NULL, *dev_ATE_myOptimalindex = NULL, *dev_ATE_myMinNSVector = NULL;
-	int *dev_ATE_NSsubsets = NULL, *dev_ATE_Csubsets = NULL;
-	int *dev_ATE_optVector = NULL;
-	int *dev_counterVec = NULL;
-	int *dev_ATE_NSsubsets_size = NULL;
-	int *dev_ATE_optVector_size = NULL;
-	int *dev_zeroVec = NULL, *dev_roundVec = NULL;
-	int *it = NULL, *ss = NULL, *NS = NULL;
+	const int thread = omp_get_thread_num();
+	
+	cudaStreamCreate(&streams[thread]);
+		
+	int *dev_ATE_elm = 0, *dev_ATE_myOPT = 0, *dev_ATE_myOptimalindex = 0, *dev_ATE_myMinNSVector = 0;
+	int *dev_ATE_NSsubsets = 0, *dev_ATE_Csubsets = 0;
+	int *dev_ATE_optVector = 0;
+	int *dev_counterVec = 0;
+	int *dev_ATE_NSsubsets_size = 0;
+	int *dev_ATE_optVector_size = 0;
+	int *dev_zeroVec = 0, *dev_roundVec = 0;
+	int *it = 0, *ss = 0, *NS = 0;
 	
     int ii=0;
     int indexomp=0;
     int maxSubsetsSize = 0;
 	const int optVectorSize = 64;
 	
-	clock_t t;
-	t = clock();
 	
-	InitGPUData(powK, LongJobs_size, AllTableElemets, zeroVec, roundVec, &counterVec[0], maxSubsetsSize, maxSumValue, counterVec.size(),
-				dev_ATE_elm, dev_ATE_myOPT, dev_ATE_myOptimalindex, dev_ATE_myMinNSVector, dev_ATE_NSsubsets, dev_ATE_Csubsets,
-				dev_ATE_optVector, dev_counterVec, dev_ATE_NSsubsets_size, dev_ATE_optVector_size, dev_zeroVec, dev_roundVec, it, ss, NS);
-
-	cout << ", LongJob size: " << LongJobs_size << ", maxSumValue: " << maxSumValue << endl;
+//	InitGPUData(powK, LongJobs_size, AllTableElemets, zeroVec, roundVec, &counterVec[0], maxSubsetsSize, optVectorSize, counterVec.size(),
+//				&dev_ATE_elm, &dev_ATE_myOPT, &dev_ATE_myOptimalindex, &dev_ATE_myMinNSVector, &dev_ATE_NSsubsets, &dev_ATE_Csubsets,
+//				&dev_ATE_optVector, &dev_counterVec, &dev_ATE_NSsubsets_size, &dev_ATE_optVector_size, &dev_zeroVec, &dev_roundVec, &it, &ss, &NS);	
 	
-		
+	int maxIndex = AllTableElemets.size() - 1;
+	int maxCounterVec = 0;
+	vector<int> temp;
+//	for (vector<int>::const_iterator pt = AllTableElemets[maxIndex].elm.end(); pt != AllTableElemets[maxIndex].elm.begin(); --pt)
+	for (int p = powK-1; p >= 0; p--)
+	{
+		if (AllTableElemets[maxIndex].elm[p] != 0)
+			temp.push_back(AllTableElemets[maxIndex].elm[p]);
+	}
+	
+	for (int i = 0; i < temp.size(); i++)
+	{
+		int a = 1;
+		for (int j = 0; j < i + 1; j++)
+		{
+			a *= temp[j];
+		}
+//		cout << "Update maxSubsetsSize, current: " << maxSubsetsSize << ", a: " << a <<endl;
+		maxSubsetsSize += a;
+	}
+	
+	for (int i = 0; i < counterVec.size(); i++)
+	{
+		if (counterVec[i] > maxCounterVec)
+			maxCounterVec = counterVec[i];
+	}
+	
+//	cout << "AllTableSize: " << AllTableElemets.size() << ", maxSubsetsSize: " << maxSubsetsSize << ", powK: " << powK << ", tempSize: " << temp.size() << endl;
+	
+	//arrays on device
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_elm, AllTableElemets.size() * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOPT, AllTableElemets.size() * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_counterVec, (LongJobs_size + 1) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_zeroVec, (powK) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_roundVec, (powK) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&it, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&ss, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&NS, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_ATE_NSsubsets_size, AllTableElemets.size() * sizeof(int)));
+    gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector_size, AllTableElemets.size() * sizeof(int)));
+    
+    
+	//cout << "thread: " << omp_get_thread_num() << ", cuda initial is done." << " Start memcpy! AllTableElemets.size: " << AllTableElemets.size() << endl;
+    
+    
+	int *ATE_myOPT = new int[AllTableElemets.size()];
+	
+	for (int i = 0; i < AllTableElemets.size(); i++){
+		gpuErrchk(cudaMemcpyAsync(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+		ATE_myOPT[i] = AllTableElemets[i].myOPT;
+	}
+	
+	//gpuErrchk(cudaMemcpyAsync(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemsetAsync(dev_zeroVec, 0, powK*sizeof(int), streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(dev_counterVec, &counterVec[0], (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(dev_ATE_myOPT, ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+	
+	
+//	cout << ", LongJob size: " << LongJobs_size << ", maxSumValue: " << maxSumValue << endl;
+    	
 	while (ii < maxSumValue+1)		//number of levels = number of jobs + 1
     {
-		int tSize = 128;
+		int tSize = 256;
 		int bSize = 1;
 		if (tSize < counterVec[ii]){
 			bSize = (tSize + counterVec[ii] - 1) / tSize;
 		}
 //		std::cout << "counterVec[" << ii << "]: " << counterVec[ii] << ", indexomp: " << indexomp << std::endl;
-		FindOPT<<<bSize, tSize>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec, T, k, powK, 
+		FindOPT<<<bSize, tSize, 0, streams[thread]>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec, T, k, powK, 
 								  AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
 								  dev_ATE_NSsubsets_size, dev_zeroVec, dev_ATE_optVector, 
 								  dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
 								  dev_ATE_myMinNSVector, ii, it, ss, NS, maxSubsetsSize, optVectorSize);
         
-        cudaStreamSynchronize(0);
-           
-//        gpuErrchk(cudaMemcpy(&counterVec[0], dev_counterVec, (LongJobs_size + 1) * sizeof(int), cudaMemcpyDeviceToHost));
+        cudaStreamSynchronize(streams[thread]);
+        
         indexomp+=counterVec[ii];
         ii++;
     } 
     
-//GPU code to update AllTableElement
+/*********************  GPU code to update AllTableElement  ********************************/
 	int *temp_NSsubsets, *temp_Csubsets, *temp_myOPT, *temp_myOptIndex, *temp_myMinNSVector, *temp_optVector;
 	temp_NSsubsets = new int[AllTableElemets.size() * maxSubsetsSize * powK];
 	temp_Csubsets = new int[AllTableElemets.size() * maxSubsetsSize * powK];
 	temp_myOPT = new int[AllTableElemets.size()];
 	temp_myOptIndex = new int[AllTableElemets.size()];
 	temp_myMinNSVector = new int[AllTableElemets.size() * powK];
-	temp_optVector = new int[AllTableElemets.size() * (maxSumValue + 1)];
+	temp_optVector = new int[AllTableElemets.size() * optVectorSize];
 	
-	cout << "thread: " << thread << ", FindOPT recursion is done. Start memcpy from Device to Host." << endl;
-	cout << "AllTableSize: " << AllTableElemets.size() << ", maxSubsetsSize: " << maxSubsetsSize << ", powK: " << powK << endl;
+//	cout << "AllTableSize: " << AllTableElemets.size() << ", maxSubsetsSize: " << maxSubsetsSize << ", powK: " << powK << endl;
 	
-	gpuErrchk(cudaMemcpyAsync(temp_NSsubsets, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyAsync(temp_Csubsets, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyAsync(temp_myOPT, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyAsync(temp_myOptIndex, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyAsync(temp_myMinNSVector, dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyAsync(temp_optVector, dev_ATE_optVector, AllTableElemets.size() * (maxSumValue + 1) * sizeof(int), cudaMemcpyDeviceToHost));
+	gpuErrchk(cudaMemcpyAsync(temp_NSsubsets, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_Csubsets, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_myOPT, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_myOptIndex, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_myMinNSVector, dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_optVector, dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
 	
-	std::cout << "memcpy from device to host are done, AllTableElemets.size: " << AllTableElemets.size() << std::endl;
-	
-	
-	t = clock() - t;
-	cout << "GPU kernel and memcpy Runtime: " << (float)t/CLOCKS_PER_SEC << endl;
-	t = clock();
+	struct timeval t1, t2;
+	gettimeofday(&t1, NULL);
 	
 	for (int i = 0; i < AllTableElemets.size(); i++)
 	{
@@ -381,14 +449,15 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 			AllTableElemets[i].Csubsets.push_back(std::vector<int>(&temp_Csubsets[(i * maxSubsetsSize) * powK], &temp_Csubsets[(i * maxSubsetsSize + 1) * powK]));
 			begin += powK;
 		}
-		AllTableElemets[i].optVector.insert(AllTableElemets[i].optVector.end(), &temp_optVector[i * (maxSumValue + 1)], &temp_optVector[(i + 1) * (maxSumValue + 1)]);
+		AllTableElemets[i].optVector.insert(AllTableElemets[i].optVector.end(), &temp_optVector[i * optVectorSize], &temp_optVector[(i + 1) * optVectorSize]);
 		AllTableElemets[i].myMinNSVector.insert(AllTableElemets[i].myMinNSVector.end(), &temp_myMinNSVector[i * powK], &temp_myMinNSVector[(i + 1) * powK]);
 	}
 	
-	t = clock() - t;
-	cout << "memory transfer to vectors Runtime: "  << (float)t/CLOCKS_PER_SEC << endl;
+	gettimeofday(&t2, NULL);
+	cout << "memory transfer to vectors Runtime: "  << t2.tv_sec - t1.tv_sec << endl;
 
 	
+	delete[] ATE_myOPT;
 	delete[] temp_NSsubsets;
 	delete[] temp_Csubsets;
 	delete[] temp_myOPT;
@@ -410,4 +479,5 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	cudaFree(NS);
 	cudaFree(dev_ATE_NSsubsets_size);
 	cudaFree(dev_ATE_optVector_size);
+	cudaStreamDestroy(streams[thread]);
 }

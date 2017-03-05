@@ -1,298 +1,64 @@
-========= CUDA-MEMCHECK
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidDeviceFunction (error 8) due to "invalid device function" on CUDA API call to cudaLaunch_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaLaunch_ptsz + 0x18e) [0x3d16e]
-=========     Host Frame:./run [0x20df]
-=========     Host Frame:./run [0x3d3e]
-=========     Host Frame:./run [0x3e1b]
-=========     Host Frame:./run [0x2e99]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorInvalidValue (error 11) due to "invalid argument" on CUDA API call to cudaMemcpyAsync_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaMemcpyAsync_ptsz + 0x1b3) [0x38d73]
-=========     Host Frame:./run [0x3172]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorCudartUnloading (error 29) due to "driver shutting down" on CUDA API call to cudaMemcpyAsync_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaMemcpyAsync_ptsz + 0x1b3) [0x38d73]
-=========     Host Frame:./run [0x27e3]
-=========     Host Frame:./run [0x2c76]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Program hit cudaErrorCudartUnloading (error 29) due to "driver shutting down" on CUDA API call to cudaMemcpyAsync_ptsz. 
-=========     Saved host backtrace up to driver entry point at error
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libcuda.so.1 [0x2f2d83]
-=========     Host Frame:/usr/local/cuda-7.5/lib64/libcudart.so.7.5 (cudaMemcpyAsync_ptsz + 0x1b3) [0x38d73]
-=========     Host Frame:./run [0x27e3]
-=========     Host Frame:./run [0x2c76]
-=========     Host Frame:./run [0xa862]
-=========     Host Frame:./run [0x9742]
-=========     Host Frame:./run [0xe717]
-=========     Host Frame:/usr/lib/x86_64-linux-gnu/libgomp.so.1 [0x834a]
-=========     Host Frame:/lib/x86_64-linux-gnu/libpthread.so.0 [0x8182]
-=========     Host Frame:/lib/x86_64-linux-gnu/libc.so.6 (clone + 0x6d) [0xfa47d]
-=========
-========= Error: process didn't terminate successfully
-=========        The application may have hit an error when dereferencing Unified Memory from the host. Please rerun the application under cuda-gdb or Nsight Eclipse Edition to catch host side errors.
-========= Internal error (20)
-========= No CUDA-MEMCHECK results found
+Reading File...
+File 1-1 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+Iteration: 1, UB: 50, LB: 31
+thread: 2, MlBk is called with LB: 41, UB: 45
+thread: thread: 0, MlBk is called with LB: 31, UB: 3, MlBk is called with LB: 4635, UB: 50
+thread: 1, MlBk is called with LB: 36, UB: 40
+
+thread: 0, Ntemp size: 16
+ thread: 0, LongJobs.size() 21
+thread: 2, Ntemp size: 16
+ thread: 2, LongJobs.size() 19
+thread: 1, Ntemp size: 16
+ thread: 1, LongJobs.size() 21
+thread: 3, Ntemp size: 16
+ thread: 3, LongJobs.size() 15
+dpoptimal: 5
+dpoptimal: 7
+dpoptimal: 8
+dpoptimal: 10
+iteration: 1, status of each seg are: -1 -1 -1 -1 
+iteration: 1, dirc[0]: -1, LB = 31UB = 33
+BKID: 0, LB: 31, UB: 33, OPT: 0
+Execution time between LB and UB is: 36.1643
+By far, all LB UB calculation runtime: 36.1643
+Iteration: 2, UB: 33, LB: 31
+thread: 0, MlBk is called with LB: 31, UB: 31
+thread: 2, MlBk is called with LB: 33thread: , UB: 133, MlBk is called with LB: 32, UB: 
+32thread: 0, Ntemp size: 16
+ thread: 0, LongJobs.size() 21
+thread: 2, Ntemp size: 16
+
+ thread: 2, LongJobs.size() 21thread: 
+1, Ntemp size: 16
+ thread: 1, LongJobs.size() 21
+dpoptimal: 10
+dpoptimal: 10
+dpoptimal: 10
+iteration: 2, status of each seg are: -1 -1 -1 
+iteration: 2, dirc[0]: -1, LB = 31UB = 31
+BKID: 0, LB: 31, UB: 31, OPT: 0
+Execution time between LB and UB is: 51.8325
+By far, all LB UB calculation runtime: 87.9968
+********************************************************
+Total execution on UB and LB is: 87.997
+OUT of Bk while loop  
+UB    31
+LB    31
+T1    0
+T2    31
+OPT   0
+nMachines   10
+AllProbData.size()    0
+All scheduling execution is done, runtime: 87.997
+optIndex    0
+optimalSchedule and machineTimes are done, runtime: 4e-05
+if BkID == 0 or not is done, runtime: 1e-06
+if longF.size()!=0 is done, runtime: 1e-06
+Clear all vectors takes time: 1.44403
+Main Scheduling is Done
+File 1-1 is Done.
+******************************

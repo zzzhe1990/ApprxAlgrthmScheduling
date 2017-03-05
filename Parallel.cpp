@@ -19,9 +19,10 @@ vector <vector<int> > MulroundVec;
 vector <vector<int> > MultempOptVector;
 
 
-int MlBk(int LB, int UB, int &sOPT, int thread);
-int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria);
-void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int thread);
+int MlBk(int LB, int UB, int &sOPT);
+int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int T);
+void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int T);
+void MlclearFun(const int size);
 /*****************************************************************************************************************************************************************************/
 
 int optIndex,FinalMakespan;
@@ -230,7 +231,8 @@ int mainScheduling()
 	
 	/**********************************************************/
 	/**************** Optimization Variables ******************/
-	int seg = 4;		//how many segments to split (threads)
+	int numThread = 4;
+	int seg = min(4, numThread);		//how many segments to split (threads)
 	int *sLB, *sUB, *sT, *sOPT, *sBkID, *dirc;
 	sLB = new int(seg);
 	sUB = new int(seg);
@@ -252,29 +254,36 @@ int mainScheduling()
 		MultempOptVector.push_back(vector<int> ());
 	}
 	
+	int marker = 0;
 	while(LB<UB){
 		tempt = clock();
-			
-		clearFun();
+		
 		BkID = 0;
-		if (UB - LB >= 2*seg)
+		
+		marker++;
+		cout << "Iteration: " << marker << ", UB: " << UB << ", LB: " << LB << endl;
+		
+		if (UB - LB + 1 >= seg)
 		{
-			int segSize = (UB - LB)/seg;
+			MlclearFun(seg);			
+			
+			int segSize = (UB - LB + 1)/seg;
 			
 			for (int i = 0; i < seg; i++)
 			{
 				sLB[i] = LB + i * segSize;
-				sUB[i] = min(sLB[i]+segSize, UB);
+				sUB[i] = min(sLB[i]+segSize-1, UB);
 				sT[i] = sLB[i] + (sUB[i] - sLB[i])/2;
 			}
-			#pragma omp parallel num_threads(4)
+			
+			#pragma omp parallel num_threads(numThread)	
 			{
-				#pragma omp for private(BkID)			
+				#pragma omp for	schedule(static,1)	
 				for (int i = 0; i < seg; i++)
 				{
-					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i], omp_get_thread_num());
+					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i]);
 				}
-			}
+			}			
 					
 			//There might be an error on "break". Require double check at the end.
 			for (int i = 0; i < seg; i++)
@@ -294,18 +303,25 @@ int mainScheduling()
 				}
 			}
 			
+			cout << "iteration: " << marker << ", status of each seg are: ";
+			for (int i = 0; i < seg; i++)
+				cout << dirc[i] << " ";
+			cout << endl;
+			
 			if (dirc[0] == -1){
 				LB = sLB[0];
 				UB = sT[0];
 				//T = sT[0];
+				cout << "iteration: " << marker << ", dirc[0]: -1, LB = " << LB << "UB = " << UB << endl;
 			}
-			else if(dirc[seg] == 1){
-				LB = sT[seg]+1;
-				UB = sUB[seg];
+			else if(dirc[seg-1] == 1){
+				LB = sT[seg-1]+1;
+				UB = sUB[seg-1];
 				//T = sT[seg];
+				cout << "iteration: " << marker << ", dirc[seg]: 1, LB = " << LB << "UB = " << UB << endl;
 			}
 			else{
-				for (int i = 1; i < seg; i++){
+				for (int i = 1; i < seg-1; i++){
 					if (dirc[i] != dirc[i-1]){
 						LB = sT[i-1] + 1;
 						UB = sT[i];
@@ -313,15 +329,84 @@ int mainScheduling()
 						break;
 					}
 				}
+				cout << "iteration: " << marker << ", LB = " << LB << ", UB = " << UB << endl;
 			}
-		}			
+		}
+		else{
+			MlclearFun(seg);			
+			seg = UB - LB + 1;
+			numThread = min(seg, numThread);
+			
+			for (int i = 0; i < seg; i++)
+			{
+				sLB[i] = LB + i;
+				sUB[i] = sLB[i];
+			}
+			
+			
+			#pragma omp parallel num_threads(numThread)	
+			{
+				#pragma omp for	schedule(static,1)	
+				for (int i = 0; i < seg; i++)
+				{
+					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i]);
+				}
+			}			
+					
+			//There might be an error on "break". Require double check at the end.
+			for (int i = 0; i < seg; i++)
+				BkID += sBkID[i];
+			if (BkID < 0)
+				break;
+				
+			//use sOPT to adjust LB and UB. If all sOPT[] are either larger or smaller than nMachines, LB & UB are updated to the right most or left most seg edges; 
+			for (int i = 0; i < seg; i++)
+			{
+				if (sOPT[i] <= nMachines){
+					dirc[i] = -1;
+				}
+				else{
+					dirc[i] = 1;
+				}
+			}
+			
+			cout << "iteration: " << marker << ", status of each seg are: ";
+			for (int i = 0; i < seg; i++)
+				cout << dirc[i] << " ";
+			cout << endl;
+			
+			if (dirc[0] == -1){
+				LB = sLB[0];
+				UB = sUB[0];
+				cout << "iteration: " << marker << ", dirc[0]: -1, LB = " << LB << "UB = " << UB << endl;
+			}
+			else if(dirc[seg-1] == 1){
+				LB = sLB[seg-1];
+				UB = sUB[seg-1];
+				cout << "iteration: " << marker << ", dirc[seg]: 1, LB = " << LB << "UB = " << UB << endl;
+			}
+			else{
+				for (int i = 1; i < seg-1; i++){
+					if (dirc[i] != dirc[i-1]){
+						LB = sLB[i];
+						UB = sUB[i];
+						break;
+					}
+				}
+				cout << "iteration: " << marker << ", LB = " << LB << ", UB = " << UB << endl;
+			}
+		}
+/*					
 		else{	
+			clearFun();
+			
 			BkID= Bk(LB, UB);
 			if (BkID==-1) {
 				cout << "BkID==-1" <<endl;
 				break;
 			}
-			
+
+		
 			//cout << "Check the line 255" << endl;
 			//print(iwhile);
 			if(OPT<=nMachines)
@@ -329,6 +414,7 @@ int mainScheduling()
 			if(OPT>nMachines)
 				LB=T+1;
 		}
+*/
 		lt = clock() - tempt;
 		LUBt += lt;
 		
@@ -415,7 +501,7 @@ int mainScheduling()
     
     
     tempt = clock();
-    
+/*    
     if(BkID==0) // number of long jobs are more than 0
     {
         if(OPT<=nMachines)
@@ -446,28 +532,13 @@ int mainScheduling()
     numShort=shortF.size();
     numLong=longF.size();
     
-    
+*/    
     lt = clock() - tempt;
 	cout << "if BkID == 0 or not is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
     
-/*    scheduleFile << "Fopt"<<"\t"<<Fopt<<endl;
-    scheduleFile << "Long Jobs:"<<endl;
-    for (int i=0; i < longF.size(); i++)
-    {
-        scheduleFile << longF[i] << "\t";
-    }
-    scheduleFile << endl;
-    scheduleFile << "Short Jobs:"<<endl;
-    for (int i=0; i<shortF.size(); i++)
-    {
-        scheduleFile << shortF[i] <<"\t";
-    }
-    scheduleFile << endl;
-  */  
-
 	tempt = clock();
 
-
+/*
 	if(longF.size()!=0)
     {
 		vector< vector <int> > FinalMachineConfiguration;
@@ -528,17 +599,12 @@ int mainScheduling()
 		makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
 		
 	}
-	
+*/	
 	lt = clock() - tempt;
 	cout << "if longF.size()!=0 is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
 	
-    
-    //cout << "Machine Times" <<endl;
-    //for (int ck=0; ck< machineTimes.size();ck++) {
-    //    cout << machineTimes[ck] <<"  ";
-   // }
-    //cout<<endl;
-
+   
+/*
 	if(shortF.size()!=0){
 		ListSchedulingFun(shortF,OptimalSchedule,machineTimes,OPT);
 		
@@ -549,43 +615,21 @@ int mainScheduling()
 	
       //  cout << "Short jobs has been aded"<<endl;
 	}
-	
-	
-    //cout << "Machine Times" <<endl;
-    //for (int ck=0; ck< machineTimes.size();ck++) {
-      //  cout << machineTimes[ck] <<"  ";
-    //}
-    //cout<<endl;
 
+	
 	tempt = clock();
 
 	int makespan;
 	makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
 	FinalMakespan = machineTimes[makespan];
-    
-    
+     
     
 	lt = clock() - tempt;
 	cout << "Calculate makespan and FinalMakespan is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
     
     
     cout << "Final OptimalSchedule" << endl;
-    //for (int q=0; q<OptimalSchedule.size(); q++)
-   // {
-     //   for (int e=0; e<OptimalSchedule[q].size(); e++)
-       // {
-         //   cout << OptimalSchedule[q][e] << " ";
-       // }
-        //cout<< endl;
-    //}
-    
-/*    scheduleFile << "Long Jobs:"<<endl;
-    for (int i=0; i < longF.size(); i++)
-    {
-        scheduleFile << longF[i] << "\t";
-    }
-    scheduleFile << endl;
-  */  
+
     
     tempt = clock();
     
@@ -598,7 +642,7 @@ int mainScheduling()
 	lt = clock() - tempt;
 	cout << "Print FinalSchedule takes time: " << (float)lt/CLOCKS_PER_SEC << endl;
     tempt = clock();
-    
+ */   
 	NSTableElements.clear();
 	AllTableElemets.clear();
 	tempOptVector.clear();
@@ -713,17 +757,22 @@ int Bk(int LB, int UB)
 	
 }
 
-int MlBk(int LB, int UB, int &sOPT, int thread)
+int MlBk(int LB, int UB, int &sOPT)
 {
 	//calculating T and k
 	double TT;
 	double creteria;
 	int roundCriteria;
 	TT=(LB+UB)/2;
-	int T=floor(TT);
+	int MlT=floor(TT);
 	double dk=1/error;
 	k=ceil(dk);
 	creteria=TT/double(k);
+	
+	int thread = omp_get_thread_num();
+	
+	cout << "thread: " << thread << ", MlBk is called with LB: " << LB << ", UB: " << UB << endl;
+
 
 	// Seprating Short and Long Jobs
 	for(int i=0; i< ProcTimeJob.size(); i++)
@@ -739,7 +788,7 @@ int MlBk(int LB, int UB, int &sOPT, int thread)
 		}
 	}
 
-	roundCriteria=(T/(Pow(k,2)));
+	roundCriteria=(MlT/(Pow(k,2)));
     
 
     
@@ -781,7 +830,7 @@ int MlBk(int LB, int UB, int &sOPT, int thread)
     
     if (MulLongJobs[thread].size()>0) {
         cout << " thread: " << thread << ", LongJobs.size() " <<MulLongJobs[thread].size()<<endl;
-        sOPT = MlDPFunction2(MulNtemp[thread], thread, roundCriteria);
+        sOPT = MlDPFunction2(MulNtemp[thread], roundCriteria, MlT);
         return 0;
     }
     else
@@ -921,22 +970,23 @@ int DPFunction2(vector<int>& Ntemp)
 	return dpoptimal;
 }
 
-int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
+int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 {
-
+	const int thread = omp_get_thread_num();
     //AllProbData.clear();
 	vector<vector<int> > Ctemp;
 	vector<vector<int> > NMinusStemp;
 	vector<vector<int> > Cwhole;
-	Mlgenerate(Ntemp,Ctemp,NMinusStemp,Cwhole, thread);
-
+		
+	Mlgenerate(Ntemp,Ctemp,NMinusStemp,Cwhole, MlT);
+	
 	for(int i=0;i<Cwhole.size();i++)
 	{
 		DynamicTable tempInst1;
 		tempInst1.elm=Cwhole[i];
 		MulAllTableElemets[thread].push_back(tempInst1);
 	}
-
+	
 	for(int i=NMinusStemp.size()-1;i>-1;i--)
 	{
 		DynamicTable tempInst;
@@ -986,8 +1036,7 @@ int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
     
     int powK = pow(k,2);
     
-
-    gpu_DP(MulAllTableElemets[thread], T, k, powK, maxSumValue, counterVec, MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0], thread);
+    gpu_DP(MulAllTableElemets[thread], MlT, k, powK, maxSumValue, counterVec, MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0]);
 	
 	
 	for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
@@ -1011,6 +1060,7 @@ int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
 	int dpoptimal;
 	int minN=100000;
 	 
+//	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
 	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
 	{
 		if(MulNSTableElements[thread][mindex].myOPT<minN)
@@ -1023,7 +1073,7 @@ int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
     
     clock_t ttt = clock();
     
-    
+/*    
     if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
     {
         
@@ -1032,7 +1082,7 @@ int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
         instance.NSTableElements=MulNSTableElements[thread];
         instance.Nvector=MulNtemp[thread];
         instance.OPTtable=dpoptimal;
-        instance.Ttable=T;
+        instance.Ttable= MlT;
         instance.optimalValuesVector=MultempOptVector[thread];
         instance.ShortJobsTable=MulShortJobs[thread];
         instance.LongJobsTable=MulLongJobs[thread];
@@ -1042,13 +1092,15 @@ int MlDPFunction2(vector<int>& Ntemp, int thread, int roundCriteria)
         
         AllProbData.push_back(instance);
     }
-
+*/
 	ttt = clock() - ttt;
-	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
+//	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
 
 	sumVec.clear();
 	Cwhole.clear();
-  
+	Ctemp.clear();
+	NMinusStemp.clear();
+	
 	return dpoptimal;
 }
 
@@ -1080,19 +1132,22 @@ void generate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int
 	}while (increase(Ntemp, it));
 }
 
-void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int thread)
-{
-  vector<int> it(Ntemp.size(), 0);   //"it" is the vector that there is one new long job assigned to in each iteration, in the descending order on round events' time.
-  do {    //this loop iterates through all possible subsets that are no larger than "Ntemp".
+void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int MlT)
+{		
+	const int thread = omp_get_thread_num();
+	
+	vector<int> it(Ntemp.size(), 0);   //"it" is the vector that there is one new long job assigned to in each iteration, in the descending order on round events' time.
+	do {    //this loop iterates through all possible subsets that are no larger than "Ntemp".
 		vector<int> s;
 		for(vector<int>::const_iterator i = it.begin(); i != it.end(); ++i)
 		{
 			s.push_back(*i);
 		}
 		Cwhole.push_back(s);             //"s" is the same to it, "s" points out the new long event assigned in current iteration;
-		                                 //"Cwhole" has all machine configurations. "s" is one configuration
+										 //"Cwhole" has all machine configurations. "s" is one configuration		
 		int sSum=sumFun(s, MulroundVec[thread]);     //roundVec is the vector of the run time of all round events, sumFun(s, roundVec) is to get the current sum of all assigned long events.
-		if(sSum <= T)
+		
+		if(sSum <= MlT)
 		{
 			Ctemp.push_back(s);
 			vector<int> NS;          //NS is the updated vector that has unassigned long works for round down timings.
@@ -1522,6 +1577,20 @@ void clearFun()
 
 }
 
+void MlclearFun(const int seg)
+{
+	for (int x = 0; x < seg; x++)
+		{
+			MulAllProbData[x].clear();
+			MulNSTableElements[x].clear();
+			MulAllTableElemets[x].clear();
+			MulShortJobs[x].clear();
+			MulLongJobs[x].clear();
+			MulLongRoundJobs[x].clear();
+			MulNtemp[x].clear();
+			MulroundVec[x].clear();
+		}
+}
 
 
 void ListSchedulingFun(vector<int>& ShortJobs,vector<vector<int> >& OptimalSchedule,vector<int>& MachtimeI,int m)

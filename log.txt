@@ -242,3 +242,23 @@ Problem detected:
 	
 	Reason: For GPU implementation, arrays on GPU takes so much memory because it does not support vector, and these arrays are copied to CPU and store in vectors which still contain huge extra 
 			memory that are not taken in MPI code. 
+
+**************************************************
+March 5
+**************************************************
+Complete:
+1. Split Upper bound and Low bound by 4 instead of binary cut.
+2. Launch Multithreading and apply each cut segment to one stream.
+
+Optimization:
+1. Now we have multithreading supported and each thread handles one segment.
+2. Each thread executes both memory copy and kernels in its own local stream.
+3. Multiple threads thus are ran in different streams so that work context of each segment can be executed concurrently.
+4. Reduce the size of "maxSubsetsSize" to a much smaller value like 256 or 512. 
+		
+Problem: 
+For the change on "maxSubsetsSize". Occationally, memcpy returns error, complaining about the size. Cause is unknown yet.
+
+To do:
+1. Modify Dynamic Programming algorithm to improve the efficiency of each kernel 
+2. For each segment on a thread, there are multiple kernels which might be independent but now running in serial because they are in the same stream. Try to run these kernels in multiple streams.
