@@ -4,47 +4,54 @@ Number of Jobs : 21
 Number of Machines : 10
 ******************************************************************
 Iteration: 1, UB: 50, LB: 31
-thread: 0, MlBk is called with LB: 31, UB: 35thread: thread: thread: 13, MlBk is called with LB: , MlBk is called with LB: 3646, UB: , UB: 4050
-
+thread: 0, MlBk is called with LB: 31, UB: 35thread: thread: thread: 1, MlBk is called with LB: 336, MlBk is called with LB: , UB: 4046, UB: 
+50
 2, MlBk is called with LB: 41, UB: 45
-thread: 1, Ntemp size: 
-16
- thread: 1, LongJobs.size() 21
-thread: 3, Ntemp size: 16
-thread: 0, Ntemp size:  thread: 163
-thread: , LongJobs.size()  thread: 0, LongJobs.size() 212
-, Ntemp size: 16
-15 thread: 2, LongJobs.size() 19
+thread: 1, Ntemp size: 16
+ thread: 1, LongJobs.size() thread: 21
+3, Ntemp size: 16
 
+ thread: 3, LongJobs.size() thread: 2, Ntemp size: 16
+ thread: 2, LongJobs.size() 19
+15
+thread: 0, Ntemp size: 16
+ thread: 0, LongJobs.size() 21
+memory transfer to vectors Runtime: 0
 dpoptimal: 5
+memory transfer to vectors Runtime: 1
+memory transfer to vectors Runtime: 1
 dpoptimal: 7
 dpoptimal: 10
+memory transfer to vectors Runtime: 0
 dpoptimal: 8
 iteration: 1, status of each seg are: -1 -1 -1 -1 
 iteration: 1, dirc[0]: -1, LB = 31UB = 33
 BKID: 0, LB: 31, UB: 33, OPT: 0
-Execution time between LB and UB is: 36.8444
-By far, all LB UB calculation runtime: 36.8444
+Execution time between LB and UB is: 27.3134
+By far, all LB UB calculation runtime: 27.3134
 Iteration: 2, UB: 33, LB: 31
 thread: 0, MlBk is called with LB: 31, UB: 31
-thread: 2, MlBk is called with LB: 33, UB: 33
+thread: thread: 12, MlBk is called with LB: 32, MlBk is called with LB: 33, UB: , UB: 3332
+
 thread: 0, Ntemp size: 16
  thread: 0, LongJobs.size() 21
-thread: 2, Ntemp size: 16
- thread: 2, LongJobs.size() 21
-thread: 1, MlBk is called with LB: 32, UB: 32
 thread: 1, Ntemp size: 16
  thread: 1, LongJobs.size() 21
+thread: 2, Ntemp size: 16
+ thread: 2, LongJobs.size() 21
+memory transfer to vectors Runtime: 1
+memory transfer to vectors Runtime: 1
 dpoptimal: 10
 dpoptimal: 10
+memory transfer to vectors Runtime: 1
 dpoptimal: 10
 iteration: 2, status of each seg are: -1 -1 -1 
 iteration: 2, dirc[0]: -1, LB = 31UB = 31
 BKID: 0, LB: 31, UB: 31, OPT: 0
-Execution time between LB and UB is: 56.5296
-By far, all LB UB calculation runtime: 93.374
+Execution time between LB and UB is: 40.119
+By far, all LB UB calculation runtime: 67.4324
 ********************************************************
-Total execution on UB and LB is: 93.3742
+Total execution on UB and LB is: 67.4325
 OUT of Bk while loop  
 UB    31
 LB    31
@@ -53,12 +60,12 @@ T2    31
 OPT   0
 nMachines   10
 AllProbData.size()    0
-All scheduling execution is done, runtime: 93.3742
+All scheduling execution is done, runtime: 67.4326
 optIndex    0
-optimalSchedule and machineTimes are done, runtime: 2.7e-05
+optimalSchedule and machineTimes are done, runtime: 2.5e-05
 if BkID == 0 or not is done, runtime: 1e-06
 if longF.size()!=0 is done, runtime: 1e-06
-Clear all vectors takes time: 1.37771
+Clear all vectors takes time: 0.338615
 Main Scheduling is Done
 File 1-1 is Done.
 ******************************

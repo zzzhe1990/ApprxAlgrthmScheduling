@@ -352,6 +352,9 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 		maxSubsetsSize += a;
 	}
 	
+	maxSubsetsSize = 256;
+
+
 	for (int i = 0; i < counterVec.size(); i++)
 	{
 		if (counterVec[i] > maxCounterVec)
