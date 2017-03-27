@@ -2,7 +2,7 @@
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
 
-const int maxStreamNum = 8;
+const int maxStreamNum = 32;
 cudaStream_t streams[maxStreamNum];
 
 	
@@ -213,8 +213,10 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
             //vector<vector<int> > Cwhole;
             //generate2(AllTableElemets[j].elm,Ctemp,NMinusStemp);
 			
-            gpu_generate2(&dev_ATE_elm[j * powK], powK, &dev_ATE_Csubsets[j * maxSubsetsSize * powK], &dev_ATE_NSsubsets[j * maxSubsetsSize * powK],
-						  dev_roundVec, T, powK, &it[thread * powK], &s[thread * powK], &NS[thread * powK], &dev_ATE_NSsubsets_size[j], thread);     //dev_ATE_elm_size[j] = Ntemp.size() = powK
+            gpu_generate2(&dev_ATE_elm[j * powK], powK, &dev_ATE_Csubsets[j * maxSubsetsSize * powK],
+            			&dev_ATE_NSsubsets[j * maxSubsetsSize * powK], dev_roundVec, T, powK,
+            			&it[thread * powK], &s[thread * powK], &NS[thread * powK],
+            			&dev_ATE_NSsubsets_size[j], thread);     //dev_ATE_elm_size[j] = Ntemp.size() = powK
 			
 			__syncthreads();
 			
@@ -309,8 +311,11 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	cudaSetDevice(0);
 	
 	const int thread = omp_get_thread_num();
+	const int numThreads = omp_get_num_threads();
+	const int batchSize = maxStreamNum/numThreads;
 	
-	cudaStreamCreate(&streams[thread]);
+	for (int i=0; i < batchSize; i++)
+		cudaStreamCreate(&streams[thread*batchSize+i]);
 		
 	int *dev_ATE_elm = 0, *dev_ATE_myOPT = 0, *dev_ATE_myOptimalindex = 0, *dev_ATE_myMinNSVector = 0;
 	int *dev_ATE_NSsubsets = 0, *dev_ATE_Csubsets = 0;
@@ -357,6 +362,7 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 
 	for (int i = 0; i < counterVec.size(); i++)
 	{
+		cout <<"thread: " << omp_get_thread_num() << ", counterVec[" << i << "]: " << counterVec[i] << endl;
 		if (counterVec[i] > maxCounterVec)
 			maxCounterVec = counterVec[i];
 	}
@@ -371,12 +377,12 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOPT, AllTableElemets.size() * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&dev_counterVec, (LongJobs_size + 1) * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&dev_counterVec, counterVec.size() * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_zeroVec, (powK) * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_roundVec, (powK) * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&it, maxCounterVec * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&ss, maxCounterVec * powK * sizeof(int)));
-	gpuErrchk(cudaMalloc((void**)&NS, maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&it, batchSize * maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&ss, batchSize * maxCounterVec * powK * sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&NS, batchSize * maxCounterVec * powK * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_NSsubsets_size, AllTableElemets.size() * sizeof(int)));
     gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector_size, AllTableElemets.size() * sizeof(int)));
     
@@ -387,15 +393,15 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	int *ATE_myOPT = new int[AllTableElemets.size()];
 	
 	for (int i = 0; i < AllTableElemets.size(); i++){
-		gpuErrchk(cudaMemcpyAsync(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+		gpuErrchk(cudaMemcpyAsync(&dev_ATE_elm[i * powK], &AllTableElemets[i].elm[0], powK * sizeof(int), cudaMemcpyHostToDevice, streams[thread*batchSize]));
 		ATE_myOPT[i] = AllTableElemets[i].myOPT;
 	}
 	
 	//gpuErrchk(cudaMemcpyAsync(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
-	gpuErrchk(cudaMemsetAsync(dev_zeroVec, 0, powK*sizeof(int), streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(dev_counterVec, &counterVec[0], (LongJobs_size + 1) * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(dev_ATE_myOPT, ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyHostToDevice, streams[thread]));
+	gpuErrchk(cudaMemsetAsync(dev_zeroVec, 0, powK*sizeof(int), streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(dev_roundVec, roundVec, powK*sizeof(int), cudaMemcpyHostToDevice, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(dev_counterVec, &counterVec[0], counterVec.size() * sizeof(int), cudaMemcpyHostToDevice, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(dev_ATE_myOPT, ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyHostToDevice, streams[thread*batchSize]));
 	
 	
 //	cout << ", LongJob size: " << LongJobs_size << ", maxSumValue: " << maxSumValue << endl;
@@ -404,22 +410,38 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
     {
 		int tSize = 256;
 		int bSize = 1;
-		if (tSize < counterVec[ii]){
-			bSize = (tSize + counterVec[ii] - 1) / tSize;
-		}
+
+		for (int ptr=0; ptr < batchSize; ptr++)
+		{
+			if (ii < maxSumValue+1)
+			{
+				if (tSize < counterVec[ii]){
+					bSize = (tSize + counterVec[ii] - 1) / tSize;
+				}
+
+				int sizeOffset = ptr * maxCounterVec * powK;
 //		std::cout << "counterVec[" << ii << "]: " << counterVec[ii] << ", indexomp: " << indexomp << std::endl;
-		FindOPT<<<bSize, tSize, 0, streams[thread]>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec, T, k, powK, 
-								  AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets, 
-								  dev_ATE_NSsubsets_size, dev_zeroVec, dev_ATE_optVector, 
-								  dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex, 
-								  dev_ATE_myMinNSVector, ii, it, ss, NS, maxSubsetsSize, optVectorSize);
-        
-        cudaStreamSynchronize(streams[thread]);
-        
-        indexomp+=counterVec[ii];
-        ii++;
+				FindOPT<<<bSize, tSize, 0, streams[thread*batchSize+ptr]>>>(dev_ATE_elm,
+									dev_counterVec, indexomp, dev_roundVec, T, k, powK,
+									AllTableElemets.size(), dev_ATE_Csubsets, dev_ATE_NSsubsets,
+									dev_ATE_NSsubsets_size, dev_zeroVec, dev_ATE_optVector,
+									dev_ATE_optVector_size, dev_ATE_myOPT, dev_ATE_myOptimalindex,
+									dev_ATE_myMinNSVector, ii, &it[sizeOffset], &ss[sizeOffset],
+									&NS[sizeOffset], maxSubsetsSize, optVectorSize);
+
+				cudaStreamSynchronize(streams[thread*batchSize+ptr]);
+
+				indexomp+=counterVec[ii];
+				ii++;
+			}
+		}
     } 
     
+//	for (int i=0; i<batchSize; i++)
+//	{
+//		cudaStreamSynchronize(streams[thread*batchSize+i]);
+//	}
+
 /*********************  GPU code to update AllTableElement  ********************************/
 	int *temp_NSsubsets, *temp_Csubsets, *temp_myOPT, *temp_myOptIndex, *temp_myMinNSVector, *temp_optVector;
 	temp_NSsubsets = new int[AllTableElemets.size() * maxSubsetsSize * powK];
@@ -431,12 +453,12 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	
 //	cout << "AllTableSize: " << AllTableElemets.size() << ", maxSubsetsSize: " << maxSubsetsSize << ", powK: " << powK << endl;
 	
-	gpuErrchk(cudaMemcpyAsync(temp_NSsubsets, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(temp_Csubsets, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(temp_myOPT, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(temp_myOptIndex, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(temp_myMinNSVector, dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
-	gpuErrchk(cudaMemcpyAsync(temp_optVector, dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int), cudaMemcpyDeviceToHost, streams[thread]));
+	gpuErrchk(cudaMemcpyAsync(temp_NSsubsets, dev_ATE_NSsubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(temp_Csubsets, dev_ATE_Csubsets, AllTableElemets.size() * maxSubsetsSize * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(temp_myOPT, dev_ATE_myOPT, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(temp_myOptIndex, dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(temp_myMinNSVector, dev_ATE_myMinNSVector, AllTableElemets.size() * powK * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
+	gpuErrchk(cudaMemcpyAsync(temp_optVector, dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int), cudaMemcpyDeviceToHost, streams[thread*batchSize]));
 	
 	struct timeval t1, t2;
 	gettimeofday(&t1, NULL);
@@ -482,5 +504,7 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, con
 	cudaFree(NS);
 	cudaFree(dev_ATE_NSsubsets_size);
 	cudaFree(dev_ATE_optVector_size);
-	cudaStreamDestroy(streams[thread]);
+
+	for (int i=0; i<batchSize; i++)
+		cudaStreamDestroy(streams[thread*batchSize+i]);
 }

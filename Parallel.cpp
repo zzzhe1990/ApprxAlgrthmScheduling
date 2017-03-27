@@ -223,11 +223,9 @@ int mainScheduling()
 	iwhile=1;
     int BkID;
 	
-	clock_t st, lt, tempt, LUBt;
-	st = clock();
-	lt = clock();
-	LUBt = 0;
-	
+    struct timeval tempt, lt, st;
+    long iterT, wallClockT;
+	gettimeofday(&st, NULL);
 	
 	/**********************************************************/
 	/**************** Optimization Variables ******************/
@@ -256,12 +254,12 @@ int mainScheduling()
 	
 	int marker = 0;
 	while(LB<UB){
-		tempt = clock();
+		gettimeofday(&tempt, NULL);
 		
 		BkID = 0;
 		
 		marker++;
-		cout << "Iteration: " << marker << ", UB: " << UB << ", LB: " << LB << endl;
+		cout << "Iteration: " << marker << ", UB: " << UB << ", LB: " << LB << "start at time: " << tempt.tv_sec << endl;
 		
 		if (UB - LB + 1 >= seg)
 		{
@@ -303,33 +301,28 @@ int mainScheduling()
 				}
 			}
 			
-			cout << "iteration: " << marker << ", status of each seg are: ";
-			for (int i = 0; i < seg; i++)
-				cout << dirc[i] << " ";
-			cout << endl;
-			
 			if (dirc[0] == -1){
 				LB = sLB[0];
 				UB = sT[0];
-				//T = sT[0];
-				cout << "iteration: " << marker << ", dirc[0]: -1, LB = " << LB << "UB = " << UB << endl;
+				AllProbData.push_back(MulAllProbData[0][0]);
+				OPT = sOPT[0];
 			}
 			else if(dirc[seg-1] == 1){
 				LB = sT[seg-1]+1;
 				UB = sUB[seg-1];
-				//T = sT[seg];
-				cout << "iteration: " << marker << ", dirc[seg]: 1, LB = " << LB << "UB = " << UB << endl;
+				AllProbData.push_back(MulAllProbData[seg-1][0]);
+				OPT = sOPT[seg-1];
 			}
 			else{
 				for (int i = 1; i < seg-1; i++){
 					if (dirc[i] != dirc[i-1]){
 						LB = sT[i-1] + 1;
 						UB = sT[i];
-						//T = sLB[i]
+						AllProbData.push_back(MulAllProbData[i-1][0]);
+						OPT = sOPT[i-1];
 						break;
 					}
 				}
-				cout << "iteration: " << marker << ", LB = " << LB << ", UB = " << UB << endl;
 			}
 		}
 		else{
@@ -369,58 +362,41 @@ int mainScheduling()
 					dirc[i] = 1;
 				}
 			}
-			
-			cout << "iteration: " << marker << ", status of each seg are: ";
-			for (int i = 0; i < seg; i++)
-				cout << dirc[i] << " ";
-			cout << endl;
-			
+						
 			if (dirc[0] == -1){
 				LB = sLB[0];
 				UB = sUB[0];
-				cout << "iteration: " << marker << ", dirc[0]: -1, LB = " << LB << "UB = " << UB << endl;
+				AllProbData.push_back(MulAllProbData[0][0]);
+				OPT = sOPT[0];
 			}
 			else if(dirc[seg-1] == 1){
 				LB = sLB[seg-1];
 				UB = sUB[seg-1];
-				cout << "iteration: " << marker << ", dirc[seg]: 1, LB = " << LB << "UB = " << UB << endl;
+				AllProbData.push_back(MulAllProbData[seg-1][0]);
+				OPT = sOPT[seg-1];
 			}
 			else{
 				for (int i = 1; i < seg-1; i++){
 					if (dirc[i] != dirc[i-1]){
 						LB = sLB[i];
 						UB = sUB[i];
+						AllProbData.push_back(MulAllProbData[i-1][0]);
+						OPT = sOPT[i-1];
 						break;
 					}
 				}
-				cout << "iteration: " << marker << ", LB = " << LB << ", UB = " << UB << endl;
 			}
 		}
-/*					
-		else{	
-			clearFun();
-			
-			BkID= Bk(LB, UB);
-			if (BkID==-1) {
-				cout << "BkID==-1" <<endl;
-				break;
-			}
+		T = (LB+UB)/2;
+		
+		gettimeofday(&lt, NULL);
+		
+		iterT = lt.tv_sec - tempt.tv_sec;
+		wallClockT = lt.tv_sec - st.tv_sec;
 
-		
-			//cout << "Check the line 255" << endl;
-			//print(iwhile);
-			if(OPT<=nMachines)
-				UB=T;
-			if(OPT>nMachines)
-				LB=T+1;
-		}
-*/
-		lt = clock() - tempt;
-		LUBt += lt;
-		
-		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
-		cout << "Execution time between LB and UB is: " << (float)lt/CLOCKS_PER_SEC << endl; 
-		cout << "By far, all LB UB calculation runtime: " << (float)LUBt/CLOCKS_PER_SEC << endl;
+		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << "iteration end at: " << lt.tv_sec << endl;
+		cout << "Execution time between LB and UB is: " << iterT << endl;
+		cout << "By far, all LB UB calculation runtime: " << wallClockT << endl;
 		iwhile++;
 	}
 	
@@ -454,10 +430,11 @@ int mainScheduling()
 		iwhile++;
 	}
 */
-	lt = clock() - st;
+
+	gettimeofday(&lt, NULL);
     
     cout << "********************************************************"<<endl;
-    cout << "Total execution on UB and LB is: " << (float)lt/CLOCKS_PER_SEC << endl;
+    cout << "Total execution on UB and LB is: " << lt.tv_sec - st.tv_sec << endl;
     cout << "OUT of Bk while loop  "<<endl;
     cout << "UB    "<< UB<<endl;
     cout << "LB    "<< LB<<endl;
@@ -477,15 +454,11 @@ int mainScheduling()
        cout << "AllProbData[ck].Ttable    "<< AllProbData[ck].Ttable <<endl;
 
     }
-
-	lt = clock() - st;
-	cout << "All scheduling execution is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
     
     cout << "optIndex    "<< optIndex<<endl;
-
-
-	tempt = clock();
     
+    gettimeofday(&tempt, NULL);
+
     vector<int> temp;
 	for(int i=0;i<nMachines;i++)
 	{
@@ -496,12 +469,12 @@ int mainScheduling()
 		machineTimes.push_back(0);
 	}
     
-    lt = clock() - tempt;
-	cout << "optimalSchedule and machineTimes are done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
+
+    gettimeofday(&lt, NULL);
+	cout << "optimalSchedule and machineTimes are done, runtime: " << lt.tv_sec - tempt.tv_sec << endl;
     
     
-    tempt = clock();
-/*    
+    
     if(BkID==0) // number of long jobs are more than 0
     {
         if(OPT<=nMachines)
@@ -532,13 +505,7 @@ int mainScheduling()
     numShort=shortF.size();
     numLong=longF.size();
     
-*/    
-    lt = clock() - tempt;
-	cout << "if BkID == 0 or not is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
-    
-	tempt = clock();
 
-/*
 	if(longF.size()!=0)
     {
 		vector< vector <int> > FinalMachineConfiguration;
@@ -552,14 +519,11 @@ int mainScheduling()
 
 
         // Now, we need to interpret the schedule for rounded down Long jobs as a schedule for Long jobs with original Processing time
-		int index;
-      //  cout << "RoundedOptimalSchedule" <<endl;
+		
 		for(int i=0;i<RoundedOptimalSchedule.size();i++)
 		{
-        //    cout << "RoundedOptimalSchedule[ " <<i<<" ]:    ";
 			for(int j=0; j< RoundedOptimalSchedule[i].size();j++)
 			{
-          //      cout << RoundedOptimalSchedule[i][j]<<"  ";
 				for(int a=0;a<longF.size();a++)
 				{
 					if(RoundedOptimalSchedule[i][j] != AllProbData[optIndex].roundCriteriaTable*Pow(k,2))
@@ -581,7 +545,6 @@ int mainScheduling()
 					}
 				}				
 			}
-            cout<<endl;
 		}
 	
 		for(int i=0;i<OptimalSchedule.size();i++)
@@ -599,50 +562,26 @@ int mainScheduling()
 		makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
 		
 	}
-*/	
-	lt = clock() - tempt;
-	cout << "if longF.size()!=0 is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
-	
    
-/*
+
 	if(shortF.size()!=0){
-		ListSchedulingFun(shortF,OptimalSchedule,machineTimes,OPT);
-		
-		
-		
-		lt = clock() - lt;
-		cout << "if shortF.size()!=0 is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
-	
+		ListSchedulingFun(shortF,OptimalSchedule,machineTimes,OPT);	
       //  cout << "Short jobs has been aded"<<endl;
 	}
 
-	
-	tempt = clock();
 
 	int makespan;
 	makespan = max_element(machineTimes.begin(), machineTimes.end()) - machineTimes.begin();
 	FinalMakespan = machineTimes[makespan];
      
-    
-	lt = clock() - tempt;
-	cout << "Calculate makespan and FinalMakespan is done, runtime: " << (float)lt/CLOCKS_PER_SEC << endl;
-    
-    
     cout << "Final OptimalSchedule" << endl;
-
-    
-    tempt = clock();
     
     
     cout << "FinalMakespan" << FinalMakespan<< endl;
     printFinalSchedule( OptimalSchedule, machineTimes, longF,shortF,Fopt);
-    
-    
-    
-	lt = clock() - tempt;
-	cout << "Print FinalSchedule takes time: " << (float)lt/CLOCKS_PER_SEC << endl;
-    tempt = clock();
- */   
+
+    gettimeofday(&tempt, NULL);
+
 	NSTableElements.clear();
 	AllTableElemets.clear();
 	tempOptVector.clear();
@@ -670,8 +609,8 @@ int mainScheduling()
 		MulroundVec[x].clear();
 	}
     
-	lt = clock() - tempt;
-	cout << "Clear all vectors takes time: " << (float)lt/CLOCKS_PER_SEC << endl;
+	gettimeofday(&lt, NULL);
+	cout << "Clear all vectors takes time: " << lt.tv_sec - tempt.tv_sec << endl;
     
     
     cout <<"Main Scheduling is Done"<<endl;
@@ -1073,7 +1012,8 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
     
     clock_t ttt = clock();
     
-/*    
+	MulAllProbData[thread].clear();
+	
     if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
     {
         
@@ -1090,9 +1030,9 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
         instance.LongRoundJobsTable=MulLongRoundJobs[thread];
         instance.roundCriteriaTable=roundCriteria;
         
-        AllProbData.push_back(instance);
+        MulAllProbData[thread].push_back(instance);
     }
-*/
+
 	ttt = clock() - ttt;
 //	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
 

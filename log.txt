@@ -1,3 +1,13 @@
+roundVec: size of powK, includes the rounded time of each interval of powK.
+Ntemp: size of powK. Includes the number of rounded long jobs fall into each time interval.
+Cwhole: Includes all sub-configurations of Ntemp.
+Ctemp: Includes all eligible sub-configurations of Ntemp that total run time of each sub-configuration is no larger than T
+NStemp: size usually 1 smaller than Ctemp size because Ctemp includes the sub-configuration of all 0. Includes the remaining configurations of Ntemp-Ctemp.
+AllTableElement: size is the # of all possible sub-configurations, size is same as Cwhole's. This is the dynamic programming table.
+NSTableElement: This is basically the same as NStemp.
+SumVec: This includes the total # of jobs for each single sub-configuration. After sorting this container, we are able to find configurations that have the same total # jobs, which are in same level.
+counterVec: This includes the # of configurations that have the same total # of jobs. Size is the same as the # of levels. Indicates number of configurations in each level.
+
 ****************************************
 Nov 27 2016
 ****************************************
@@ -258,6 +268,9 @@ Optimization:
 		
 Problem: 
 For the change on "maxSubsetsSize". Occationally, memcpy returns error, complaining about the size. Cause is unknown yet.
+
+Parallelism:
+Each FindOPT kernel represents a level. And each thread in the kernel represents a sub-configuration.
 
 To do:
 1. Modify Dynamic Programming algorithm to improve the efficiency of each kernel 
