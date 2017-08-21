@@ -18,7 +18,32 @@
 #include <time.h>
 #include <omp.h>
 
+
+#define SPLIT
+//#define DEBUG
+
 using namespace std;
+
+class dim
+{
+public:
+	int weit;
+	int index;
+	bool operator< (const dim &a) const{
+		return (weit < a.weit);
+	}
+};
+
+
+class block
+{
+public:
+	vector<int> elm;
+	int mySUM;
+	bool operator < (const block &a) const{
+		return (mySUM < a.mySUM);
+	}
+};
 
 class DynamicTable
 {

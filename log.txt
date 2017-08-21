@@ -1,7 +1,7 @@
 roundVec: size of powK, includes the rounded time of each interval of powK.
 Ntemp: size of powK. Includes the number of rounded long jobs fall into each time interval.
 Cwhole: Includes all sub-configurations of Ntemp.
-Ctemp: Includes all eligible sub-configurations of Ntemp that total run time of each sub-configuration is no larger than T
+Ctemp: Machine Configurations. Includes all eligible sub-configurations of Ntemp that total run time of each sub-configuration is no larger than makespan T.
 NStemp: size usually 1 smaller than Ctemp size because Ctemp includes the sub-configuration of all 0. Includes the remaining configurations of Ntemp-Ctemp.
 AllTableElement: size is the # of all possible sub-configurations, size is same as Cwhole's. This is the dynamic programming table.
 NSTableElement: This is basically the same as NStemp.
@@ -275,3 +275,72 @@ Each FindOPT kernel represents a level. And each thread in the kernel represents
 To do:
 1. Modify Dynamic Programming algorithm to improve the efficiency of each kernel 
 2. For each segment on a thread, there are multiple kernels which might be independent but now running in serial because they are in the same stream. Try to run these kernels in multiple streams.
+
+
+**************************************************
+March 29
+**************************************************
+Bug fixed:
+In MainScheduling, the operation for selecting the correct segment for next iteration has a bug that the 3rd statement should be "if (i < seg-1)" to include the right most segment.
+
+Potential Work:
+1. Split multi-dimension table into sub-blocks.
+2. For a configuration N, current implementation compares all its NSsubsets to AllTableElemets to find info for all feasible sub-configuration (code shown below); 
+	it might not be necessary. Greedy here might helpful on reducing operations, which is to find the configuration that takes maximum time. Also, using the idea of splitting multi-dimension table
+	into sub-blocks can result in the benefit of reducing the iteration on "r" because we have locate the block that configuration resides and iterate that block only.
+				for (int r = 0; r < AllTableElemets_size; r++)
+                {					
+                    //if(AllTableElemets[j].NSsubsets[h]==AllTableElemets[r].elm)   // if found match of NSsubsets[h], copy its OPT and break 
+
+                   
+                    if (gpu_sameVectors(&dev_ATE_NSsubsets[(j * maxSubsetsSize + h) * powK], &dev_ATE_elm[r * powK], powK))
+                    {
+                        //AllTableElemets[j].optVector.push_back(AllTableElemets[r].myOPT);
+                        dev_ATE_optVector[j * optVectorSize + optVecIndex] = dev_ATE_myOPT[r];                       						
+                        optVecIndex++;
+						dev_ATE_optVector_size[j] = optVecIndex;
+											
+                        break;
+                    }
+                }
+
+
+*************************************************
+April 8
+*************************************************
+Implemented:
+1. parallel implementation for finding if two vectors are same in implemented, but worse performance.
+2. parallel implementation for generate2 is done, no good performance due to te in-consuctive acceptance on subconfigurations.
+
+
+**************************************************
+June 19
+**************************************************
+Bug fixed:
+1. dev_ATE_optVector and dev_ATE_optVector_size were used directly but it should be applied with an offset
+	changes made: 
+	In function LaunchBlock, 	int *bOptVec_size = &dev_ATE_optVector_size[configOffset];
+								int *bOptVec = &dev_ATE_optVector[configOffset * optVectorSize];
+								
+**************************************************
+Aug 1
+**************************************************
+Bug fixed:
+1. In DPCUDA.cu, the part that calculating "blockOffset" (just above function "LaunchBlocks<<<>>>()" was wrong because "allBlocksNoZero" was initialized incorrectly.
+				//blockOffset returns the current block ID.
+				int blockOffset = gpu_blockOffsetNoZero(&allBlocksNoZero[b].elm[0], &divisor[0], allBlocksNoZero[b].elm.size(), divisor.size());
+	Solution: update allBlocksNoZero to make it correct.
+	
+Resolution:
+	Program now returns correct result.
+				
+***************************************************
+Aug2
+***************************************************
+In Parallel.cpp function "mainScheduling", the part for deciding which segment should be picked.
+	if (dirc[0] == -1)... else if (dirc[seg-1] == 1)... else { for (int i=1; i<seg; i++)}
+	
+	for an example of segs: 1, -1, -1. If it is the last segments that each segment has only one element, we should probably pick the "1" segment. However, if the segments are that each has 
+	multiple elements, we should pick the first "-1" segment.
+	
+	

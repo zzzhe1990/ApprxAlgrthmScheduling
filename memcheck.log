@@ -1,24 +1,6 @@
 Reading File...
-File 1-1 is read.
-Number of Jobs : 21
-Number of Machines : 10
+File 31-1 is read.
+Number of Jobs : 41
+Number of Machines : 20
 ******************************************************************
-Iteration: 1, UB: 50, LB: 31start at time: 1489619570
-thread: 0, MlBk is called with LB: 31, UB: 35thread: thread: thread: 3, MlBk is called with LB: 246, UB: , MlBk is called with LB: 5041, UB: 45
 
-thread: 3, Ntemp size: 16
- thread: 3, LongJobs.size() 15
-
-thread: 2, Ntemp size: 16
- thread: 2, LongJobs.size() 19
-1, MlBk is called with LB: 36, UB: 40
-thread: 0, Ntemp size: 16
- thread: 0, LongJobs.size() 21
-thread: 1, Ntemp size: 16
- thread: 1, LongJobs.size() 21
-memory transfer to vectors Runtime: 0
-dpoptimal: 5
-memory transfer to vectors Runtime: 1
-memory transfer to vectors Runtime: 1
-dpoptimal: 10
-dpoptimal: 7

@@ -1,6 +1,7 @@
 //#include "Parallel.h"
 #include "DPCUDA.h"
 
+
 //  Global defination 
 vector <DynamicTable> NSTableElements;
 vector <DynamicTable> AllTableElemets;
@@ -11,6 +12,7 @@ vector < FinalTableINFO > AllProbData;
 vector <vector<FinalTableINFO> > MulAllProbData;
 vector <vector<DynamicTable> > MulNSTableElements;
 vector <vector<DynamicTable> > MulAllTableElemets;
+vector <vector<DynamicTable> > MulDispTableElemets;
 vector <vector<int> > MulShortJobs;
 vector <vector<int> > MulLongJobs;
 vector <vector<int> > MulLongRoundJobs;
@@ -21,8 +23,12 @@ vector <vector<int> > MultempOptVector;
 
 int MlBk(int LB, int UB, int &sOPT);
 int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int T);
+int DimOffset(int dim, int *offsetArr);
+int MulDimOffset(vector<int>& coord, vector<int>& weight);
+int MlSplitDim(int tar);
 void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int T);
 void MlclearFun(const int size);
+bool descSort(const dim &a, const dim &b);
 /*****************************************************************************************************************************************************************************/
 
 int optIndex,FinalMakespan;
@@ -78,7 +84,7 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 //int nthreads,nthreads0;
 
 //string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
-string str0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/File";
+string str0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/UniformData/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
 //string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
@@ -115,7 +121,7 @@ int main(int argc, char* argv[])
         nFile=atoi(argv[3]);
     }
     
-    //nFile=301;
+    //nFile=153;
     //error =0.3;
     //th=0;
 
@@ -127,7 +133,11 @@ int main(int argc, char* argv[])
     if (! gethostname(hostname, sizeof hostname) == 0)
       perror("gethostname");
 
-    while (nFile<2)
+	struct timeval begin, end;
+	long totaltime;
+	gettimeofday(&begin, NULL);
+	
+    while (nFile<32)
     {
         for (int f=1; f<2; f++)
         {
@@ -190,6 +200,10 @@ int main(int argc, char* argv[])
         
         nFile++;
     }
+    
+    gettimeofday(&end, NULL);
+    totaltime = end.tv_sec - begin.tv_sec;
+    cout << "Total running time is: " << totaltime << endl;
 
 	return 0;
 }
@@ -225,11 +239,12 @@ int mainScheduling()
 	
     struct timeval tempt, lt, st;
     long iterT, wallClockT;
+    clock_t t;
 	gettimeofday(&st, NULL);
 	
 	/**********************************************************/
 	/**************** Optimization Variables ******************/
-	int numThread = 4;
+	int numThread = 8;
 	int seg = min(4, numThread);		//how many segments to split (threads)
 	int *sLB, *sUB, *sT, *sOPT, *sBkID, *dirc;
 	sLB = new int(seg);
@@ -244,6 +259,7 @@ int mainScheduling()
 		MulAllProbData.push_back(vector<FinalTableINFO> ());
 		MulNSTableElements.push_back(vector<DynamicTable> ());
 		MulAllTableElemets.push_back(vector<DynamicTable> ());
+		MulDispTableElemets.push_back(vector<DynamicTable> ());
 		MulShortJobs.push_back(vector<int> ());
 		MulLongJobs.push_back(vector<int> ());
 		MulLongRoundJobs.push_back(vector<int> ());
@@ -255,12 +271,13 @@ int mainScheduling()
 	int marker = 0;
 	while(LB<UB){
 		gettimeofday(&tempt, NULL);
-		
+		t = clock();
 		BkID = 0;
 		
 		marker++;
+#ifdef DEBUG		
 		cout << "Iteration: " << marker << ", UB: " << UB << ", LB: " << LB << "start at time: " << tempt.tv_sec << endl;
-		
+#endif	
 		if (UB - LB + 1 >= seg)
 		{
 			MlclearFun(seg);			
@@ -270,7 +287,9 @@ int mainScheduling()
 			for (int i = 0; i < seg; i++)
 			{
 				sLB[i] = LB + i * segSize;
-				sUB[i] = min(sLB[i]+segSize-1, UB);
+				sUB[i] = sLB[i]+segSize-1;
+				if (i == seg-1)
+					sUB[i] = max(sLB[i]+segSize-1, UB);
 				sT[i] = sLB[i] + (sUB[i] - sLB[i])/2;
 			}
 			
@@ -287,10 +306,16 @@ int mainScheduling()
 			for (int i = 0; i < seg; i++)
 				BkID += sBkID[i];
 			if (BkID < 0)
+			{
+				cout << "something wrong is going wrong here, process terminates here." << endl;
 				break;
-				
+			}
+
 			//use sOPT to adjust LB and UB. If all sOPT[] are either larger or smaller than nMachines, LB & UB are updated to the right most or left most seg edges; 
 			//If sOPT[i]>nMachine, but sOPT[i+1] < nMachine, then LB = sT[i], UB = sT[i+1]
+#ifdef DEBUG			
+			cout << "Thread: " << omp_get_thread_num() << " has dirc:";
+#endif
 			for (int i = 0; i < seg; i++)
 			{
 				if (sOPT[i] <= nMachines){
@@ -299,31 +324,45 @@ int mainScheduling()
 				else{
 					dirc[i] = 1;
 				}
+#ifdef DEBUG
+				cout << " " << dirc[i];
+#endif
 			}
+			cout << endl;
 			
 			if (dirc[0] == -1){
 				LB = sLB[0];
 				UB = sT[0];
 				AllProbData.push_back(MulAllProbData[0][0]);
 				OPT = sOPT[0];
+#ifdef DEBUG
+				cout << "Pick seg 0 for next iteration where LB: " << LB << ", UB: " << UB << endl;
+#endif
 			}
 			else if(dirc[seg-1] == 1){
 				LB = sT[seg-1]+1;
 				UB = sUB[seg-1];
 				AllProbData.push_back(MulAllProbData[seg-1][0]);
 				OPT = sOPT[seg-1];
+#ifdef DEBUG
+				cout << "Pick seg " << seg-1 << " for next iteration where LB: " << LB << ", UB: " << UB << endl;
+#endif
 			}
 			else{
-				for (int i = 1; i < seg-1; i++){
+				for (int i = 1; i < seg; i++){
 					if (dirc[i] != dirc[i-1]){
 						LB = sT[i-1] + 1;
 						UB = sT[i];
-						AllProbData.push_back(MulAllProbData[i-1][0]);
-						OPT = sOPT[i-1];
+						AllProbData.push_back(MulAllProbData[i][0]);
+						OPT = sOPT[i];
+#ifdef DEBUG
+						cout << "Pick seg " << i << " for next iteration where LB: " << LB << ", UB: " << UB << endl;
+#endif
 						break;
 					}
 				}
 			}
+			T = (LB + UB)/2;
 		}
 		else{
 			MlclearFun(seg);			
@@ -368,33 +407,41 @@ int mainScheduling()
 				UB = sUB[0];
 				AllProbData.push_back(MulAllProbData[0][0]);
 				OPT = sOPT[0];
+				T = (LB + UB)/2;
 			}
 			else if(dirc[seg-1] == 1){
 				LB = sLB[seg-1];
 				UB = sUB[seg-1];
 				AllProbData.push_back(MulAllProbData[seg-1][0]);
 				OPT = sOPT[seg-1];
+				T = (LB + UB)/2;
 			}
 			else{
-				for (int i = 1; i < seg-1; i++){
+				for (int i = 1; i < seg; i++){
 					if (dirc[i] != dirc[i-1]){
 						LB = sLB[i];
 						UB = sUB[i];
-						AllProbData.push_back(MulAllProbData[i-1][0]);
-						OPT = sOPT[i-1];
+						AllProbData.push_back(MulAllProbData[i][0]);
+						//OPT = sOPT[i];
+						//T = (LB + UB)/2;
+						//if (LB == UB){
+							OPT = sOPT[i-1];
+							T = sUB[i-1];
+						//}
 						break;
 					}
 				}
 			}
 		}
-		T = (LB+UB)/2;
 		
 		gettimeofday(&lt, NULL);
 		
 		iterT = lt.tv_sec - tempt.tv_sec;
 		wallClockT = lt.tv_sec - st.tv_sec;
+		t = clock() - t;
 
-		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << "iteration end at: " << lt.tv_sec << endl;
+		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
+		cout << "Dynamic Programming Runtime: " << (float)t / CLOCKS_PER_SEC << endl;
 		cout << "Execution time between LB and UB is: " << iterT << endl;
 		cout << "By far, all LB UB calculation runtime: " << wallClockT << endl;
 		iwhile++;
@@ -454,10 +501,6 @@ int mainScheduling()
        cout << "AllProbData[ck].Ttable    "<< AllProbData[ck].Ttable <<endl;
 
     }
-    
-    cout << "optIndex    "<< optIndex<<endl;
-    
-    gettimeofday(&tempt, NULL);
 
     vector<int> temp;
 	for(int i=0;i<nMachines;i++)
@@ -468,11 +511,6 @@ int mainScheduling()
 	{
 		machineTimes.push_back(0);
 	}
-    
-
-    gettimeofday(&lt, NULL);
-	cout << "optimalSchedule and machineTimes are done, runtime: " << lt.tv_sec - tempt.tv_sec << endl;
-    
     
     
     if(BkID==0) // number of long jobs are more than 0
@@ -580,7 +618,6 @@ int mainScheduling()
     cout << "FinalMakespan" << FinalMakespan<< endl;
     printFinalSchedule( OptimalSchedule, machineTimes, longF,shortF,Fopt);
 
-    gettimeofday(&tempt, NULL);
 
 	NSTableElements.clear();
 	AllTableElemets.clear();
@@ -602,16 +639,13 @@ int mainScheduling()
 		MulAllProbData[x].clear();
 		MulNSTableElements[x].clear();
 		MulAllTableElemets[x].clear();
+		MulDispTableElemets[x].clear();
 		MulShortJobs[x].clear();
 		MulLongJobs[x].clear();
 		MulLongRoundJobs[x].clear();
 		MulNtemp[x].clear();
 		MulroundVec[x].clear();
-	}
-    
-	gettimeofday(&lt, NULL);
-	cout << "Clear all vectors takes time: " << lt.tv_sec - tempt.tv_sec << endl;
-    
+	}  
     
     cout <<"Main Scheduling is Done"<<endl;
 	return 0;
@@ -685,13 +719,15 @@ int Bk(int LB, int UB)
 
     
     if (LongJobs.size()>0) {
-        cout << " LongJobs.size() " <<LongJobs.size()<<endl;
+        //cout << " LongJobs.size() " <<LongJobs.size()<<endl;
         OPT=DPFunction2(Ntemp);
         return 0;
     }
     else
-    {cout << " LongJobs.size() " <<LongJobs.size()<<endl;
-        return -1;}
+    {
+		//cout << " LongJobs.size() " <<LongJobs.size()<<endl;
+        return -1;
+	}
 	
 	
 }
@@ -709,9 +745,10 @@ int MlBk(int LB, int UB, int &sOPT)
 	creteria=TT/double(k);
 	
 	int thread = omp_get_thread_num();
-	
-	cout << "thread: " << thread << ", MlBk is called with LB: " << LB << ", UB: " << UB << endl;
 
+#ifdef DEBUG	
+	cout << "thread: " << thread << ", MlBk is called with LB: " << LB << ", UB: " << UB << endl;
+#endif
 
 	// Seprating Short and Long Jobs
 	for(int i=0; i< ProcTimeJob.size(); i++)
@@ -752,28 +789,25 @@ int MlBk(int LB, int UB, int &sOPT)
 		}
 		MulNtemp[thread].push_back(count);
 	}
-    
-    cout << "thread: " << thread << ", Ntemp size: " << MulNtemp[thread].size() << endl;
-    
-    //cout << "Ntemp is done as following " <<endl;
-   // for (int ck=0; ck<Ntemp.size(); ck++) {
-    //    cout << Ntemp[ck]<< "  ";
-    //}
-    //cout << endl;
 
 	//Starting Dynamic Programing Algorithm
 	MulAllTableElemets[thread].clear();
+	MulDispTableElemets[thread].clear();
 	MulNSTableElements[thread].clear();
 	MultempOptVector[thread].clear();
 
     
     if (MulLongJobs[thread].size()>0) {
+#ifdef DEBUG		
         cout << " thread: " << thread << ", LongJobs.size() " <<MulLongJobs[thread].size()<<endl;
+#endif
         sOPT = MlDPFunction2(MulNtemp[thread], roundCriteria, MlT);
         return 0;
     }
-    else
-    {cout << " LongJobs.size() " << MulLongJobs[thread].size()<<endl;
+    else{
+#ifdef DEBUG		
+		cout << " LongJobs.size() " << MulLongJobs[thread].size()<<endl;
+#endif
         return -1;}
 }
 
@@ -844,7 +878,7 @@ int DPFunction2(vector<int>& Ntemp)
     int powK = pow(k,2);
     
 
-    gpu_DP(AllTableElemets, T, k, powK, maxSumValue, counterVec, LongJobs.size(), &zeroVec[0], &roundVec[0]);
+    //gpu_DP(AllTableElemets, T, k, powK, maxSumValue, counterVec, LongJobs.size(), &zeroVec[0], &roundVec[0]);
 	
 	
 	for(int i=0; i<NSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
@@ -909,6 +943,41 @@ int DPFunction2(vector<int>& Ntemp)
 	return dpoptimal;
 }
 
+
+// This is the function to calculate the offset of one dimension
+int DimOffset(int dim, vector<int>& dimSize)
+{
+	int offset = 1;
+	    
+	for (int i=dim; i<dimSize.size(); i++)   
+	{
+		offset *= dimSize[i];
+	}
+
+	return offset;
+}
+
+//This is the function to calculate the offset for multi-dimension configuration
+int MulDimOffset(vector<int>& coord, vector<int>& weight)
+{
+	//For the first dimension, it has no offset but itself. Add to offset directly
+	int numDim = coord.size()-1;
+	int offset = coord[numDim];
+	//For higher dimensions, offset = its index * size of all dimensions that lower than itself. eg: d3 offset = index d3 * d2 size * d1 size * d0 size + d2 * d1 size * d0 size + d1 * d0 size + d0
+	for (int i=0; i<numDim; i++)
+	{
+		offset += ( coord[i] * DimOffset(i+1, weight) ); //i: index of one dimension; numDim -i = dimension id
+	}
+
+	return offset;
+}
+
+bool descSort(const dim &a, const dim &b)
+{
+	return (a.weit > b.weit);
+}
+
+
 int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 {
 	const int thread = omp_get_thread_num();
@@ -921,9 +990,10 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 	
 	for(int i=0;i<Cwhole.size();i++)
 	{
-		DynamicTable tempInst1;
+		DynamicTable tempInst1, tempEmpty;
 		tempInst1.elm=Cwhole[i];
 		MulAllTableElemets[thread].push_back(tempInst1);
+		MulDispTableElemets[thread].push_back(tempEmpty);
 	}
 	
 	for(int i=NMinusStemp.size()-1;i>-1;i--)
@@ -932,6 +1002,433 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 		tempInst.elm=NMinusStemp[i];
 		MulNSTableElements[thread].push_back(tempInst);
 	}
+#ifdef DEBUG
+	cout << "thread: " << thread << ", NSTable size: " << MulNSTableElements[thread].size() << endl;
+#endif
+
+    int powK = pow(k,2);
+
+//*****************************************  For optimization for splitting AllTableElements into blocks         ***************************************
+//*****************************************  Data displacement should be performed to make block data consective ***************************************
+#ifdef SPLIT
+//First, Get non-zero maximum configuration, and its size
+	//int *maxConfig = new int[powK];
+	//int *temp = maxConfig;
+	//int count = 0;
+	vector<int> maxConfig;
+	vector<dim> dimSize;
+	vector<int> blockDimSize;
+	vector<int> blockDimSizeComp;
+	vector<int> divisor;
+	vector<int> divisorComp;
+	vector<dim> maxN;
+	vector<int> inBlockCounterVec;
+	vector<block> allBlocks;
+	vector<block> allBlocksNoZero;
+	vector<int>	blockCounterVec;     			//a vector to store the number of blocks in each level
+	block blockVecNoZero;
+	block blockVec;
+	block largestBlockVec;
+	block largestNoZeroBlockVec;
+
+	int N = 3;
+	int jobsPerBlock = 1;
+	int levelsPerBlock = 0;
+	int blocksPerConfig = 1;
+    int maxJob = 0;
+    int maxIndex = MulAllTableElemets[thread].size() - 1;
+
+	for (int i=0; i<MulAllTableElemets[thread][maxIndex].elm.size();i++)
+	{
+#ifdef DEBUG
+		cout << "thread: " << thread << ", i: " << i << ", alltableelemets[thread][maxindex].elm[i]: " << MulAllTableElemets[thread][maxIndex].elm[i] << endl;
+#endif
+		if (MulAllTableElemets[thread][maxIndex].elm[i] != 0)
+		{
+			maxConfig.push_back(MulAllTableElemets[thread][maxIndex].elm[i]);
+		}
+	}
+
+//Second, Split AllTableElemets according to the maxConfig.
+//Split the multi-dimension table from the highest 3 dimensions. (This value can vary)
+//It is better to have a prime number list count from 1 to the max value in maxConfig.
+
+	//increase maxConfig by 1 to get the real size of each dimension.
+	dim aa;
+	for(int i=0; i<maxConfig.size(); i++)
+	{
+		aa.weit = maxConfig[i]+1;
+		aa.index = i;
+		dimSize.push_back(aa);
+		maxN.push_back(aa);
+		blockDimSize.push_back(maxConfig[i] + 1);
+		blockVecNoZero.elm.push_back(0);
+#ifdef DEBUG
+		//cout << "thread: " << thread << ", i: "<< i << ", maxN[i].weit: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+#endif
+	}
+	
+
+	sort(maxN.begin(), maxN.end(), descSort);
+	
+	//Store the N largest dimension size into maxN.weight and the index of each max into maxN.index.
+	N = min(N, (int)maxConfig.size());
+	maxN.resize(N);
+//	for(int i =0; i<N; i++)
+//		cout << "thread: " << thread << ", i: " << i << ", maxN[i]: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << endl;
+	
+	
+	//For each large dimension size in maxN, find how many segments the dimension should be splitted. If the dimension is not splitted, divisor should be 1.
+	for (int i = 0; i < dimSize.size(); i++)
+	{
+		divisor.push_back(1);
+	}
+
+	//this container now may include a dimension's divisor with a size of 1. Future improvement: if it is a prime number, replace the dimension with the next max weight dimension; Or split all dimensions.
+	//meanwhile, get the dimension size of each block from divisor and store in blockDimSize
+	int div;
+	for (int i=0; i<N; i++)
+	{
+		div = (int)sqrt( (float)maxN[i].weit );
+		//cout << "thread: " << thread << ", i: " << i << ", maxN[i]: " << maxN[i].weit << ", div: " << div << endl;
+		while (div!=0)
+		{
+			if (maxN[i].weit % div != 0)
+			{
+				div--;
+				continue;
+			}
+			//cout << "thread: " << thread << ", i: " << i << ", maxN[i].index: " << maxN[i].index << ", div: " << div << endl;
+			divisor[maxN[i].index] = div;
+			blockDimSize[maxN[i].index] /= div;
+			break;
+		}
+	}
+
+#ifdef DEBUG
+	//for (int i = 0; i < dimSize.size(); i++)
+	//	cout << "thread: " << thread << ", i: " << i << ", divisor[i]: " << divisor[i] << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+#endif
+
+	//once get the blockDimSize and divisor, we are able to get jobsPerBlock and blocksPerConfig
+	//dimSize.size() is the same as N.
+	for (int i=0; i<dimSize.size(); i++)
+	{
+		jobsPerBlock *= blockDimSize[i];
+		levelsPerBlock += blockDimSize[i];
+	}
+
+	for (int i = 0; i < divisor.size(); i++)
+	{
+		blocksPerConfig *= divisor[i];
+	}
+
+//	cout << "thread: " << thread << ", jobsPerBlock: " << jobsPerBlock << ", blocksPerConfig: " << blocksPerConfig << endl; 
+	
+	//It is necessary to get all block vectors and the count of blocks that are in the same level.
+	//for (int i = 0; i < blocksPerConfig; i++)
+	for (int i = 0; i < powK; i++)
+	{
+		blockVec.elm.push_back(0);
+	}
+	blockVec.mySUM = 0;
+	allBlocks.push_back(blockVec);
+
+	//expand largestBlockVec, divisor and blockDimSize to the size of powK
+	int j = 0;
+
+#ifdef DEBUG
+	//cout << "thread: " << thread << ", largestBlockVec.elm: ";
+#endif
+	for (int i=0; i<powK;i++)
+	{
+		if (MulAllTableElemets[thread][maxIndex].elm[i] != 0)
+		{
+			divisorComp.push_back(divisor[j]);
+			blockDimSizeComp.push_back(blockDimSize[j]);
+			largestBlockVec.elm.push_back(divisor[j]-1);
+			largestNoZeroBlockVec.elm.push_back(divisor[j]-1);
+			j++;
+		}
+		else{
+			divisorComp.push_back(0);
+			blockDimSizeComp.push_back(0);
+			largestBlockVec.elm.push_back(0);
+		}
+#ifdef DEBUG
+		//cout << largestBlockVec.elm[i] << " ";
+#endif
+	}
+#ifdef DEBUG
+	cout << endl;
+
+	cout << "thread: " << thread << ", blockDimSizeComp: ";
+	for (int i=0; i<powK; i++)
+		cout << blockDimSizeComp[i] << " ";
+	cout << endl;
+	cout << "thread: " << thread << ", divisorComp: ";
+	for (int i=0; i<powK; i++)
+		cout << divisorComp[i] << " ";
+	cout << endl;
+	cout << "thread: " << thread << ", largestBlockVec: ";
+	for (int i=0; i<powK; i++)
+		cout << largestBlockVec.elm[i] << " ";
+	cout << endl;
+	cout << "thread: " << thread << ", largestNoZeroBlockVec: ";
+	for (int i=0; i<largestNoZeroBlockVec.elm.size(); i++)
+		cout << largestNoZeroBlockVec.elm[i] << " ";
+	cout << endl;
+
+#endif
+
+	while(blockVec.elm != largestBlockVec.elm)
+	{
+		int index;
+		for (int i = 0; i < powK; i++)
+		{
+			index = powK - 1 - i;
+			++blockVec.elm[index];
+			++blockVec.mySUM;
+			if (blockVec.elm[index] > largestBlockVec.elm[index]) {
+				blockVec.mySUM -= blockVec.elm[index];
+				blockVec.elm[index] = 0;
+			}
+			else {
+				allBlocks.push_back(blockVec);
+				break;
+			}
+		}
+	}
+	//sort all block vectors by mySUM. (level)
+	sort(allBlocks.begin(), allBlocks.end());
+
+	//get allBlocks Index without 0 value dimensions, maybe not correct and not necessary. May be replaced by inBlockCounterVec.size()
+	allBlocksNoZero.push_back(blockVecNoZero);
+
+	while(blockVecNoZero.elm != largestNoZeroBlockVec.elm)
+	{
+		int index;
+		for (int i = 0; i < largestNoZeroBlockVec.elm.size(); i++)
+		{
+			index = largestNoZeroBlockVec.elm.size() - 1 - i;
+			++blockVecNoZero.elm[index];
+			++blockVecNoZero.mySUM;
+			if (blockVecNoZero.elm[index] > largestNoZeroBlockVec.elm[index]) {
+				blockVecNoZero.mySUM -= blockVecNoZero.elm[index];
+				blockVecNoZero.elm[index] = 0;
+			}
+			else {
+				allBlocksNoZero.push_back(blockVecNoZero);
+				break;
+			}
+		}
+	}
+	//sort all block vectors by mySUM. (level)
+	sort(allBlocksNoZero.begin(), allBlocksNoZero.end());
+
+#ifdef DEBUG
+		cout << "thread: " << thread << ", allBlocks: ";
+		for (int i = 0; i < allBlocks.size(); i++)
+		{
+			for (int j=0; j<powK; j++)
+				cout << allBlocks[i].elm[j] << " ";
+			cout << ", mySum: " << allBlocks[i].mySUM << endl;
+		}
+#endif
+
+	for (int i = 0; i < allBlocks.size(); i++)
+	{
+		int c = 1;
+		while(i < allBlocks.size() - 1  && allBlocks[i].mySUM == allBlocks[i+1].mySUM)
+		{
+			c++;
+			i++;
+		}
+		blockCounterVec.push_back(c);
+	}
+	
+//	for (int i=0; i<blockCounterVec.size(); i++)
+//		cout << "thread: " << thread << ", i: " << i << ", # of blocks in level " << i << ": " << blockCounterVec[i] << endl;
+
+	// A check may be required on divisor to ensure it is larger than a efficiency rate. If it is lower than the rate, there are too few blocks to be run in parallel.
+	//???????????????????????
+
+	//calculate the new position of each configuration and store in MulDispTableElemets
+	//MulDispTableElemets[thread].resize( MulAllTableElemets[thread].size() );
+	int blockOffset, inBlockOffset, pos;
+	vector<int> blockID;
+	vector<int> inBlockPos;
+	
+	
+	for (int i = 0; i < MulAllTableElemets[thread].size(); i++)
+	{
+		//cout << "thread: " << thread << ", i: " << i << ", MulAllTableElemets[thread][i]: ";
+		blockID.clear();
+		inBlockPos.clear();
+		for (int j=0; j<powK; j++)
+		{
+			if (blockDimSizeComp[j] != 0)
+			{
+				blockID.push_back( MulAllTableElemets[thread][i].elm[j] / blockDimSizeComp[j] );
+				inBlockPos.push_back( MulAllTableElemets[thread][i].elm[j] % blockDimSizeComp[j] );
+			}
+			//cout << MulAllTableElemets[thread][i].elm[j] << " ";
+		}
+		//cout << endl;
+		//Calculating the offset, which is to find new position according to offset and block ID
+		blockOffset = MulDimOffset(blockID, divisor);
+		inBlockOffset = MulDimOffset(inBlockPos, blockDimSize);
+		pos = blockOffset * jobsPerBlock + inBlockOffset;
+		
+		//cout << "blockID: ";
+		//for (int tt=0; tt<blockID.size(); tt++)
+		//{
+		//	cout << blockID[tt] << " ";
+		//}
+		//cout << endl << "blockOffset: " << blockOffset << ", inBlockOffset: " << inBlockOffset << ", pos: " << pos << endl;
+		
+		MulDispTableElemets[thread][pos] = MulAllTableElemets[thread][i];
+		//std::copy(&MulAllTableElemets[thread][i], &MulAllTableElemets[thread][i+1], &MulDispTableElemets[thread][pos]);
+	}
+/*	
+	for (int i=0; i<MulDispTableElemets[thread].size(); i++)
+	{
+		cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[thread][i]: ";
+		for (int j=0; j<powK; j++)
+		{
+			cout << MulDispTableElemets[thread][i].elm[j] << " ";
+		}
+		cout << endl;
+	}
+*/
+
+//Third: Sort each block and count how many configurations per level within each box
+	//Parallelism inside of each block is the same as AllTableElemets for configurations that are at same level get run in parallel. Thus, configurations in each block can be sorted within block.
+	for (int i=0; i<MulDispTableElemets[thread].size(); i++) 	//Calculate the # of configurations in each level for a splitted block
+	{
+		int sumOver=0;
+		for (int j=0; j<MulDispTableElemets[thread][i].elm.size(); j++)   //AllTableElemets[i].elm.size() = Cwhole[i].szie() = Ntemp.size()
+		{
+			sumOver  = sumOver+ MulDispTableElemets[thread][i].elm[j];
+		}
+		//inBlockLevelSum.push_back(sumOver);
+		MulDispTableElemets[thread][i].mySum=sumOver;
+		//cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[thread][i].mySum: " << MulDispTableElemets[thread][i].mySum << endl;
+	}
+
+	//sort(inBlockLevelSum.begin(), inBlockLevelSum.end());			//align jobs in order for dependency.
+
+	//this might not work, if not, try use MulAllTableElemets[thread].data().
+	for (vector<DynamicTable>::iterator it = MulDispTableElemets[thread].begin(); it != MulDispTableElemets[thread].end(); it+=jobsPerBlock)
+	{
+		sort(it, it+jobsPerBlock);
+	}
+#ifdef DEBUG
+/*	
+	for (int block = 0; block < allBlocks.size(); block++)
+	{
+		cout << "thread: " << thread << ", block: " << block << ", vectors: " << endl;
+		int offset = block * jobsPerBlock;
+		for (int i = 0; i < jobsPerBlock; i++)
+		{
+			cout << "vector " << i << ": ";
+			int offset1 = offset + i;
+			for (int j = 0; j<powK; j++)
+				cout << MulDispTableElemets[thread][offset1].elm[j] << " ";
+			cout << endl;
+		}
+	}
+*/
+#endif
+	// count how many of each item is in the inBlockLevelSum
+	for(int i = 0; i < jobsPerBlock; i++)		//the number of jobs in each level
+	{
+		int c = 1;
+		int limit = jobsPerBlock - 1;
+		while(i < limit  && MulDispTableElemets[thread][i].mySum == MulDispTableElemets[thread][i+1].mySum)
+		{
+			i++;
+			c++;
+		}
+		//cout << "thread: " << thread << ", i: " << i << ", c: " << c << endl;
+		inBlockCounterVec.push_back(c);
+	}
+
+	//maxSumValue = number of total jobs + 1
+	gpu_BlockDP(MulDispTableElemets[thread], MlT, powK, jobsPerBlock, levelsPerBlock, inBlockCounterVec,
+	    		MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0], divisor, divisorComp,
+	    		blockDimSizeComp, allBlocks, allBlocksNoZero, blockCounterVec);
+
+	for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
+	{
+		for(int j=0;j<MulDispTableElemets[thread].size();j++)
+		{
+			if(MulNSTableElements[thread][i].elm==MulDispTableElemets[thread][j].elm)
+			{
+//				cout << "thread: " << thread << ", i: " << i << ", NSTable[i]: ";
+				MulNSTableElements[thread][i]=MulDispTableElemets[thread][j];
+
+//				for (int tt = 0; tt < powK; tt++)
+//					cout << MulNSTableElements[thread][i].elm[tt] << " ";
+//				cout << ", NSTable.myOPT: " << MulNSTableElements[thread][i].myOPT << ", DispTable.myOPT: " << MulDispTableElemets[thread][j].myOPT;
+//				cout << endl;
+				break;
+			}
+		}
+
+	}
+
+	for(int i=0; i<MulNSTableElements[thread].size();i++)
+	{
+		MultempOptVector[thread].push_back(MulNSTableElements[thread][i].myOPT);
+	}
+
+	int dpoptimal;
+	int minN=100000;
+
+//	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
+	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
+	{
+		if(MulNSTableElements[thread][mindex].myOPT<minN)
+			minN=MulNSTableElements[thread][mindex].myOPT;
+	}
+
+	dpoptimal=minN +1;
+	
+#ifdef DEBUG
+	cout << "cpuId: " << thread << ", dpoptimal: " <<dpoptimal << endl;
+#endif
+
+	clock_t ttt = clock();
+
+	MulAllProbData[thread].clear();
+
+	if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
+	{
+
+		FinalTableINFO instance;
+		instance.AllTableElemets=MulDispTableElemets[thread];
+		instance.NSTableElements=MulNSTableElements[thread];
+		instance.Nvector=MulNtemp[thread];
+		instance.OPTtable=dpoptimal;
+		instance.Ttable= MlT;
+		instance.optimalValuesVector=MultempOptVector[thread];
+		instance.ShortJobsTable=MulShortJobs[thread];
+		instance.LongJobsTable=MulLongJobs[thread];
+		instance.roundVecTable=MulroundVec[thread];
+		instance.LongRoundJobsTable=MulLongRoundJobs[thread];
+		instance.roundCriteriaTable=roundCriteria;
+
+		MulAllProbData[thread].push_back(instance);
+	}
+
+	ttt = clock() - ttt;
+	
+#ifdef DEBUG
+	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
+#endif
+//*****************************************  Here is the end of AllTableElemets split work *************************************************************
+#else
 
     vector<int> sumVec;
 	for (int i=0; i<MulAllTableElemets[thread].size(); i++) 	//calculate the total run time of each job, jobs have same run time are in the same level (can do parallel).  AllTableElemets.size() = CWhole.size()
@@ -972,75 +1469,93 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 	vector<int> zeroVec;
 	for(int i=0;i< Ntemp.size();i++)
 		zeroVec.push_back(0);
-    
-    int powK = pow(k,2);
-    
-    gpu_DP(MulAllTableElemets[thread], MlT, k, powK, maxSumValue, counterVec, MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0]);
-	
-	
-	for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
-	{
-		for(int j=0;j<MulAllTableElemets[thread].size();j++)
-		{	
-			if(MulNSTableElements[thread][i].elm==MulAllTableElemets[thread][j].elm)
-			{
-				MulNSTableElements[thread][i]=MulAllTableElemets[thread][j];
-				break;
-			}
-		}
 
-	}
-
-	for(int i=0; i<MulNSTableElements[thread].size();i++)
-	{
-		MultempOptVector[thread].push_back(MulNSTableElements[thread][i].myOPT);
-	}
-
-	int dpoptimal;
-	int minN=100000;
-	 
-//	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
-	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
-	{
-		if(MulNSTableElements[thread][mindex].myOPT<minN)
-			minN=MulNSTableElements[thread][mindex].myOPT;
-	}
-
-	dpoptimal=minN +1;
-
-    cout << "dpoptimal: " <<dpoptimal << endl;
-    
-    clock_t ttt = clock();
-    
-	MulAllProbData[thread].clear();
-	
-    if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
+    if (powK > 1024)
     {
-        
-        FinalTableINFO instance;
-        instance.AllTableElemets=MulAllTableElemets[thread];
-        instance.NSTableElements=MulNSTableElements[thread];
-        instance.Nvector=MulNtemp[thread];
-        instance.OPTtable=dpoptimal;
-        instance.Ttable= MlT;
-        instance.optimalValuesVector=MultempOptVector[thread];
-        instance.ShortJobsTable=MulShortJobs[thread];
-        instance.LongJobsTable=MulLongJobs[thread];
-        instance.roundVecTable=MulroundVec[thread];
-        instance.LongRoundJobsTable=MulLongRoundJobs[thread];
-        instance.roundCriteriaTable=roundCriteria;
-        
-        MulAllProbData[thread].push_back(instance);
+    	cout << "GPU function does not work because powK is over 1024." << endl;
+    	exit(-1);
     }
 
-	ttt = clock() - ttt;
-//	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
+    gpu_DP(MulAllTableElemets[thread], MlT, k, powK, maxSumValue, counterVec,
+    		MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0]);
 
+    for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
+    	{
+    		for(int j=0;j<MulAllTableElemets[thread].size();j++)
+    		{
+    			if(MulNSTableElements[thread][i].elm==MulAllTableElemets[thread][j].elm)
+    			{
+    				MulNSTableElements[thread][i]=MulAllTableElemets[thread][j];
+    				break;
+    			}
+    		}
+
+    	}
+
+    	for(int i=0; i<MulNSTableElements[thread].size();i++)
+    	{
+    		MultempOptVector[thread].push_back(MulNSTableElements[thread][i].myOPT);
+    	}
+
+    	int dpoptimal;
+    	int minN=100000;
+
+    //	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
+    	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
+    	{
+    		if(MulNSTableElements[thread][mindex].myOPT<minN)
+    			minN=MulNSTableElements[thread][mindex].myOPT;
+    	}
+
+    	dpoptimal=minN +1;
+
+        cout << "dpoptimal: " <<dpoptimal << endl;
+        
+        clock_t ttt = clock();
+        
+    	MulAllProbData[thread].clear();
+
+        if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
+        {
+
+            FinalTableINFO instance;
+            instance.AllTableElemets=MulAllTableElemets[thread];
+            instance.NSTableElements=MulNSTableElements[thread];
+            instance.Nvector=MulNtemp[thread];
+            instance.OPTtable=dpoptimal;
+            instance.Ttable= MlT;
+            instance.optimalValuesVector=MultempOptVector[thread];
+            instance.ShortJobsTable=MulShortJobs[thread];
+            instance.LongJobsTable=MulLongJobs[thread];
+            instance.roundVecTable=MulroundVec[thread];
+            instance.LongRoundJobsTable=MulLongRoundJobs[thread];
+            instance.roundCriteriaTable=roundCriteria;
+
+            MulAllProbData[thread].push_back(instance);
+        }
+
+    	ttt = clock() - ttt;
+    	cout << "copy the latest feasible solution to instance takes time: " << (float)ttt/CLOCKS_PER_SEC << endl;
+
+#endif
+
+
+#ifdef SPLIT
+	maxConfig.clear();
+	dimSize.clear();
+	blockDimSize.clear();
+	divisor.clear();
+	maxN.clear();
+	inBlockCounterVec.clear();
+	Cwhole.clear();
+	Ctemp.clear();
+	NMinusStemp.clear();
+#else
 	sumVec.clear();
 	Cwhole.clear();
 	Ctemp.clear();
 	NMinusStemp.clear();
-	
+#endif
 	return dpoptimal;
 }
 

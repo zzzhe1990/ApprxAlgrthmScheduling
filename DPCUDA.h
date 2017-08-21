@@ -4,6 +4,9 @@
 #include "Parallel.h"
 #include "iterator"
 
+
+//#define DEBUG
+
 //void InitGPUData(int powK, int LongJobs_size, vector<DynamicTable> &AllTableElemets, 
 //				 int *zeroVec, int *roundVec, int *counterVec, int &maxSubsetsSize, const int optVectorSize);
 void InitGPUData(int powK, int LongJobs_size, vector<DynamicTable> &AllTableElemets, int *zeroVec, 
@@ -24,5 +27,9 @@ void gpu_DP(vector<DynamicTable> &AllTableElemets, int *dev_ATE_elm, int *dev_co
 */			
 void gpu_DP(vector<DynamicTable> &AllTableElemets, const int T, const int k, const int powK, const int maxSumValue, 
 			vector<int> &counterVec, const int LongJobs_size, int *zeroVec, int *roundVec);
+
+void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int powK, const int jobsPerBlock, const int levelsPerBlock,
+			vector<int> &counterVec, const int LongJobs_size, int *zeroVec, int *roundVec, vector<int> &divisor, vector<int> &divisorComp,
+			vector<int> &blockDimSize, vector<block> &allBlocks, vector<block> &allBlocksNoZero, vector<int> &blockCounterVec);
 
 #endif
