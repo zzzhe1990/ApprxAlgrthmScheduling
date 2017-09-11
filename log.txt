@@ -343,4 +343,35 @@ In Parallel.cpp function "mainScheduling", the part for deciding which segment s
 	for an example of segs: 1, -1, -1. If it is the last segments that each segment has only one element, we should probably pick the "1" segment. However, if the segments are that each has 
 	multiple elements, we should pick the first "-1" segment.
 	
-	
+
+***************************************************
+Aug 22
+***************************************************
+Problem detected:
+1. Incorrect results for File3-1.
+2. Memory issue. DPCUDA.cu:864 memcpyAsync
+
+
+****************************************************
+Sep 5
+****************************************************
+Optimization:
+1. In FindOPT kernel function, there is a for loop "for(int h=0; h < dev_ATE_NSsubsets_size[j]; h++)" can be replaced by a kernel function.
+
+Problem resolved:
+1. Segment fault. Caused by "MulAllProbData" that the accepted OPT result of 4 threads will be stored into MulAllProbData and then select the best from 4; however, if a thread has OPT greater than 
+   the threshold, it does not store any data which means MulAllProbData[thread] will not be initialized. Thus, the access to this address would cause memory issue.
+2. In the kernel function which is developed to unroll the for loop, which is for looping through all sub-configurations and update their OPT, __shared__ lock[1] is only shared by the thread within 
+   the same block, so that the block size should be big enough to include all possible optVector. Otherwise, it would generate multiple block, and lock[1] will only be effective to each block itself.
+   Also, __threadfence() is necessary to ensure the shared and global memory writes.
+   
+****************************************************
+Sep 10
+****************************************************
+Optimization:
+1. In "MlDPFunction2()", the previous calculation for "divisor" could get a result of all 1 because it's possible that the configuration size of all dimensions could be prime numbers. 
+   In this case, there is no split and all jobs are executed in one big block. Thus, update the max N dimensions' divisor to the same size as its dimension weight to ensure the multile blocks.
+   
+To do:
+1. Change the way of 4-way splitting. Previously, 4 splits are evenly placed between UB and LB; however, this is not efficient because most data resides in some specific area (dense). 
+   Also, there are more long jobs if the cut is more close to LB. Because with a smaller T (T = (UB+LB)/2 ), there are more jobs greater than T considered as long jobs.

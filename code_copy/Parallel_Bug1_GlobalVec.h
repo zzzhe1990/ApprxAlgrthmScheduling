@@ -21,7 +21,7 @@
 
 
 #define SPLIT
-//#define _HOST_DEBUG
+#define _HOST_DEBUG
 //#define _DEVICE_DEBUG
 
 using namespace std;
@@ -63,8 +63,6 @@ public:
     bool operator< (const DynamicTable &a) const {
         return (mySum < a.mySum);
     }
-    //DynamicTable():elm(0, 0), optVector(0, 0), myOPT(0), mySum(0), myOptimalindex(0), myMinNSVector(0, 0), NSsubsets(0, vector<int>(0, 0)), Csubsets(0, vector<int>(0, 0)){};
-    //~DynamicTable();
 };
 
 
@@ -83,8 +81,6 @@ public:
     vector<int> LongJobsTable;
     vector<int> LongRoundJobsTable;
     double roundCriteriaTable;
-    //FinalTableINFO():Nvector(0, 0), OPTtable(0), NSTableElements(0), AllTableElemets(0), Ttable(0), optimalValuesVector(0, 0), roundVecTable(0, 0), ShortJobsTable(0, 0), LongJobsTable(0, 0), LongRoundJobsTable(0, 0), roundCriteriaTable(0){};
-	//~FinalTableINFO();
 };
 
 #endif

@@ -1,6 +1,2 @@
-Reading File...
-File 31-1 is read.
-Number of Jobs : 41
-Number of Machines : 20
-******************************************************************
-
+========= CUDA-MEMCHECK
+========= ERROR SUMMARY: 0 errors

@@ -1093,7 +1093,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 		blockDimSize.push_back(maxConfig[i] + 1);
 		blockVecNoZero.elm.push_back(0);
 #ifdef _HOST_DEBUG
-		cout << "thread: " << thread << ", i: "<< i << ", maxN[i].weit: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+		//cout << "thread: " << thread << ", i: "<< i << ", maxN[i].weit: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << ", blockDimSize[i]: " << blockDimSize[i] << endl;
 #endif
 	}
 	
@@ -1128,20 +1128,15 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 				continue;
 			}
 			//cout << "thread: " << thread << ", i: " << i << ", maxN[i].index: " << maxN[i].index << ", div: " << div << endl;
-			if (div == 1){
-				divisor[maxN[i].index] = maxN[i].weit;
-			}
-			else{
-				divisor[maxN[i].index] = div;
-			}
-			blockDimSize[maxN[i].index] /= divisor[maxN[i].index];
+			divisor[maxN[i].index] = div;
+			blockDimSize[maxN[i].index] /= div;
 			break;
 		}
 	}
 
 #ifdef _HOST_DEBUG
-	for (int i = 0; i < dimSize.size(); i++)
-		cout << "thread: " << thread << ", i: " << i << ", divisor[i]: " << divisor[i] << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+	//for (int i = 0; i < dimSize.size(); i++)
+	//	cout << "thread: " << thread << ", i: " << i << ", divisor[i]: " << divisor[i] << ", blockDimSize[i]: " << blockDimSize[i] << endl;
 #endif
 
 	//once get the blockDimSize and divisor, we are able to get jobsPerBlock and blocksPerConfig
@@ -1156,7 +1151,6 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	{
 		blocksPerConfig *= divisor[i];
 	}
-
 
 //	cout << "thread: " << thread << ", jobsPerBlock: " << jobsPerBlock << ", blocksPerConfig: " << blocksPerConfig << endl; 
 	
@@ -1173,7 +1167,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	int j = 0;
 
 #ifdef _HOST_DEBUG
-	cout << "thread: " << thread << ", largestBlockVec.elm: ";
+	//cout << "thread: " << thread << ", largestBlockVec.elm: ";
 #endif
 	for (int i=0; i<powK;i++)
 	{
@@ -1191,7 +1185,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 			largestBlockVec.elm.push_back(0);
 		}
 #ifdef _HOST_DEBUG
-		cout << largestBlockVec.elm[i] << " ";
+		//cout << largestBlockVec.elm[i] << " ";
 #endif
 	}
 #ifdef _HOST_DEBUG

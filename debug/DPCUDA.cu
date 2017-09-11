@@ -93,66 +93,7 @@ void InitGPUData(int powK, int LongJobs_size, vector<DynamicTable> &AllTableElem
 	//cout << "End of InitGPUData, thread: " << omp_get_thread_num() << ", dev_roundVec address: " << *dev_roundVec << endl;
 }
 */
-/*
-__device__ int gpu_sameVectors(int *vecA, int *vecB, int size)
-{
-	int same = 1;
-	for (int i = 0; i < size; i++)
-	{
-		if (vecA[i] != vecB[i])
-		{
-			same = 0;
-			break;
-		}
-	}
-	return same;
-}
 
-__device__ int gpu_sameVectors(int *vecA, int choice, int size)
-{
-	int vecB[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0};
-
-	vecB[15] = choice;
-
-	int same = 1;
-	for (int i = 0; i < size; i++)
-	{
-		if (vecA[i] != vecB[i])
-		{
-			same = 0;
-			break;
-		}
-	}
-	return same;
-}
-
-
-__global__ void gpu_sameVectors(int *A, int *B, const int powK, int *res)
-{
-	int thread = blockDim.x * blockIdx.x + threadIdx.x;
-	int tRes;
-//	__shared__ int warpRes[32];
-
-//	if (thread < 32)
-//		warpRes[thread] = 0;
-
-	if (thread < powK)
-	{
-		tRes = __all(A[thread]-B[thread]);
-	}
-
-//	if (thread&(32-1) == 0)
-//	{
-//		warpRes[thread/32] = tRes;
-//	}
-
-//	if (thread < 32)
-//		tRes = __any( warpRes != 0 );
-
-	if (thread == 0)
-		res[0] = tRes;
-}
-*/
 
 __device__ int gpu_increase(int *Ntemp, int *it, int Ntemp_size)
 {
@@ -413,32 +354,28 @@ __global__ void FindSubConfigOPT(int MemOffset, int *NS, int *dev_ATE_elm, int p
 	}
 }
 
-__global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
+__global__ void LoopNSsubsets(int dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
 							  int powK, int *dev_zeroVec, int *dev_ATE_optVector, int optOffset,
 							  int *blockDimSize, int *divisorComp, int *divisor, 
-							  int divSize, int jobsPerBlock, int *dev_ATE_elm, int *dev_ATE_myOPT,
-							  int *dev_ATE_optVector_size, const int j, const int cpuId)
+							  int divSize, int jobsPerBlock, int *dev_ATE_elm, int *dev_ATE_myOPT)
 {
 	int thread = blockIdx.x * blockDim.x + threadIdx.x;
+	int blockIndex[32];
 	__shared__ int lock[1];
 	
 	if (thread == 0)
 		lock[0] = 0;
-	//__syncthreads();
-	__threadfence_block();
+	__syncthreads();
 	
-	if (thread < dev_ATE_NSsubsets_size[j]){
-		int blockIndex[32];
+	if (thread < dev_ATE_NSsubsets_size){
 		int *NS = &dev_ATE_NSsubsets[(NSOffset + thread) * powK];
 		
 		if(gpu_sameVectors(NS, dev_zeroVec, powK))
 		{
 			dev_ATE_optVector[optOffset + thread] = 0;
-			dev_ATE_optVector_size[j] = 1;
 			atomicAdd(lock, 1);
 		}
-		//__syncthreads();
-		__threadfence();
+		__syncthreads();
 
 		if (lock[0] == 0){
 			//Find in which block the sub-configuration is stored.
@@ -462,7 +399,6 @@ __global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubset
 				}
 			} 
 		}
-		__threadfence();
 	}
 }
 
@@ -484,20 +420,18 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 	int optOffset = j * optVectorSize;
 
 	if (thread < dev_counterVec[ii]){
-		
-		int blockSize = 64;
+/*		
+		int blockSize = 32;
 		int gridSize = (dev_ATE_NSsubsets_size[j] + blockSize - 1) / blockSize;
-		dev_ATE_optVector_size[j] = dev_ATE_NSsubsets_size[j];
-		__threadfence();
 		
 		if (dev_ATE_NSsubsets_size[j] > 0){
-			LoopNSsubsets<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size, dev_ATE_NSsubsets, NSOffset, 
+			LoopNSsubsets<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size[j], dev_ATE_NSsubsets, NSOffset, 
 													powK, dev_zeroVec, dev_ATE_optVector, optOffset,
 													blockDimSize, divisorComp, divisor, divSize, jobsPerBlock, 
-													dev_ATE_elm, dev_ATE_myOPT, dev_ATE_optVector_size, j, cpuId);
+													dev_ATE_elm, dev_ATE_myOPT);
 			cudaDeviceSynchronize();
 		}
-/*
+*/		
 		int blockIndex[64];
 		for(int h=0; h < dev_ATE_NSsubsets_size[j]; h++)
 		{
@@ -521,22 +455,23 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 
 			int blockOffset = gpu_blockOffset(&blockIndex[0], divisorComp, powK, divisor, divSize);
 			int MemOffset = blockOffset * jobsPerBlock;
-			bool nomatch = true;
-			for (int r = MemOffset; r < MemOffset + jobsPerBlock && nomatch; r++)
+		
+			for (int r = MemOffset; r < MemOffset + jobsPerBlock; r++)
 			{	
 				if (gpu_sameVectors(NS, &dev_ATE_elm[r * powK], powK))
 				{
 					dev_ATE_optVector[optOffset + h] = dev_ATE_myOPT[r];
 					dev_ATE_optVector_size[j] = h+1;
-					nomatch = false;
+					break;
 				}
 			} 
 		}
-*/
+
 		int minn = 100000;
 		int myOptimalindex = 0;
 		// find out the OPT from all dependencies.		
-		for (int pp = 0; pp < dev_ATE_optVector_size[j]; pp++)
+		//for (int pp = 0; pp < dev_ATE_optVector_size[j]; pp++)
+		for (int pp = 0; pp < dev_ATE_NSsubsets_size[j]; pp++)
 		{			
 			if (dev_ATE_optVector[optOffset + pp] < minn)
 			{

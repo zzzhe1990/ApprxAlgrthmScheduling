@@ -9,19 +9,26 @@ vector<int> tempOptVector;
 vector < FinalTableINFO > AllProbData;
 
 /************************************************** multiple copy of global vectors for CUDA kernel Optimization ************************************************************/
-int MlBk(int LB, int UB, int &sOPT, vector<DynamicTable>& MulNSTableElements, vector<DynamicTable>& MulAllTableElemets, vector<DynamicTable>& MulDispTableElemets,
-		vector<int>& MulShortJobs, vector<int>& MulLongJobs, vector<int>& MulLongRoundJobs, vector<int>& MulNtemp, vector<int>& MulroundVec, vector<int>& MultempOptVector,
-		vector<FinalTableINFO>& MulAllProbData);
-		
-int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int T, vector<DynamicTable>& MulNSTableElements, vector<DynamicTable>& MulAllTableElemets, 
-					vector<DynamicTable>& MulDispTableElemets, vector<int>& MulShortJobs, vector<int>& MulLongJobs, vector<int>& MulLongRoundJobs, 
-					vector<int>& MulNtemp, vector<int>& MulroundVec, vector<int>& MultempOptVector, vector<FinalTableINFO>& MulAllProbData);
-					
+vector <vector<FinalTableINFO> > MulAllProbData;
+vector <vector<DynamicTable> > MulNSTableElements;
+vector <vector<DynamicTable> > MulAllTableElemets;
+vector <vector<DynamicTable> > MulDispTableElemets;
+vector <vector<int> > MulShortJobs;
+vector <vector<int> > MulLongJobs;
+vector <vector<int> > MulLongRoundJobs;
+vector <vector<int> > MulNtemp;
+vector <vector<int> > MulroundVec;
+vector <vector<int> > MultempOptVector;
+
+
+int MlBk(int LB, int UB, int &sOPT, vector<DynmaicTable>& NSTableElements, vector<DynmaicTable>& AllTableElemets, vector<DynmaicTable>& DispTableElemets,
+		vector<int>& shortJobs, vector<int>& LongJobs, vector<int>& LongRoundJobs, vector<int>& Ntemp, vector<int>& roundVec, vector<int>& tempOptVector);
+int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int T);
 int DimOffset(int dim, int *offsetArr);
 int MulDimOffset(vector<int>& coord, vector<int>& weight);
 int MlSplitDim(int tar);
-void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp, vector<vector<int> >& Cwhole, const int T, vector<int>& MulroundVec);
-void MlclearFun(const int size,  vector <vector<FinalTableINFO> >& MulAllProbData);
+void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int T);
+void MlclearFun(const int size);
 bool descSort(const dim &a, const dim &b);
 /*****************************************************************************************************************************************************************************/
 
@@ -132,7 +139,7 @@ int main(int argc, char* argv[])
 	
     while (nFile<4)
     {
-        for (int f=1; f<21; f++)
+        for (int f=1; f<3; f++)
         {
          //   scheduleFile << "File"<<"\t"<<nFile<<"-"<<f<<endl;
             ostringstream convert;
@@ -209,7 +216,6 @@ int mainScheduling()
     vector <int > shortF;
     vector <int> longF;
     vector<int> machineTimes;
-    vector <vector<FinalTableINFO> > MulAllProbData;
     
     
 	//Calculating Lower and Upper bounds
@@ -251,8 +257,16 @@ int mainScheduling()
 	for (int x = 0; x < seg; x++)
 	{
 		MulAllProbData.push_back(vector<FinalTableINFO> ());
+		MulNSTableElements.push_back(vector<DynamicTable> ());
+		MulAllTableElemets.push_back(vector<DynamicTable> ());
+		MulDispTableElemets.push_back(vector<DynamicTable> ());
+		MulShortJobs.push_back(vector<int> ());
+		MulLongJobs.push_back(vector<int> ());
+		MulLongRoundJobs.push_back(vector<int> ());
+		MulNtemp.push_back(vector<int> ());
+		MulroundVec.push_back(vector<int> ());
+		MultempOptVector.push_back(vector<int> ());
 	}
-	//MulAllProbData.reserve(4);
 	
 	int marker = 0;
 	while(LB<UB){
@@ -267,6 +281,7 @@ int mainScheduling()
 		//if (UB - LB + 1 >= seg)
 		if (UB - LB > seg)
 		{
+			MlclearFun(seg);
 			memset(sOPT, 0, seg);			
 			
 			int segSize = (UB - LB + 1)/seg;
@@ -285,20 +300,20 @@ int mainScheduling()
 			
 			#pragma omp parallel shared(sLB, sUB, sOPT, sBkID, MulAllProbData) num_threads(numThread)	
 			{
-				vector<DynamicTable> MulNSTableElements;
-				vector<DynamicTable> MulAllTableElemets;
-				vector<DynamicTable> MulDispTableElemets;
-				vector<int> MulShortJobs;
-				vector<int> MulLongJobs;
-				vector<int> MulLongRoundJobs;
-				vector<int> MulNtemp;
-				vector<int> MulroundVec;
-				vector<int> MultempOptVector;
+				vector<DynamicTable> NSTableElements;
+				vector<DynamicTable> AllTableElemets;
+				vector<DynamicTable> DispTableElemets;
+				vector<int> ShortJobs;
+				vector<int> LongJobs;
+				vector<int> LongRoundJobs;
+				vector<int> Ntemp;
+				vector<int> roundVec;
+				vector<int> tempOptVector;
 				#pragma omp for	schedule(static,1)	
 				for (int i = 0; i < seg; i++)
 				{
-					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i], MulNSTableElements, MulAllTableElemets, MulDispTableElemets, MulShortJobs, MulLongJobs,
-									MulLongRoundJobs, MulNtemp, MulroundVec, MultempOptVector, MulAllProbData[i]);
+					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i], NSTableElements, AllTableElemets, DispTableElemets, ShortJobs, LongJobs,
+									LongRoundJobs, vector<int> Ntemp, roundVec, tempOptVector);
 				}	
 #ifdef _HOST_DEBUG
 		cout << "Thread: " << omp_get_thread_num() << ", MlBk function is done, and BkID for all processes are collected." << endl;
@@ -392,6 +407,7 @@ int mainScheduling()
 			}
 		}
 		else{
+			MlclearFun(seg);
 			memset(sOPT, 0, seg);			
 			//seg = UB - LB + 1;		
 			seg = UB - LB;
@@ -406,20 +422,20 @@ int mainScheduling()
 					
 			#pragma omp parallel shared(sLB, sUB, sOPT, sBkID, MulAllProbData) num_threads(numThread)	
 			{
-				vector<DynamicTable> MulNSTableElements;
-				vector<DynamicTable> MulAllTableElemets;
-				vector<DynamicTable> MulDispTableElemets;
-				vector<int> MulShortJobs;
-				vector<int> MulLongJobs;
-				vector<int> MulLongRoundJobs;
-				vector<int> MulNtemp;
-				vector<int> MulroundVec;
-				vector<int> MultempOptVector;
+				vector<DynamicTable> NSTableElements;
+				vector<DynamicTable> AllTableElemets;
+				vector<DynamicTable> DispTableElemets;
+				vector<int> ShortJobs;
+				vector<int> LongJobs;
+				vector<int> LongRoundJobs;
+				vector<int> Ntemp;
+				vector<int> roundVec;
+				vector<int> tempOptVector;
 				#pragma omp for	schedule(static,1)	
 				for (int i = 0; i < seg; i++)
 				{
-					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i], MulNSTableElements, MulAllTableElemets, MulDispTableElemets, MulShortJobs, MulLongJobs,
-									MulLongRoundJobs, MulNtemp, MulroundVec, MultempOptVector, MulAllProbData[i]);
+					sBkID[i] = MlBk(sLB[i], sUB[i], sOPT[i], NSTableElements, AllTableElemets, DispTableElemets, ShortJobs, LongJobs,
+									LongRoundJobs, vector<int> Ntemp, roundVec, tempOptVector);
 				}
 			}			
 					
@@ -447,9 +463,8 @@ int mainScheduling()
 				OPT = sOPT[0];
 				T = (LB + UB)/2;
 				
-				if (OPT <= nMachines){
+				if (OPT <= nMachines)
 					AllProbData.push_back(MulAllProbData[0][0]);
-				}
 			}
 			else if(dirc[seg-1] == 1){
 				//LB = sLB[seg-1];
@@ -458,9 +473,8 @@ int mainScheduling()
 				OPT = sOPT[seg-1];
 				T = (LB + UB)/2;
 				
-				if (OPT <= nMachines){
+				if (OPT <= nMachines)
 					AllProbData.push_back(MulAllProbData[seg-1][0]);
-				}
 			}
 			else{
 				for (int i = 1; i < seg; i++){
@@ -472,9 +486,9 @@ int mainScheduling()
 						OPT = sOPT[i];
 						T = (LB + UB)/2;
 						
-						if (OPT <= nMachines){
-							AllProbData.push_back(MulAllProbData[i][0]);
-						}
+						if (OPT <= nMachines)
+							AllProbData.push_back(MulAllProbData[i-1][0]);
+						
 						break;
 					}
 				}
@@ -492,9 +506,38 @@ int mainScheduling()
 		cout << "Execution time between LB and UB is: " << iterT << endl;
 		cout << "By far, all LB UB calculation runtime: " << wallClockT << endl;
 		iwhile++;
-		
-		MlclearFun(seg, MulAllProbData);
 	}
+	
+/*	
+	while(LB<UB){
+		
+		tempt = clock();
+		
+		
+		clearFun();
+		
+		BkID= Bk(LB,UB);
+        if (BkID==-1) {
+			cout << "BkID==-1" <<endl;
+            break;
+        }
+        
+        //cout << "Check the line 255" << endl;
+		//print(iwhile);
+		if(OPT<=nMachines)
+			UB=T;
+		if(OPT>nMachines)
+			LB=T+1;
+		
+		lt = clock() - tempt;
+		LUBt += lt;
+		
+		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
+		cout << "Execution time between LB and UB is: " << (float)lt/CLOCKS_PER_SEC << endl; 
+		cout << "By far, all LB UB calculation runtime: " << (float)LUBt/CLOCKS_PER_SEC << endl;
+		iwhile++;
+	}
+*/
 
 	gettimeofday(&lt, NULL);
     
@@ -652,9 +695,9 @@ int mainScheduling()
 	delete[] sBkID;
 	delete[] dirc;
 
-//	NSTableElements.clear();
-//	AllTableElemets.clear();
-//	tempOptVector.clear();
+	NSTableElements.clear();
+	AllTableElemets.clear();
+	tempOptVector.clear();
 	RoundedOptimalSchedule.clear();
 	OptimalSchedule.clear();
 	roundVec.clear();
@@ -666,6 +709,19 @@ int mainScheduling()
 	machineTimes.clear();
     shortF.clear();
     longF.clear();
+    
+    for (int x = 0; x < seg; x++)
+	{
+		MulAllProbData[x].clear();
+		MulNSTableElements[x].clear();
+		MulAllTableElemets[x].clear();
+		MulDispTableElemets[x].clear();
+		MulShortJobs[x].clear();
+		MulLongJobs[x].clear();
+		MulLongRoundJobs[x].clear();
+		MulNtemp[x].clear();
+		MulroundVec[x].clear();
+	}  
     
     cout <<"Main Scheduling is Done"<<endl;
 	return 0;
@@ -752,9 +808,8 @@ int Bk(int LB, int UB)
 	
 }
 
-int MlBk(int LB, int UB, int &sOPT, vector<DynamicTable>& MulNSTableElements, vector<DynamicTable>& MulAllTableElemets, vector<DynamicTable>& MulDispTableElemets,
-		vector<int>& MulShortJobs, vector<int>& MulLongJobs, vector<int>& MulLongRoundJobs, vector<int>& MulNtemp, vector<int>& MulroundVec, 
-		vector<int>& MultempOptVector, vector<FinalTableINFO>& MulAllProbData)
+int MlBk(int LB, int UB, int &sOPT, vector<DynmaicTable>& NSTableElements, vector<DynmaicTable>& AllTableElemets, vector<DynmaicTable>& DispTableElemets,
+		vector<int>& shortJobs, vector<int>& LongJobs, vector<int>& LongRoundJobs, vector<int>& Ntemp, vector<int>& roundVec, vector<int>& tempOptVector)
 {
 	//calculating T and k
 	double TT;
@@ -777,12 +832,12 @@ int MlBk(int LB, int UB, int &sOPT, vector<DynamicTable>& MulNSTableElements, ve
 	{
 		if(ProcTimeJob[i]<=creteria)
 		{
-			MulShortJobs.push_back(ProcTimeJob[i]);
+			MulShortJobs[thread].push_back(ProcTimeJob[i]);
 			
 		}
 		else
 		{
-			MulLongJobs.push_back(ProcTimeJob[i]);
+			MulLongJobs[thread].push_back(ProcTimeJob[i]);
 		}
 	}
 
@@ -793,38 +848,37 @@ int MlBk(int LB, int UB, int &sOPT, vector<DynamicTable>& MulNSTableElements, ve
 	//Generating T/K^2 vector : will be used to generating n vector
 	for(int i=0; i<Pow(k,2); i++)
 	{
-		MulroundVec.push_back((i+1)*roundCriteria);
+		MulroundVec[thread].push_back((i+1)*roundCriteria);
 	}
     
    
-	for(int iterator=0; iterator<MulLongJobs.size();iterator++){
-		MulLongRoundJobs.push_back(rounDownFun(MulroundVec, MulLongJobs, iterator));}
+	for(int iterator=0; iterator<MulLongJobs[thread].size();iterator++){
+		MulLongRoundJobs[thread].push_back(rounDownFun(MulroundVec[thread],MulLongJobs[thread],iterator));}
 
 	// Generating vector N ( by comparing the rounded down Long Jobs processing times with r vector and counting them
-	for(int i=0; i<MulroundVec.size(); i++)
+	for(int i=0; i<MulroundVec[thread].size(); i++)
 	{
 		int count=0;
-		for(int j=0; j<MulLongRoundJobs.size();j++)
+		for(int j=0; j<MulLongRoundJobs[thread].size();j++)
 		{
-			if(MulroundVec[i]==MulLongRoundJobs[j])
+			if(MulroundVec[thread][i]==MulLongRoundJobs[thread][j])
 				count++;
 		}
-		MulNtemp.push_back(count);
+		MulNtemp[thread].push_back(count);
 	}
 
 	//Starting Dynamic Programing Algorithm
-	MulAllTableElemets.clear();
-	MulDispTableElemets.clear();
-	MulNSTableElements.clear();
-	MultempOptVector.clear();
+	MulAllTableElemets[thread].clear();
+	MulDispTableElemets[thread].clear();
+	MulNSTableElements[thread].clear();
+	MultempOptVector[thread].clear();
 
     
-    if (MulLongJobs.size()>0) {
+    if (MulLongJobs[thread].size()>0) {
 #ifdef _HOST_DEBUG		
-        cout << " thread: " << thread << ", LongJobs.size() " <<MulLongJobs.size()<<endl;
+        cout << " thread: " << thread << ", LongJobs.size() " <<MulLongJobs[thread].size()<<endl;
 #endif
-        sOPT = MlDPFunction2(MulNtemp, roundCriteria, MlT, MulAllTableElemets, MulDispTableElemets, MulNSTableElements, 
-							 MulShortJobs, MulLongJobs, MulLongRoundJobs, MulNtemp, MulroundVec, MultempOptVector, MulAllProbData);
+        sOPT = MlDPFunction2(MulNtemp[thread], roundCriteria, MlT);
 #ifdef _HOST_DEBUG
 		cout << "thread: " << thread << ", sOPT: " << sOPT << endl;
 #endif
@@ -832,7 +886,7 @@ int MlBk(int LB, int UB, int &sOPT, vector<DynamicTable>& MulNSTableElements, ve
     }
     else{
 #ifdef _HOST_DEBUG		
-		cout << " LongJobs.size() " << MulLongJobs.size()<<endl;
+		cout << " LongJobs.size() " << MulLongJobs[thread].size()<<endl;
 #endif
         return -1;
 	}
@@ -1005,9 +1059,7 @@ bool descSort(const dim &a, const dim &b)
 }
 
 
-int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<DynamicTable>& MulNSTableElements, vector<DynamicTable>& MulAllTableElemets, 
-					vector<DynamicTable>& MulDispTableElemets, vector<int>& MulShortJobs, vector<int>& MulLongJobs, vector<int>& MulLongRoundJobs, 
-					vector<int>& MulNtemp, vector<int>& MulroundVec,  vector<int>& MultempOptVector, vector<FinalTableINFO>& MulAllProbData)
+int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT)
 {
 	const int thread = omp_get_thread_num();
     //AllProbData.clear();
@@ -1015,24 +1067,24 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	vector<vector<int> > NMinusStemp;
 	vector<vector<int> > Cwhole;
 		
-	Mlgenerate(Ntemp,Ctemp,NMinusStemp,Cwhole, MlT, MulroundVec);
+	Mlgenerate(Ntemp,Ctemp,NMinusStemp,Cwhole, MlT);
 	
 	for(int i=0;i<Cwhole.size();i++)
 	{
 		DynamicTable tempInst1, tempEmpty;
 		tempInst1.elm=Cwhole[i];
-		MulAllTableElemets.push_back(tempInst1);
-		MulDispTableElemets.push_back(tempEmpty);
+		MulAllTableElemets[thread].push_back(tempInst1);
+		MulDispTableElemets[thread].push_back(tempEmpty);
 	}
 	
 	for(int i=NMinusStemp.size()-1;i>-1;i--)
 	{
 		DynamicTable tempInst;
 		tempInst.elm=NMinusStemp[i];
-		MulNSTableElements.push_back(tempInst);
+		MulNSTableElements[thread].push_back(tempInst);
 	}
 #ifdef _HOST_DEBUG
-	cout << "thread: " << thread << ", NSTable size: " << MulNSTableElements.size() << endl;
+	cout << "thread: " << thread << ", NSTable size: " << MulNSTableElements[thread].size() << endl;
 #endif
 
     int powK = pow(k,2);
@@ -1065,16 +1117,16 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	int levelsPerBlock = 0;
 	int blocksPerConfig = 1;
     int maxJob = 0;
-    int maxIndex = MulAllTableElemets.size() - 1;
+    int maxIndex = MulAllTableElemets[thread].size() - 1;
 
-	for (int i=0; i<MulAllTableElemets[maxIndex].elm.size();i++)
+	for (int i=0; i<MulAllTableElemets[thread][maxIndex].elm.size();i++)
 	{
 #ifdef _HOST_DEBUG
-		cout << "thread: " << thread << ", i: " << i << ", alltableelemets[maxindex].elm[i]: " << MulAllTableElemets[maxIndex].elm[i] << endl;
+		cout << "thread: " << thread << ", i: " << i << ", alltableelemets[thread][maxindex].elm[i]: " << MulAllTableElemets[thread][maxIndex].elm[i] << endl;
 #endif
-		if (MulAllTableElemets[maxIndex].elm[i] != 0)
+		if (MulAllTableElemets[thread][maxIndex].elm[i] != 0)
 		{
-			maxConfig.push_back(MulAllTableElemets[maxIndex].elm[i]);
+			maxConfig.push_back(MulAllTableElemets[thread][maxIndex].elm[i]);
 		}
 	}
 
@@ -1093,7 +1145,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 		blockDimSize.push_back(maxConfig[i] + 1);
 		blockVecNoZero.elm.push_back(0);
 #ifdef _HOST_DEBUG
-		cout << "thread: " << thread << ", i: "<< i << ", maxN[i].weit: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+		//cout << "thread: " << thread << ", i: "<< i << ", maxN[i].weit: " << maxN[i].weit << ", maxN[i].idx: " << maxN[i].index << ", blockDimSize[i]: " << blockDimSize[i] << endl;
 #endif
 	}
 	
@@ -1128,20 +1180,15 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 				continue;
 			}
 			//cout << "thread: " << thread << ", i: " << i << ", maxN[i].index: " << maxN[i].index << ", div: " << div << endl;
-			if (div == 1){
-				divisor[maxN[i].index] = maxN[i].weit;
-			}
-			else{
-				divisor[maxN[i].index] = div;
-			}
-			blockDimSize[maxN[i].index] /= divisor[maxN[i].index];
+			divisor[maxN[i].index] = div;
+			blockDimSize[maxN[i].index] /= div;
 			break;
 		}
 	}
 
 #ifdef _HOST_DEBUG
-	for (int i = 0; i < dimSize.size(); i++)
-		cout << "thread: " << thread << ", i: " << i << ", divisor[i]: " << divisor[i] << ", blockDimSize[i]: " << blockDimSize[i] << endl;
+	//for (int i = 0; i < dimSize.size(); i++)
+	//	cout << "thread: " << thread << ", i: " << i << ", divisor[i]: " << divisor[i] << ", blockDimSize[i]: " << blockDimSize[i] << endl;
 #endif
 
 	//once get the blockDimSize and divisor, we are able to get jobsPerBlock and blocksPerConfig
@@ -1156,7 +1203,6 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	{
 		blocksPerConfig *= divisor[i];
 	}
-
 
 //	cout << "thread: " << thread << ", jobsPerBlock: " << jobsPerBlock << ", blocksPerConfig: " << blocksPerConfig << endl; 
 	
@@ -1173,11 +1219,11 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	int j = 0;
 
 #ifdef _HOST_DEBUG
-	cout << "thread: " << thread << ", largestBlockVec.elm: ";
+	//cout << "thread: " << thread << ", largestBlockVec.elm: ";
 #endif
 	for (int i=0; i<powK;i++)
 	{
-		if (MulAllTableElemets[maxIndex].elm[i] != 0)
+		if (MulAllTableElemets[thread][maxIndex].elm[i] != 0)
 		{
 			divisorComp.push_back(divisor[j]);
 			blockDimSizeComp.push_back(blockDimSize[j]);
@@ -1191,7 +1237,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 			largestBlockVec.elm.push_back(0);
 		}
 #ifdef _HOST_DEBUG
-		cout << largestBlockVec.elm[i] << " ";
+		//cout << largestBlockVec.elm[i] << " ";
 #endif
 	}
 #ifdef _HOST_DEBUG
@@ -1289,25 +1335,25 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	//???????????????????????
 
 	//calculate the new position of each configuration and store in MulDispTableElemets
-	//MulDispTableElemets.resize( MulAllTableElemets.size() );
+	//MulDispTableElemets[thread].resize( MulAllTableElemets[thread].size() );
 	int blockOffset, inBlockOffset, pos;
 	vector<int> blockID;
 	vector<int> inBlockPos;
 	
 	
-	for (int i = 0; i < MulAllTableElemets.size(); i++)
+	for (int i = 0; i < MulAllTableElemets[thread].size(); i++)
 	{
-		//cout << "thread: " << thread << ", i: " << i << ", MulAllTableElemets[i]: ";
+		//cout << "thread: " << thread << ", i: " << i << ", MulAllTableElemets[thread][i]: ";
 		blockID.clear();
 		inBlockPos.clear();
 		for (int j=0; j<powK; j++)
 		{
 			if (blockDimSizeComp[j] != 0)
 			{
-				blockID.push_back( MulAllTableElemets[i].elm[j] / blockDimSizeComp[j] );
-				inBlockPos.push_back( MulAllTableElemets[i].elm[j] % blockDimSizeComp[j] );
+				blockID.push_back( MulAllTableElemets[thread][i].elm[j] / blockDimSizeComp[j] );
+				inBlockPos.push_back( MulAllTableElemets[thread][i].elm[j] % blockDimSizeComp[j] );
 			}
-			//cout << MulAllTableElemets[i].elm[j] << " ";
+			//cout << MulAllTableElemets[thread][i].elm[j] << " ";
 		}
 		//cout << endl;
 		//Calculating the offset, which is to find new position according to offset and block ID
@@ -1322,16 +1368,16 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 		//}
 		//cout << endl << "blockOffset: " << blockOffset << ", inBlockOffset: " << inBlockOffset << ", pos: " << pos << endl;
 		
-		MulDispTableElemets[pos] = MulAllTableElemets[i];
-		//std::copy(&MulAllTableElemets[i], &MulAllTableElemets[i+1], &MulDispTableElemets[pos]);
+		MulDispTableElemets[thread][pos] = MulAllTableElemets[thread][i];
+		//std::copy(&MulAllTableElemets[thread][i], &MulAllTableElemets[thread][i+1], &MulDispTableElemets[thread][pos]);
 	}
 /*	
-	for (int i=0; i<MulDispTableElemets.size(); i++)
+	for (int i=0; i<MulDispTableElemets[thread].size(); i++)
 	{
-		cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[i]: ";
+		cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[thread][i]: ";
 		for (int j=0; j<powK; j++)
 		{
-			cout << MulDispTableElemets[i].elm[j] << " ";
+			cout << MulDispTableElemets[thread][i].elm[j] << " ";
 		}
 		cout << endl;
 	}
@@ -1339,22 +1385,22 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 
 //Third: Sort each block and count how many configurations per level within each box
 	//Parallelism inside of each block is the same as AllTableElemets for configurations that are at same level get run in parallel. Thus, configurations in each block can be sorted within block.
-	for (int i=0; i<MulDispTableElemets.size(); i++) 	//Calculate the # of configurations in each level for a splitted block
+	for (int i=0; i<MulDispTableElemets[thread].size(); i++) 	//Calculate the # of configurations in each level for a splitted block
 	{
 		int sumOver=0;
-		for (int j=0; j<MulDispTableElemets[i].elm.size(); j++)   //AllTableElemets[i].elm.size() = Cwhole[i].szie() = Ntemp.size()
+		for (int j=0; j<MulDispTableElemets[thread][i].elm.size(); j++)   //AllTableElemets[i].elm.size() = Cwhole[i].szie() = Ntemp.size()
 		{
-			sumOver  = sumOver+ MulDispTableElemets[i].elm[j];
+			sumOver  = sumOver+ MulDispTableElemets[thread][i].elm[j];
 		}
 		//inBlockLevelSum.push_back(sumOver);
-		MulDispTableElemets[i].mySum=sumOver;
-		//cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[i].mySum: " << MulDispTableElemets[i].mySum << endl;
+		MulDispTableElemets[thread][i].mySum=sumOver;
+		//cout << "thread: " << thread << ", i: " << i << ", MulDispTableElemets[thread][i].mySum: " << MulDispTableElemets[thread][i].mySum << endl;
 	}
 
 	//sort(inBlockLevelSum.begin(), inBlockLevelSum.end());			//align jobs in order for dependency.
 
-	//this might not work, if not, try use MulAllTableElemets.data().
-	for (vector<DynamicTable>::iterator it = MulDispTableElemets.begin(); it != MulDispTableElemets.end(); it+=jobsPerBlock)
+	//this might not work, if not, try use MulAllTableElemets[thread].data().
+	for (vector<DynamicTable>::iterator it = MulDispTableElemets[thread].begin(); it != MulDispTableElemets[thread].end(); it+=jobsPerBlock)
 	{
 		sort(it, it+jobsPerBlock);
 	}
@@ -1369,7 +1415,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 			cout << "vector " << i << ": ";
 			int offset1 = offset + i;
 			for (int j = 0; j<powK; j++)
-				cout << MulDispTableElemets[offset1].elm[j] << " ";
+				cout << MulDispTableElemets[thread][offset1].elm[j] << " ";
 			cout << endl;
 		}
 	}
@@ -1380,7 +1426,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	{
 		int c = 1;
 		int limit = jobsPerBlock - 1;
-		while(i < limit  && MulDispTableElemets[i].mySum == MulDispTableElemets[i+1].mySum)
+		while(i < limit  && MulDispTableElemets[thread][i].mySum == MulDispTableElemets[thread][i+1].mySum)
 		{
 			i++;
 			c++;
@@ -1390,26 +1436,26 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	}
 
 	//maxSumValue = number of total jobs + 1
-	gpu_BlockDP(MulDispTableElemets, MlT, powK, jobsPerBlock, levelsPerBlock, inBlockCounterVec,
-	    		MulLongJobs.size(), &zeroVec[0], &MulroundVec[0], divisor, divisorComp,
+	gpu_BlockDP(MulDispTableElemets[thread], MlT, powK, jobsPerBlock, levelsPerBlock, inBlockCounterVec,
+	    		MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0], divisor, divisorComp,
 	    		blockDimSizeComp, allBlocks, allBlocksNoZero, blockCounterVec);
 
 #ifdef _HOST_DEBUG
 	cout << "Thread: " << thread << ", gpu_BlockDP is done." << endl;
 #endif
 
-	for(int i=0; i<MulNSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
+	for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
 	{
-		for(int j=0;j<MulDispTableElemets.size();j++)
+		for(int j=0;j<MulDispTableElemets[thread].size();j++)
 		{
-			if(MulNSTableElements[i].elm==MulDispTableElemets[j].elm)
+			if(MulNSTableElements[thread][i].elm==MulDispTableElemets[thread][j].elm)
 			{
 //				cout << "thread: " << thread << ", i: " << i << ", NSTable[i]: ";
-				MulNSTableElements[i]=MulDispTableElemets[j];
+				MulNSTableElements[thread][i]=MulDispTableElemets[thread][j];
 
 //				for (int tt = 0; tt < powK; tt++)
-//					cout << MulNSTableElements[i].elm[tt] << " ";
-//				cout << ", NSTable.myOPT: " << MulNSTableElements[i].myOPT << ", DispTable.myOPT: " << MulDispTableElemets[j].myOPT;
+//					cout << MulNSTableElements[thread][i].elm[tt] << " ";
+//				cout << ", NSTable.myOPT: " << MulNSTableElements[thread][i].myOPT << ", DispTable.myOPT: " << MulDispTableElemets[thread][j].myOPT;
 //				cout << endl;
 				break;
 			}
@@ -1421,19 +1467,19 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	cout << "Thread: " << thread << ", find the NS table for a selected configuration." << endl;
 #endif
 
-	for(int i=0; i<MulNSTableElements.size();i++)
+	for(int i=0; i<MulNSTableElements[thread].size();i++)
 	{
-		MultempOptVector.push_back(MulNSTableElements[i].myOPT);
+		MultempOptVector[thread].push_back(MulNSTableElements[thread][i].myOPT);
 	}
 
 	int dpoptimal;
 	int minN=100000;
 
-//	cout << "NSTableElemets size: " << MulNSTableElements.size() << endl;
-	for(int mindex=0; mindex<MulNSTableElements.size();mindex++)
+//	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
+	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
 	{
-		if(MulNSTableElements[mindex].myOPT<minN)
-			minN=MulNSTableElements[mindex].myOPT;
+		if(MulNSTableElements[thread][mindex].myOPT<minN)
+			minN=MulNSTableElements[thread][mindex].myOPT;
 	}
 
 	dpoptimal=minN +1;
@@ -1444,25 +1490,25 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 
 	clock_t ttt = clock();
 
+	MulAllProbData[thread].clear();
+
 	if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
 	{
 
 		FinalTableINFO instance;
-		instance.AllTableElemets=MulDispTableElemets;
-		instance.NSTableElements=MulNSTableElements;
-		instance.Nvector=MulNtemp;
+		instance.AllTableElemets=MulDispTableElemets[thread];
+		instance.NSTableElements=MulNSTableElements[thread];
+		instance.Nvector=MulNtemp[thread];
 		instance.OPTtable=dpoptimal;
 		instance.Ttable= MlT;
-		instance.optimalValuesVector=MultempOptVector;
-		instance.ShortJobsTable=MulShortJobs;
-		instance.LongJobsTable=MulLongJobs;
-		instance.roundVecTable=MulroundVec;
-		instance.LongRoundJobsTable=MulLongRoundJobs;
+		instance.optimalValuesVector=MultempOptVector[thread];
+		instance.ShortJobsTable=MulShortJobs[thread];
+		instance.LongJobsTable=MulLongJobs[thread];
+		instance.roundVecTable=MulroundVec[thread];
+		instance.LongRoundJobsTable=MulLongRoundJobs[thread];
 		instance.roundCriteriaTable=roundCriteria;
-#pragma omp critical
-{
-		MulAllProbData.push_back(instance);
-}
+
+		MulAllProbData[thread].push_back(instance);
 	}
 
 	ttt = clock() - ttt;
@@ -1474,15 +1520,15 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 #else
 
     vector<int> sumVec;
-	for (int i=0; i<MulAllTableElemets.size(); i++) 	//calculate the total run time of each job, jobs have same run time are in the same level (can do parallel).  AllTableElemets.size() = CWhole.size()
+	for (int i=0; i<MulAllTableElemets[thread].size(); i++) 	//calculate the total run time of each job, jobs have same run time are in the same level (can do parallel).  AllTableElemets.size() = CWhole.size()
 	{
 		int sumOver=0;
-		for (int j=0; j<MulAllTableElemets[i].elm.size(); j++)   //AllTableElemets[i].elm.size() = Cwhole[i].szie() = Ntemp.size()
+		for (int j=0; j<MulAllTableElemets[thread][i].elm.size(); j++)   //AllTableElemets[i].elm.size() = Cwhole[i].szie() = Ntemp.size()
 		{
-			sumOver  = sumOver+ MulAllTableElemets[i].elm[j];
+			sumOver  = sumOver+ MulAllTableElemets[thread][i].elm[j];
 		}
 		sumVec.push_back(sumOver);
-        MulAllTableElemets[i].mySum=sumOver;
+        MulAllTableElemets[thread][i].mySum=sumOver;
 	}
     
     sort(sumVec.begin(), sumVec.end());			//align jobs in order for dependency.
@@ -1503,7 +1549,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
         counterVec.push_back(c);
     }
     
-    sort(MulAllTableElemets.begin(), MulAllTableElemets.end());
+    sort(MulAllTableElemets[thread].begin(), MulAllTableElemets[thread].end());
 
 	int maxSumIndex;
 	maxSumIndex = max_element(sumVec.begin(), sumVec.end()) - sumVec.begin();			
@@ -1519,35 +1565,35 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
     	exit(-1);
     }
 
-    gpu_DP(MulAllTableElemets, MlT, k, powK, maxSumValue, counterVec,
-    		MulLongJobs.size(), &zeroVec[0], &MulroundVec[0]);
+    gpu_DP(MulAllTableElemets[thread], MlT, k, powK, maxSumValue, counterVec,
+    		MulLongJobs[thread].size(), &zeroVec[0], &MulroundVec[thread][0]);
 
-    for(int i=0; i<MulNSTableElements.size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
+    for(int i=0; i<MulNSTableElements[thread].size();i++)			//NSTableElements is N - S. For example. (2,3), si = (0,1), then NS[i] = (2,2)
     	{
-    		for(int j=0;j<MulAllTableElemets.size();j++)
+    		for(int j=0;j<MulAllTableElemets[thread].size();j++)
     		{
-    			if(MulNSTableElements[i].elm==MulAllTableElemets[j].elm)
+    			if(MulNSTableElements[thread][i].elm==MulAllTableElemets[thread][j].elm)
     			{
-    				MulNSTableElements[i]=MulAllTableElemets[j];
+    				MulNSTableElements[thread][i]=MulAllTableElemets[thread][j];
     				break;
     			}
     		}
 
     	}
 
-    	for(int i=0; i<MulNSTableElements.size();i++)
+    	for(int i=0; i<MulNSTableElements[thread].size();i++)
     	{
-    		MultempOptVector.push_back(MulNSTableElements[i].myOPT);
+    		MultempOptVector[thread].push_back(MulNSTableElements[thread][i].myOPT);
     	}
 
     	int dpoptimal;
     	int minN=100000;
 
-    //	cout << "NSTableElemets size: " << MulNSTableElements.size() << endl;
-    	for(int mindex=0; mindex<MulNSTableElements.size();mindex++)
+    //	cout << "NSTableElemets size: " << MulNSTableElements[thread].size() << endl;
+    	for(int mindex=0; mindex<MulNSTableElements[thread].size();mindex++)
     	{
-    		if(MulNSTableElements[mindex].myOPT<minN)
-    			minN=MulNSTableElements[mindex].myOPT;
+    		if(MulNSTableElements[thread][mindex].myOPT<minN)
+    			minN=MulNSTableElements[thread][mindex].myOPT;
     	}
 
     	dpoptimal=minN +1;
@@ -1555,26 +1601,26 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
         cout << "dpoptimal: " <<dpoptimal << endl;
         
         clock_t ttt = clock();
+        
+    	MulAllProbData[thread].clear();
 
         if (dpoptimal<=nMachines)		//keep a copy of the latest feasible solution.
         {
 
             FinalTableINFO instance;
-            instance.AllTableElemets=MulAllTableElemets;
-            instance.NSTableElements=MulNSTableElements;
-            instance.Nvector=MulNtemp;
+            instance.AllTableElemets=MulAllTableElemets[thread];
+            instance.NSTableElements=MulNSTableElements[thread];
+            instance.Nvector=MulNtemp[thread];
             instance.OPTtable=dpoptimal;
             instance.Ttable= MlT;
-            instance.optimalValuesVector=MultempOptVector;
-            instance.ShortJobsTable=MulShortJobs;
-            instance.LongJobsTable=MulLongJobs;
-            instance.roundVecTable=MulroundVec;
-            instance.LongRoundJobsTable=MulLongRoundJobs;
+            instance.optimalValuesVector=MultempOptVector[thread];
+            instance.ShortJobsTable=MulShortJobs[thread];
+            instance.LongJobsTable=MulLongJobs[thread];
+            instance.roundVecTable=MulroundVec[thread];
+            instance.LongRoundJobsTable=MulLongRoundJobs[thread];
             instance.roundCriteriaTable=roundCriteria;
-#pragma omp critical
-{
-            MulAllProbData.push_back(instance);
-}
+
+            MulAllProbData[thread].push_back(instance);
         }
 
     	ttt = clock() - ttt;
@@ -1630,8 +1676,7 @@ void generate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int
 	}while (increase(Ntemp, it));
 }
 
-void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int MlT,
-				vector<int>& MulroundVec)
+void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<int> >& NMinusStemp,vector<vector<int> >& Cwhole, const int MlT)
 {		
 	const int thread = omp_get_thread_num();
 	
@@ -1644,7 +1689,7 @@ void Mlgenerate(vector<int>& Ntemp, vector<vector<int> >& Ctemp, vector<vector<i
 		}
 		Cwhole.push_back(s);             //"s" is the same to it, "s" points out the new long event assigned in current iteration;
 										 //"Cwhole" has all machine configurations. "s" is one configuration		
-		int sSum=sumFun(s, MulroundVec);     //roundVec is the vector of the run time of all round events, sumFun(s, roundVec) is to get the current sum of all assigned long events.
+		int sSum=sumFun(s, MulroundVec[thread]);     //roundVec is the vector of the run time of all round events, sumFun(s, roundVec) is to get the current sum of all assigned long events.
 		
 		if(sSum <= MlT)
 		{
@@ -2076,11 +2121,18 @@ void clearFun()
 
 }
 
-void MlclearFun(const int seg,  vector <vector<FinalTableINFO> >& MulAllProbData)
+void MlclearFun(const int seg)
 {
 	for (int x = 0; x < seg; x++)
 		{
 			MulAllProbData[x].clear();
+			MulNSTableElements[x].clear();
+			MulAllTableElemets[x].clear();
+			MulShortJobs[x].clear();
+			MulLongJobs[x].clear();
+			MulLongRoundJobs[x].clear();
+			MulNtemp[x].clear();
+			MulroundVec[x].clear();
 		}
 }
 

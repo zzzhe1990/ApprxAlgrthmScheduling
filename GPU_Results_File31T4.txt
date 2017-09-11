@@ -1,0 +1,10 @@
+Reading File...
+File 31-1 is read.
+Number of Jobs : 41
+Number of Machines : 20
+******************************************************************
+
+BKID: 0, LB: 61, UB: 65, OPT: 20
+Dynamic Programming Runtime: 237.171
+Execution time between LB and UB is: 108
+By far, all LB UB calculation runtime: 108

@@ -21,7 +21,7 @@
 
 
 #define SPLIT
-//#define _HOST_DEBUG
+#define _HOST_DEBUG
 //#define _DEVICE_DEBUG
 
 using namespace std;

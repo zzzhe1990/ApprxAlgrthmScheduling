@@ -1,0 +1,30 @@
+==21713== NVPROF is profiling process 21713, command: ./run 0.3 4 3
+==21713== Profiling application: ./run 0.3 4 3
+==21713== Profiling result:
+Time(%)      Time  Calls (host)  Calls (device)       Avg       Min       Max  Name
+ 86.78%  969.906s             0            6024  161.01ms  11.456us  4.02666s  FindOPT(int*, int*, int, int*, int, int, int*, int*, int*, int*, int*, int*, int*, int*, int*, int, int, int, int*, int*, int*, int, int, int, int, int, int)
+ 12.50%  139.711s             0            6024  23.192ms  107.01us  411.42ms  gpu_generate2(int, int*, int, int*, int*, int*, int, int*, int*, int*, int*, int*, int, int)
+  0.57%  6.38458s          1272               -  5.0193ms  4.3200us  63.566ms  [CUDA memcpy DtoH]
+  0.11%  1.23806s        626604               -  1.9750us  1.4080us  52.576us  [CUDA memcpy HtoD]
+  0.04%  433.19ms           502               0  862.92us  490.50us  1.2800ms  LaunchBlocks(int, int*, int*, int*, int, int, int, int*, int*, int*, int*, int*, int*, int*, int*, int*, int, int, int, int, int*, int, int, int*, int*, int*, int*, int*, int, int, int)
+  0.00%  419.43us           212               -  1.9780us  1.3760us  4.0640us  [CUDA memset]
+
+==21713== API calls:
+Time(%)      Time     Calls       Avg       Min       Max  Name
+ 67.15%    1e+03s      7696  137.74ms     990ns  26.1930s  cudaStreamSynchronize
+ 21.95%  346.430s      3604  96.124ms  3.3980us  20.4152s  cudaFree
+  5.27%  83.1399s      2544  32.681ms  3.3840us  6.45643s  cudaMemcpyAsync
+  3.38%  53.4253s       502  106.43ms  11.661us  6.25153s  cudaLaunch
+  2.02%  31.8301s    625332  50.901us  8.6950us  2.27405s  cudaMemcpy
+  0.11%  1.72062s      3832  449.01us     649ns  836.14ms  cudaStreamCreate
+  0.10%  1.54154s      3832  402.28us  1.5310us  1.08217s  cudaStreamDestroy
+  0.03%  408.70ms      3816  107.10us  3.5190us  4.8892ms  cudaMalloc
+  0.00%  8.0879ms       212  38.150us  12.870us  252.92us  cudaMemsetAsync
+  0.00%  3.0532ms     15562     196ns     128ns  239.98us  cudaSetupArgument
+  0.00%  1.1204ms       166  6.7490us     204ns  278.14us  cuDeviceGetAttribute
+  0.00%  1.0571ms       212  4.9860us  1.8550us  14.078us  cudaSetDevice
+  0.00%  388.77us       502     774ns     259ns  8.4310us  cudaConfigureCall
+  0.00%  143.17us         2  71.585us  59.090us  84.081us  cuDeviceTotalMem
+  0.00%  108.51us         2  54.255us  45.805us  62.705us  cuDeviceGetName
+  0.00%  1.6190us         2     809ns     565ns  1.0540us  cuDeviceGetCount
+  0.00%  1.3330us         4     333ns     229ns     461ns  cuDeviceGet
