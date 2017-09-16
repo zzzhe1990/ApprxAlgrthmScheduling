@@ -368,10 +368,35 @@ Problem resolved:
 ****************************************************
 Sep 10
 ****************************************************
-Optimization:
+Problem resolved:
 1. In "MlDPFunction2()", the previous calculation for "divisor" could get a result of all 1 because it's possible that the configuration size of all dimensions could be prime numbers. 
    In this case, there is no split and all jobs are executed in one big block. Thus, update the max N dimensions' divisor to the same size as its dimension weight to ensure the multile blocks.
    
 To do:
 1. Change the way of 4-way splitting. Previously, 4 splits are evenly placed between UB and LB; however, this is not efficient because most data resides in some specific area (dense). 
    Also, there are more long jobs if the cut is more close to LB. Because with a smaller T (T = (UB+LB)/2 ), there are more jobs greater than T considered as long jobs.
+2. Change the "do....while()" loop in "gpu_generate2" kernel function into for loops, and unroll the for loop with a kernel function.
+
+****************************************************
+Sep 11
+****************************************************
+Problem detected:
+1. Csubsets is not necessary if host function "finalScheduleFun2" is not called.
+2. NS array might be replaced by kernel local array.
+3. With the improvement to global function "gpu_generate2", the results for File1-4 and 1-15 are not correct.
+
+Performance VS:
+1. For File2-16, GPU is much faster, and this file is computation intense.
+2. For File3-16, 3-17, 3-18, GPU is much faster.
+
+******************************************************
+Sep 15
+******************************************************
+Problem resolved:
+1. In function "FindOPT", instead of returning back to lock (FindOPT kernel thread) after lauching the "loopNS" kernel function, merging the sort operation into "loopNS" also to ensure 
+   the coherence of memory update.
+  
+TO DO:
+1. Some global arrays, like dev_optVector, dev_optVector_size, dev_Csubsets can be removed or replaced by shared memory. Even dev_NSsubsets can be removed, 
+   if function "FindOPT" is merged to "gpu_generate2".
+2. The use of multiple streams for each block may not be necessary.

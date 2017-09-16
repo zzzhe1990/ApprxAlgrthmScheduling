@@ -269,6 +269,7 @@ int mainScheduling()
 		{
 			memset(sOPT, 0, seg);			
 			
+			//int segSize = ( (UB - LB)/2 + 1)/seg;
 			int segSize = (UB - LB + 1)/seg;
 			
 			for (int i = 0; i < seg; i++)

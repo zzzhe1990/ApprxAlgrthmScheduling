@@ -1,0 +1,28 @@
+==14626== NVPROF is profiling process 14626, command: ./run 0.3 4 1
+==14626== Profiling application: ./run 0.3 4 1
+==14626== Profiling result:
+Time(%)      Time     Calls       Avg       Min       Max  Name
+ 92.20%  107.14ms        70  1.5305ms  654.69us  2.3565ms  LaunchBlocks(int, int*, int*, int*, int, int, int, int*, int*, int*, int*, int*, int*, int*, int*, int*, int, int, int, int, int*, int, int, int*, int*, int*, int*, int*, int, int, int, int*)
+  5.95%  6.9131ms      3502  1.9740us  1.4080us  10.944us  [CUDA memcpy HtoD]
+  1.85%  2.1468ms         6  357.80us  4.8640us  1.0263ms  [CUDA memcpy DtoH]
+  0.01%  6.1120us         3  2.0370us  2.0160us  2.0480us  [CUDA memset]
+
+==14626== API calls:
+Time(%)      Time     Calls       Avg       Min       Max  Name
+ 77.47%  692.89ms        64  10.826ms  8.9990us  173.45ms  cudaStreamCreate
+ 17.73%  158.54ms      3495  45.362us  11.021us  1.4563ms  cudaMemcpy
+  2.30%  20.554ms       192  107.05us  2.7970us  2.0737ms  cudaStreamSynchronize
+  1.67%  14.900ms        76  196.05us  3.9350us  3.9684ms  cudaMalloc
+  0.39%  3.4481ms        12  287.35us  24.856us  1.4549ms  cudaMemcpyAsync
+  0.21%  1.8769ms        70  26.813us  14.492us  68.990us  cudaLaunch
+  0.14%  1.2106ms       166  7.2920us     210ns  297.35us  cuDeviceGetAttribute
+  0.05%  410.11us      2240     183ns     151ns  8.6870us  cudaSetupArgument
+  0.02%  153.97us         2  76.985us  63.010us  90.960us  cuDeviceTotalMem
+  0.02%  148.36us         3  49.452us  46.364us  54.059us  cudaMemsetAsync
+  0.02%  141.31us         2  70.656us  49.308us  92.005us  cuDeviceGetName
+  0.00%  40.759us         4  10.189us  6.6460us  15.925us  cudaSetDevice
+  0.00%  34.359us        70     490ns     317ns  7.8700us  cudaConfigureCall
+  0.00%  1.9230us         2     961ns     482ns  1.4410us  cuDeviceGetCount
+  0.00%  1.5040us         4     376ns     217ns     538ns  cuDeviceGet
+==14626== Warning: Some profiling data are not recorded. Make sure cudaProfilerStop() or cuProfilerStop() is called before application exit to flush profile data.
+======== Error: Application received signal 139
