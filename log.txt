@@ -398,5 +398,5 @@ Problem resolved:
   
 TO DO:
 1. Some global arrays, like dev_optVector, dev_optVector_size, dev_Csubsets can be removed or replaced by shared memory. Even dev_NSsubsets can be removed, 
-   if function "FindOPT" is merged to "gpu_generate2".
+   if function "FindOPT" is merged to "gpu_generate2".																			(optVector, optVector_size, Csubsets are removed)
 2. The use of multiple streams for each block may not be necessary.
