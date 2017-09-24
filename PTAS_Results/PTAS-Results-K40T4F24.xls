@@ -1,0 +1,21 @@
+ nFile  	f	 njobs 	 nMachines 	 Error  	 nThreads 	LB0	UB0	 Num Short	Num Long	OPT	makespan	 Total Wall Clock (ms)	Host Name
+24	1	100	10	0.3	1007	1112	0	0	0	0	4	gomc-desktop
+24	2	100	10	0.3	998	1103	0	0	0	0	0	gomc-desktop
+24	3	100	10	0.3	1001	1106	0	0	0	0	5	gomc-desktop
+24	4	100	10	0.3	1007	1112	0	0	0	0	0	gomc-desktop
+24	5	100	10	0.3	998	1103	0	0	0	0	0	gomc-desktop
+24	6	100	10	0.3	996	1101	0	0	0	0	0	gomc-desktop
+24	7	100	10	0.3	1002	1107	0	0	0	0	0	gomc-desktop
+24	8	100	10	0.3	1004	1109	0	0	0	0	0	gomc-desktop
+24	9	100	10	0.3	997	1102	0	0	0	0	0	gomc-desktop
+24	10	100	10	0.3	1001	1106	0	0	0	0	0	gomc-desktop
+24	11	100	10	0.3	997	1102	0	0	0	0	0	gomc-desktop
+24	12	100	10	0.3	1002	1107	0	0	0	0	0	gomc-desktop
+24	13	100	10	0.3	998	1103	0	0	0	0	0	gomc-desktop
+24	14	100	10	0.3	998	1103	0	0	0	0	0	gomc-desktop
+24	15	100	10	0.3	996	1101	0	0	0	0	0	gomc-desktop
+24	16	100	10	0.3	1007	1112	0	0	0	0	0	gomc-desktop
+24	17	100	10	0.3	998	1103	0	0	0	0	0	gomc-desktop
+24	18	100	10	0.3	997	1102	0	0	0	0	0	gomc-desktop
+24	19	100	10	0.3	999	1104	0	0	0	0	0	gomc-desktop
+24	20	100	10	0.3	999	1104	0	0	0	0	0	gomc-desktop

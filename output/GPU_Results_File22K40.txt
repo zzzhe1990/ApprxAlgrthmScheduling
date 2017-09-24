@@ -1,0 +1,421 @@
+Reading File...
+File 22-1 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    61
+LB    51
+T1    0
+T2    56
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-1 is Done.
+******************************
+Reading File...
+File 22-2 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    64
+LB    54
+T1    56
+T2    59
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-2 is Done.
+******************************
+Reading File...
+File 22-3 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    66
+LB    56
+T1    59
+T2    61
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-3 is Done.
+******************************
+Reading File...
+File 22-4 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    68
+LB    58
+T1    61
+T2    63
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-4 is Done.
+******************************
+Reading File...
+File 22-5 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    65
+LB    55
+T1    63
+T2    60
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-5 is Done.
+******************************
+Reading File...
+File 22-6 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    66
+LB    56
+T1    60
+T2    61
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-6 is Done.
+******************************
+Reading File...
+File 22-7 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    63
+LB    53
+T1    61
+T2    58
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-7 is Done.
+******************************
+Reading File...
+File 22-8 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    62
+LB    52
+T1    58
+T2    57
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-8 is Done.
+******************************
+Reading File...
+File 22-9 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    63
+LB    53
+T1    57
+T2    58
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-9 is Done.
+******************************
+Reading File...
+File 22-10 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    64
+LB    54
+T1    58
+T2    59
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-10 is Done.
+******************************
+Reading File...
+File 22-11 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    66
+LB    56
+T1    59
+T2    61
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-11 is Done.
+******************************
+Reading File...
+File 22-12 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    62
+LB    52
+T1    61
+T2    57
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-12 is Done.
+******************************
+Reading File...
+File 22-13 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    71
+LB    61
+T1    57
+T2    66
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-13 is Done.
+******************************
+Reading File...
+File 22-14 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    65
+LB    55
+T1    66
+T2    60
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-14 is Done.
+******************************
+Reading File...
+File 22-15 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    68
+LB    58
+T1    60
+T2    63
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-15 is Done.
+******************************
+Reading File...
+File 22-16 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    62
+LB    52
+T1    63
+T2    57
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-16 is Done.
+******************************
+Reading File...
+File 22-17 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    67
+LB    57
+T1    57
+T2    62
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-17 is Done.
+******************************
+Reading File...
+File 22-18 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    63
+LB    53
+T1    62
+T2    58
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-18 is Done.
+******************************
+Reading File...
+File 22-19 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    64
+LB    54
+T1    58
+T2    59
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-19 is Done.
+******************************
+Reading File...
+File 22-20 is read.
+Number of Jobs : 100
+Number of Machines : 10
+******************************************************************
+something wrong is going wrong here because BkID < 0, process terminates here.
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    69
+LB    59
+T1    59
+T2    64
+OPT   0
+nMachines   10
+BkID	-4
+AllProbData.size()    0
+No Problem until here 1
+Main Scheduling is Done
+File 22-20 is Done.
+******************************
+Total running time is: 0

@@ -1,0 +1,918 @@
+Reading File...
+File 5-1 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 268, UB: 294, OPT: 9
+Dynamic Programming Runtime: 0.785993
+Execution time between LB and UB is: 32
+By far, all LB UB calculation runtime: 32
+
+BKID: 0, LB: 272, UB: 278, OPT: 9
+Dynamic Programming Runtime: 3.70341
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 33
+
+BKID: 0, LB: 272, UB: 272, OPT: 9
+Dynamic Programming Runtime: 3.40383
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 34
+********************************************************
+Total execution on UB and LB is: 34
+OUT of Bk while loop  
+UB    272
+LB    272
+T1    272
+T2    272
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    272
+ck :   1
+AllProbData[ck].Ttable    277
+ck :   0
+AllProbData[ck].Ttable    293
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan485
+Main Scheduling is Done
+File 5-1 is Done.
+******************************
+Reading File...
+File 5-2 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 218, UB: 244, OPT: 9
+Dynamic Programming Runtime: 1.3426
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 218, UB: 222, OPT: 10
+Dynamic Programming Runtime: 9.10641
+Execution time between LB and UB is: 5
+By far, all LB UB calculation runtime: 6
+BKID: 0, LB: 221, UB: 221, OPT: 10
+Dynamic Programming Runtime: 17.3307
+Execution time between LB and UB is: 5
+By far, all LB UB calculation runtime: 11
+********************************************************
+Total execution on UB and LB is: 11
+OUT of Bk while loop  
+UB    221
+LB    221
+T1    221
+T2    221
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    221
+ck :   1
+AllProbData[ck].Ttable    221
+ck :   0
+AllProbData[ck].Ttable    243
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan233
+Main Scheduling is Done
+File 5-2 is Done.
+******************************
+Reading File...
+File 5-3 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 218, UB: 244, OPT: 10
+Dynamic Programming Runtime: 0.91523
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 234, UB: 241, OPT: 10
+Dynamic Programming Runtime: 2.25136
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+
+BKID: 0, LB: 240, UB: 242, OPT: 10
+Dynamic Programming Runtime: 1.61755
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 2
+BKID: 0, LB: 240, UB: 240, OPT: 10
+Dynamic Programming Runtime: 0.711999
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 2
+********************************************************
+Total execution on UB and LB is: 3
+OUT of Bk while loop  
+UB    240
+LB    240
+T1    240
+T2    240
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    4
+ck :   3
+AllProbData[ck].Ttable    240
+ck :   2
+AllProbData[ck].Ttable    241
+ck :   1
+AllProbData[ck].Ttable    240
+ck :   0
+AllProbData[ck].Ttable    243
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan577
+Main Scheduling is Done
+File 5-3 is Done.
+******************************
+Reading File...
+File 5-4 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 195, UB: 219, OPT: 9
+Dynamic Programming Runtime: 0.894151
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 195, UB: 199, OPT: 10
+Dynamic Programming Runtime: 6.68743
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 3
+BKID: 0, LB: 195, UB: 195, OPT: 10
+Dynamic Programming Runtime: 8.74718
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 5
+********************************************************
+Total execution on UB and LB is: 5
+OUT of Bk while loop  
+UB    195
+LB    195
+T1    195
+T2    195
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    195
+ck :   1
+AllProbData[ck].Ttable    198
+ck :   0
+AllProbData[ck].Ttable    218
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan852
+Main Scheduling is Done
+File 5-4 is Done.
+******************************
+Reading File...
+File 5-5 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 209, UB: 236, OPT: 9
+Dynamic Programming Runtime: 0.410058
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 209, UB: 213, OPT: 10
+Dynamic Programming Runtime: 2.17623
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+BKID: 0, LB: 209, UB: 209, OPT: 10
+Dynamic Programming Runtime: 4.93945
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 3
+********************************************************
+Total execution on UB and LB is: 3
+OUT of Bk while loop  
+UB    209
+LB    209
+T1    209
+T2    209
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    209
+ck :   1
+AllProbData[ck].Ttable    212
+ck :   0
+AllProbData[ck].Ttable    235
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan575
+Main Scheduling is Done
+File 5-5 is Done.
+******************************
+Reading File...
+File 5-6 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 239, UB: 266, OPT: 9
+Dynamic Programming Runtime: 1.53877
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 239, UB: 243, OPT: 10
+Dynamic Programming Runtime: 5.33056
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 3
+BKID: 0, LB: 240, UB: 240, OPT: 10
+Dynamic Programming Runtime: 4.79305
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 4
+********************************************************
+Total execution on UB and LB is: 4
+OUT of Bk while loop  
+UB    240
+LB    240
+T1    240
+T2    240
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    240
+ck :   1
+AllProbData[ck].Ttable    242
+ck :   0
+AllProbData[ck].Ttable    265
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan260
+Main Scheduling is Done
+File 5-6 is Done.
+******************************
+Reading File...
+File 5-7 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 203, UB: 227, OPT: 8
+Dynamic Programming Runtime: 0.246976
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 203, UB: 207, OPT: 9
+Dynamic Programming Runtime: 0.33127
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+BKID: 0, LB: 203, UB: 203, OPT: 9
+Dynamic Programming Runtime: 0.363867
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+********************************************************
+Total execution on UB and LB is: 0
+OUT of Bk while loop  
+UB    203
+LB    203
+T1    203
+T2    203
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    203
+ck :   1
+AllProbData[ck].Ttable    206
+ck :   0
+AllProbData[ck].Ttable    226
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan1262
+Main Scheduling is Done
+File 5-7 is Done.
+******************************
+Reading File...
+File 5-8 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 261, UB: 288, OPT: 10
+Dynamic Programming Runtime: 1.12993
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 272, UB: 279, OPT: 10
+Dynamic Programming Runtime: 3.38741
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+
+BKID: 0, LB: 272, UB: 274, OPT: 10
+Dynamic Programming Runtime: 4.46424
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 4
+BKID: 0, LB: 272, UB: 272, OPT: 10
+Dynamic Programming Runtime: 1.69575
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 5
+********************************************************
+Total execution on UB and LB is: 5
+OUT of Bk while loop  
+UB    272
+LB    272
+T1    272
+T2    272
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    4
+ck :   3
+AllProbData[ck].Ttable    272
+ck :   2
+AllProbData[ck].Ttable    273
+ck :   1
+AllProbData[ck].Ttable    278
+ck :   0
+AllProbData[ck].Ttable    287
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan654
+Main Scheduling is Done
+File 5-8 is Done.
+******************************
+Reading File...
+File 5-9 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 297, UB: 323, OPT: 9
+Dynamic Programming Runtime: 2.35071
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 301, UB: 307, OPT: 10
+Dynamic Programming Runtime: 5.50295
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 4
+
+BKID: 0, LB: 304, UB: 306, OPT: 10
+Dynamic Programming Runtime: 10.6055
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 7
+BKID: 0, LB: 304, UB: 304, OPT: 10
+Dynamic Programming Runtime: 1.23287
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 8
+********************************************************
+Total execution on UB and LB is: 8
+OUT of Bk while loop  
+UB    304
+LB    304
+T1    304
+T2    304
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    4
+ck :   3
+AllProbData[ck].Ttable    304
+ck :   2
+AllProbData[ck].Ttable    305
+ck :   1
+AllProbData[ck].Ttable    306
+ck :   0
+AllProbData[ck].Ttable    322
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan334
+Main Scheduling is Done
+File 5-9 is Done.
+******************************
+Reading File...
+File 5-10 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 241, UB: 265, OPT: 9
+Dynamic Programming Runtime: 0.965413
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 241, UB: 245, OPT: 10
+Dynamic Programming Runtime: 3.28282
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+BKID: 0, LB: 241, UB: 241, OPT: 10
+Dynamic Programming Runtime: 3.30711
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 3
+********************************************************
+Total execution on UB and LB is: 4
+OUT of Bk while loop  
+UB    241
+LB    241
+T1    241
+T2    241
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    241
+ck :   1
+AllProbData[ck].Ttable    244
+ck :   0
+AllProbData[ck].Ttable    264
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan551
+Main Scheduling is Done
+File 5-10 is Done.
+******************************
+Reading File...
+File 5-11 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 288, UB: 340, OPT: 7
+Dynamic Programming Runtime: 0.884629
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 288, UB: 295, OPT: 9
+Dynamic Programming Runtime: 1.0029
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 288, UB: 290, OPT: 9
+Dynamic Programming Runtime: 1.72219
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+BKID: 0, LB: 288, UB: 288, OPT: 9
+Dynamic Programming Runtime: 0.830176
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 3
+********************************************************
+Total execution on UB and LB is: 3
+OUT of Bk while loop  
+UB    288
+LB    288
+T1    288
+T2    288
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    4
+ck :   3
+AllProbData[ck].Ttable    288
+ck :   2
+AllProbData[ck].Ttable    289
+ck :   1
+AllProbData[ck].Ttable    294
+ck :   0
+AllProbData[ck].Ttable    339
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan309
+Main Scheduling is Done
+File 5-11 is Done.
+******************************
+Reading File...
+File 5-12 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 216, UB: 242, OPT: 9
+Dynamic Programming Runtime: 1.20992
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 220, UB: 226, OPT: 10
+Dynamic Programming Runtime: 6.68262
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 3
+
+BKID: 0, LB: 221, UB: 221, OPT: 10
+Dynamic Programming Runtime: 9.82861
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 6
+********************************************************
+Total execution on UB and LB is: 7
+OUT of Bk while loop  
+UB    221
+LB    221
+T1    220
+T2    221
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    221
+ck :   1
+AllProbData[ck].Ttable    225
+ck :   0
+AllProbData[ck].Ttable    241
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan759
+Main Scheduling is Done
+File 5-12 is Done.
+******************************
+Reading File...
+File 5-13 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 209, UB: 234, OPT: 8
+Dynamic Programming Runtime: 2.78822
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 2
+
+BKID: 0, LB: 209, UB: 213, OPT: 9
+Dynamic Programming Runtime: 20.9201
+Execution time between LB and UB is: 6
+By far, all LB UB calculation runtime: 8
+BKID: 0, LB: 209, UB: 209, OPT: 9
+Dynamic Programming Runtime: 25.2627
+Execution time between LB and UB is: 8
+By far, all LB UB calculation runtime: 16
+********************************************************
+Total execution on UB and LB is: 16
+OUT of Bk while loop  
+UB    209
+LB    209
+T1    209
+T2    209
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    209
+ck :   1
+AllProbData[ck].Ttable    212
+ck :   0
+AllProbData[ck].Ttable    233
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan235
+Main Scheduling is Done
+File 5-13 is Done.
+******************************
+Reading File...
+File 5-14 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 214, UB: 240, OPT: 9
+Dynamic Programming Runtime: 1.45422
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 214, UB: 218, OPT: 10
+Dynamic Programming Runtime: 8.45468
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 4
+BKID: 0, LB: 214, UB: 214, OPT: 10
+Dynamic Programming Runtime: 14.2458
+Execution time between LB and UB is: 4
+By far, all LB UB calculation runtime: 9
+********************************************************
+Total execution on UB and LB is: 9
+OUT of Bk while loop  
+UB    214
+LB    214
+T1    214
+T2    214
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    214
+ck :   1
+AllProbData[ck].Ttable    217
+ck :   0
+AllProbData[ck].Ttable    239
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan585
+Main Scheduling is Done
+File 5-14 is Done.
+******************************
+Reading File...
+File 5-15 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 214, UB: 241, OPT: 9
+Dynamic Programming Runtime: 2.44639
+Execution time between LB and UB is: 2
+By far, all LB UB calculation runtime: 2
+
+BKID: 0, LB: 214, UB: 218, OPT: 10
+Dynamic Programming Runtime: 18.9849
+Execution time between LB and UB is: 7
+By far, all LB UB calculation runtime: 9
+BKID: 0, LB: 214, UB: 214, OPT: 10
+Dynamic Programming Runtime: 37.344
+Execution time between LB and UB is: 11
+By far, all LB UB calculation runtime: 20
+********************************************************
+Total execution on UB and LB is: 20
+OUT of Bk while loop  
+UB    214
+LB    214
+T1    214
+T2    214
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    214
+ck :   1
+AllProbData[ck].Ttable    217
+ck :   0
+AllProbData[ck].Ttable    240
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan351
+Main Scheduling is Done
+File 5-15 is Done.
+******************************
+Reading File...
+File 5-16 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 225, UB: 252, OPT: 10
+Dynamic Programming Runtime: 0.430851
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 236, UB: 243, OPT: 10
+Dynamic Programming Runtime: 1.17941
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 238, UB: 240, OPT: 10
+Dynamic Programming Runtime: 1.27318
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+BKID: 0, LB: 238, UB: 238, OPT: 10
+Dynamic Programming Runtime: 0.518836
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 2
+********************************************************
+Total execution on UB and LB is: 2
+OUT of Bk while loop  
+UB    238
+LB    238
+T1    238
+T2    238
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    4
+ck :   3
+AllProbData[ck].Ttable    238
+ck :   2
+AllProbData[ck].Ttable    239
+ck :   1
+AllProbData[ck].Ttable    242
+ck :   0
+AllProbData[ck].Ttable    251
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan248
+Main Scheduling is Done
+File 5-16 is Done.
+******************************
+Reading File...
+File 5-17 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 191, UB: 215, OPT: 8
+Dynamic Programming Runtime: 0.38814
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 191, UB: 195, OPT: 9
+Dynamic Programming Runtime: 1.4395
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+BKID: 0, LB: 191, UB: 191, OPT: 9
+Dynamic Programming Runtime: 2.47084
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+********************************************************
+Total execution on UB and LB is: 2
+OUT of Bk while loop  
+UB    191
+LB    191
+T1    191
+T2    191
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    191
+ck :   1
+AllProbData[ck].Ttable    194
+ck :   0
+AllProbData[ck].Ttable    214
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan685
+Main Scheduling is Done
+File 5-17 is Done.
+******************************
+Reading File...
+File 5-18 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 197, UB: 221, OPT: 8
+Dynamic Programming Runtime: 0.708498
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 197, UB: 201, OPT: 9
+Dynamic Programming Runtime: 7.35727
+Execution time between LB and UB is: 3
+By far, all LB UB calculation runtime: 3
+BKID: 0, LB: 197, UB: 197, OPT: 9
+Dynamic Programming Runtime: 12.1257
+Execution time between LB and UB is: 4
+By far, all LB UB calculation runtime: 7
+********************************************************
+Total execution on UB and LB is: 7
+OUT of Bk while loop  
+UB    197
+LB    197
+T1    197
+T2    197
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    197
+ck :   1
+AllProbData[ck].Ttable    200
+ck :   0
+AllProbData[ck].Ttable    220
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan389
+Main Scheduling is Done
+File 5-18 is Done.
+******************************
+Reading File...
+File 5-19 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 205, UB: 227, OPT: 8
+Dynamic Programming Runtime: 0.284636
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 205, UB: 208, OPT: 8
+Dynamic Programming Runtime: 1.17314
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+BKID: 0, LB: 205, UB: 205, OPT: 8
+Dynamic Programming Runtime: 0.548024
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+********************************************************
+Total execution on UB and LB is: 1
+OUT of Bk while loop  
+UB    205
+LB    205
+T1    205
+T2    205
+OPT   8
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    205
+ck :   1
+AllProbData[ck].Ttable    207
+ck :   0
+AllProbData[ck].Ttable    226
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan582
+Main Scheduling is Done
+File 5-19 is Done.
+******************************
+Reading File...
+File 5-20 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 237, UB: 264, OPT: 9
+Dynamic Programming Runtime: 0.538359
+Execution time between LB and UB is: 0
+By far, all LB UB calculation runtime: 0
+
+BKID: 0, LB: 237, UB: 241, OPT: 10
+Dynamic Programming Runtime: 3.42784
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+BKID: 0, LB: 240, UB: 240, OPT: 10
+Dynamic Programming Runtime: 2.25946
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 3
+********************************************************
+Total execution on UB and LB is: 3
+OUT of Bk while loop  
+UB    240
+LB    240
+T1    240
+T2    240
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    240
+ck :   1
+AllProbData[ck].Ttable    240
+ck :   0
+AllProbData[ck].Ttable    263
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan459
+Main Scheduling is Done
+File 5-20 is Done.
+******************************
+Total running time is: 150

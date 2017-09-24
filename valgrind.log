@@ -1,194 +1,196 @@
-==11182== Memcheck, a memory error detector
-==11182== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==11182== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==11182== Command: ./run 0.3 4 1
-==11182== Parent PID: 16055
-==11182== 
---11182-- 
---11182-- Valgrind options:
---11182--    -v
---11182--    --log-file=valgrind.log
---11182--    --show-reachable=yes
---11182--    --track-origins=yes
---11182--    --suppressions=valgrind-cuda.supp
---11182-- Contents of /proc/version:
---11182--   Linux version 4.2.0-35-generic (buildd@lgw01-58) (gcc version 4.8.2 (Ubuntu 4.8.2-19ubuntu1) ) #40~14.04.1-Ubuntu SMP Fri Mar 18 16:37:35 UTC 2016
---11182-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-rdtscp-sse3-avx
---11182-- Page sizes: currently 4096, max supported 4096
---11182-- Valgrind library directory: /usr/lib/valgrind
---11182-- Reading syms from /lib/x86_64-linux-gnu/ld-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/ld-2.19.so ..
---11182--   .. CRC mismatch (computed ef2bc4a1 wanted 12987a55)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.19.so ..
---11182--   .. CRC is valid
---11182-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
---11182--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
---11182--   .. CRC mismatch (computed 4f1eed43 wanted a323a3ab)
---11182--    object doesn't have a symbol table
---11182--    object doesn't have a dynamic symbol table
---11182-- Scheduler: using generic scheduler lock implementation.
---11182-- Reading suppressions file: valgrind-cuda.supp
---11182-- Reading suppressions file: /usr/lib/valgrind/default.supp
-==11182== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-11182-by-gomc-on-???
-==11182== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-11182-by-gomc-on-???
-==11182== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-11182-by-gomc-on-???
-==11182== 
-==11182== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==11182== don't want to do, unless you know exactly what you're doing,
-==11182== or are doing some strange experiment):
-==11182==   /usr/lib/valgrind/../../bin/vgdb --pid=11182 ...command...
-==11182== 
-==11182== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==11182==   /path/to/gdb ./run
-==11182== and then give GDB the following command
-==11182==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=11182
-==11182== --pid is optional if only one valgrind process is running
-==11182== 
---11182-- REDIR: 0x4019ca0 (ld-linux-x86-64.so.2:strlen) redirected to 0x380764b1 (???)
---11182-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
---11182--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
---11182--   .. CRC mismatch (computed fc68135e wanted 45f5e986)
---11182--    object doesn't have a symbol table
---11182-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
---11182--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
---11182--   .. CRC mismatch (computed ae683f7e wanted 08c06df2)
---11182--    object doesn't have a symbol table
-==11182== WARNING: new redirection conflicts with existing -- ignoring it
---11182--     old: 0x04019ca0 (strlen              ) R-> (0000.0) 0x380764b1 ???
---11182--     new: 0x04019ca0 (strlen              ) R-> (2007.0) 0x04c2e1a0 strlen
---11182-- REDIR: 0x4019a50 (ld-linux-x86-64.so.2:index) redirected to 0x4c2dd50 (index)
---11182-- REDIR: 0x4019c70 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2f2f0 (strcmp)
---11182-- REDIR: 0x401a9c0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c31da0 (mempcpy)
---11182-- Reading syms from /usr/local/cuda-7.5/lib64/libcudart.so.7.5.18
---11182--    object doesn't have a symbol table
---11182-- Reading syms from /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
---11182--   Considering /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 ..
---11182--   .. CRC mismatch (computed cb44c6fc wanted 84e091dd)
---11182--    object doesn't have a symbol table
---11182-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
---11182--   Considering /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 ..
---11182--   .. CRC mismatch (computed dc37bb90 wanted ea8c3b40)
---11182--    object doesn't have a symbol table
---11182-- Reading syms from /lib/x86_64-linux-gnu/libm-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/libm-2.19.so ..
---11182--   .. CRC mismatch (computed 0fbb5cf0 wanted cac31e3b)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libm-2.19.so ..
---11182--   .. CRC is valid
---11182-- Reading syms from /lib/x86_64-linux-gnu/libgcc_s.so.1
---11182--   Considering /lib/x86_64-linux-gnu/libgcc_s.so.1 ..
---11182--   .. CRC mismatch (computed 6116126e wanted 54e3f1f2)
---11182--    object doesn't have a symbol table
---11182-- Reading syms from /lib/x86_64-linux-gnu/libc-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/libc-2.19.so ..
---11182--   .. CRC mismatch (computed 600bae51 wanted b4d0580d)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.19.so ..
---11182--   .. CRC is valid
---11182-- Reading syms from /lib/x86_64-linux-gnu/libdl-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/libdl-2.19.so ..
---11182--   .. CRC mismatch (computed f1ad1153 wanted 4c149e5f)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libdl-2.19.so ..
---11182--   .. CRC is valid
---11182-- Reading syms from /lib/x86_64-linux-gnu/libpthread-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/libpthread-2.19.so ..
---11182--   .. CRC mismatch (computed 4841b2fb wanted eec353ab)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libpthread-2.19.so ..
---11182--   .. CRC is valid
---11182-- Reading syms from /lib/x86_64-linux-gnu/librt-2.19.so
---11182--   Considering /lib/x86_64-linux-gnu/librt-2.19.so ..
---11182--   .. CRC mismatch (computed 4e29566d wanted 692ffe1d)
---11182--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/librt-2.19.so ..
---11182--   .. CRC is valid
---11182-- REDIR: 0x5b50d60 (libc.so.6:strcasecmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b53050 (libc.so.6:strncasecmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b50530 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4e7c0 (libc.so.6:rindex) redirected to 0x4c2da30 (rindex)
---11182-- REDIR: 0x5b4cac0 (libc.so.6:strlen) redirected to 0x4c2e0e0 (strlen)
---11182-- REDIR: 0x5b505c0 (libc.so.6:memset) redirected to 0x4c31350 (memset)
---11182-- REDIR: 0x5b46750 (libc.so.6:malloc) redirected to 0x4c2ab10 (malloc)
---11182-- REDIR: 0x5b4ffa0 (libc.so.6:__GI_memcmp) redirected to 0x4c30b80 (__GI_memcmp)
---11182-- REDIR: 0x5b4b070 (libc.so.6:strcmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5c04200 (libc.so.6:__strcmp_ssse3) redirected to 0x4c2f1b0 (strcmp)
---11182-- REDIR: 0x5302d90 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c2b070 (operator new(unsigned long))
---11182-- REDIR: 0x5b55730 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b5bfd0 (libc.so.6:__memcpy_sse2_unaligned) redirected to 0x4c2f6b0 (memcpy@@GLIBC_2.14)
---11182-- REDIR: 0x5b4f410 (libc.so.6:__GI_strstr) redirected to 0x4c32030 (__strstr_sse2)
---11182-- REDIR: 0x5302ea0 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c2b790 (operator new[](unsigned long))
---11182-- REDIR: 0x5b47220 (libc.so.6:calloc) redirected to 0x4c2cbf0 (calloc)
---11182-- REDIR: 0x5b46df0 (libc.so.6:free) redirected to 0x4c2bd80 (free)
---11182-- REDIR: 0x5b55780 (libc.so.6:__GI_memcpy) redirected to 0x4c2fc90 (__GI_memcpy)
---11182-- REDIR: 0x5b4ff60 (libc.so.6:bcmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5c24060 (libc.so.6:__memcmp_sse4_1) redirected to 0x4c30c00 (__memcmp_sse4_1)
---11182-- REDIR: 0xffffffffff600000 (???:???) redirected to 0x38076493 (???)
---11182-- REDIR: 0x5c14090 (libc.so.6:__memmove_ssse3_back) redirected to 0x4c2f450 (memcpy@GLIBC_2.2.5)
---11182-- REDIR: 0x53010f0 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c2c250 (operator delete(void*))
---11182-- REDIR: 0x5b57ac0 (libc.so.6:strchrnul) redirected to 0x4c319b0 (strchrnul)
---11182-- REDIR: 0x5b4fc10 (libc.so.6:memchr) redirected to 0x4c2f390 (memchr)
---11182-- REDIR: 0x5b46ef0 (libc.so.6:realloc) redirected to 0x4c2ce10 (realloc)
---11182-- Reading syms from /usr/lib/x86_64-linux-gnu/libcuda.so.352.39
---11182--    object doesn't have a symbol table
---11182-- REDIR: 0x5b4f9d0 (libc.so.6:strstr) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4ae20 (libc.so.6:index) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4cee0 (libc.so.6:strncmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4e780 (libc.so.6:strncpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4cea0 (libc.so.6:strncat) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4c500 (libc.so.6:strcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b50bb0 (libc.so.6:stpcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5b4ac20 (libc.so.6:strcat) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0xffffffffff600400 (???:???) redirected to 0x3807649d (???)
---11182-- REDIR: 0x5b503a0 (libc.so.6:__GI_memmove) redirected to 0x4c31660 (__GI_memmove)
---11182-- REDIR: 0x5b4ae50 (libc.so.6:__GI_strchr) redirected to 0x4c2db90 (__GI_strchr)
---11182-- REDIR: 0x5b506c0 (libc.so.6:mempcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
---11182-- REDIR: 0x5c115c0 (libc.so.6:__mempcpy_ssse3_back) redirected to 0x4c31ad0 (mempcpy)
---11182-- REDIR: 0x5b4cf30 (libc.so.6:__GI_strncmp) redirected to 0x4c2e930 (__GI_strncmp)
---11182-- REDIR: 0x5b639b0 (libc.so.6:__strcat_sse2_unaligned) redirected to 0x4c2dd90 (strcat)
---11182-- REDIR: 0x5b4cc80 (libc.so.6:strnlen) redirected to 0x4c2e080 (strnlen)
---11182-- REDIR: 0x5b60b90 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4c2e1c0 (strcpy)
---11182-- REDIR: 0x5b611c0 (libc.so.6:__strncpy_sse2_unaligned) redirected to 0x4c2e770 (__strncpy_sse2_unaligned)
---11182-- REDIR: 0x5b578b0 (libc.so.6:rawmemchr) redirected to 0x4c319f0 (rawmemchr)
---11182-- REDIR: 0x5b65230 (libc.so.6:__strstr_sse2_unaligned) redirected to 0x4c31fa0 (strstr)
-==11182== Warning: noted but unhandled ioctl 0x30000001 with no size/direction hints.
-==11182==    This could cause spurious value errors to appear.
-==11182==    See README_MISSING_SYSCALL_OR_IOCTL for guidance on writing a proper wrapper.
-==11182== Warning: set address range perms: large range [0x200000000, 0x500000000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x80cba2000, 0xd0cba2000) (noaccess)
-==11182== Warning: set address range perms: large range [0x900000000, 0xe00000000) (noaccess)
-==11182== Warning: set address range perms: large range [0x1000000000, 0x1500000000) (noaccess)
---11182-- REDIR: 0x5b642a0 (libc.so.6:__strncat_sse2_unaligned) redirected to 0x4c2df70 (strncat)
---11182-- memcheck GC: 1000 nodes, 985 survivors ( 98.5%)
---11182-- memcheck GC: 1414 new table size (stepup)
---11182-- REDIR: 0x5301120 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c2c7d0 (operator delete[](void*))
-==11182== 
-==11182== HEAP SUMMARY:
-==11182==     in use at exit: 6,733,804 bytes in 19,050 blocks
-==11182==   total heap usage: 973,394,877 allocs, 973,375,827 frees, 92,413,965,677 bytes allocated
-==11182== 
-==11182== Searching for pointers to 19,050 not-freed blocks
-==11182== Checked 29,519,424 bytes
-==11182== 
-==11182== LEAK SUMMARY:
-==11182==    definitely lost: 0 bytes in 0 blocks
-==11182==    indirectly lost: 0 bytes in 0 blocks
-==11182==      possibly lost: 304 bytes in 1 blocks
-==11182==    still reachable: 1,800 bytes in 3 blocks
-==11182==         suppressed: 6,731,700 bytes in 19,046 blocks
-==11182== Rerun with --leak-check=full to see details of leaked memory
-==11182== 
-==11182== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
---11182-- 
---11182-- used_suppression:   1388 alloc_libcuda valgrind-cuda.supp:2 suppressed: 6,715,517 bytes in 18,899 blocks
---11182-- used_suppression:     63 alloc_libcudaart valgrind-cuda.supp:22 suppressed: 16,183 bytes in 147 blocks
-==11182== 
-==11182== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==6616== Memcheck, a memory error detector
+==6616== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==6616== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==6616== Command: ./run 0.3 4 5
+==6616== Parent PID: 16055
+==6616== 
+--6616-- 
+--6616-- Valgrind options:
+--6616--    -v
+--6616--    --log-file=valgrind.log
+--6616--    --show-reachable=yes
+--6616--    --track-origins=yes
+--6616--    --suppressions=valgrind-cuda.supp
+--6616-- Contents of /proc/version:
+--6616--   Linux version 4.2.0-35-generic (buildd@lgw01-58) (gcc version 4.8.2 (Ubuntu 4.8.2-19ubuntu1) ) #40~14.04.1-Ubuntu SMP Fri Mar 18 16:37:35 UTC 2016
+--6616-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-rdtscp-sse3-avx
+--6616-- Page sizes: currently 4096, max supported 4096
+--6616-- Valgrind library directory: /usr/lib/valgrind
+--6616-- Reading syms from /lib/x86_64-linux-gnu/ld-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/ld-2.19.so ..
+--6616--   .. CRC mismatch (computed ef2bc4a1 wanted 12987a55)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--6616--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
+--6616--   .. CRC mismatch (computed 4f1eed43 wanted a323a3ab)
+--6616--    object doesn't have a symbol table
+--6616--    object doesn't have a dynamic symbol table
+--6616-- Scheduler: using generic scheduler lock implementation.
+--6616-- Reading suppressions file: valgrind-cuda.supp
+--6616-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==6616== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-6616-by-gomc-on-???
+==6616== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-6616-by-gomc-on-???
+==6616== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-6616-by-gomc-on-???
+==6616== 
+==6616== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==6616== don't want to do, unless you know exactly what you're doing,
+==6616== or are doing some strange experiment):
+==6616==   /usr/lib/valgrind/../../bin/vgdb --pid=6616 ...command...
+==6616== 
+==6616== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==6616==   /path/to/gdb ./run
+==6616== and then give GDB the following command
+==6616==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=6616
+==6616== --pid is optional if only one valgrind process is running
+==6616== 
+--6616-- REDIR: 0x4019ca0 (ld-linux-x86-64.so.2:strlen) redirected to 0x380764b1 (???)
+--6616-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+--6616--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
+--6616--   .. CRC mismatch (computed fc68135e wanted 45f5e986)
+--6616--    object doesn't have a symbol table
+--6616-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+--6616--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
+--6616--   .. CRC mismatch (computed ae683f7e wanted 08c06df2)
+--6616--    object doesn't have a symbol table
+==6616== WARNING: new redirection conflicts with existing -- ignoring it
+--6616--     old: 0x04019ca0 (strlen              ) R-> (0000.0) 0x380764b1 ???
+--6616--     new: 0x04019ca0 (strlen              ) R-> (2007.0) 0x04c2e1a0 strlen
+--6616-- REDIR: 0x4019a50 (ld-linux-x86-64.so.2:index) redirected to 0x4c2dd50 (index)
+--6616-- REDIR: 0x4019c70 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2f2f0 (strcmp)
+--6616-- REDIR: 0x401a9c0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c31da0 (mempcpy)
+--6616-- Reading syms from /usr/local/cuda-7.5/lib64/libcudart.so.7.5.18
+--6616--    object doesn't have a symbol table
+--6616-- Reading syms from /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+--6616--   Considering /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0 ..
+--6616--   .. CRC mismatch (computed cb44c6fc wanted 84e091dd)
+--6616--    object doesn't have a symbol table
+--6616-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+--6616--   Considering /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19 ..
+--6616--   .. CRC mismatch (computed dc37bb90 wanted ea8c3b40)
+--6616--    object doesn't have a symbol table
+--6616-- Reading syms from /lib/x86_64-linux-gnu/libm-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/libm-2.19.so ..
+--6616--   .. CRC mismatch (computed 0fbb5cf0 wanted cac31e3b)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libm-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- Reading syms from /lib/x86_64-linux-gnu/libgcc_s.so.1
+--6616--   Considering /lib/x86_64-linux-gnu/libgcc_s.so.1 ..
+--6616--   .. CRC mismatch (computed 6116126e wanted 54e3f1f2)
+--6616--    object doesn't have a symbol table
+--6616-- Reading syms from /lib/x86_64-linux-gnu/libc-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/libc-2.19.so ..
+--6616--   .. CRC mismatch (computed 600bae51 wanted b4d0580d)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- Reading syms from /lib/x86_64-linux-gnu/libdl-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/libdl-2.19.so ..
+--6616--   .. CRC mismatch (computed f1ad1153 wanted 4c149e5f)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libdl-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- Reading syms from /lib/x86_64-linux-gnu/libpthread-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/libpthread-2.19.so ..
+--6616--   .. CRC mismatch (computed 4841b2fb wanted eec353ab)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libpthread-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- Reading syms from /lib/x86_64-linux-gnu/librt-2.19.so
+--6616--   Considering /lib/x86_64-linux-gnu/librt-2.19.so ..
+--6616--   .. CRC mismatch (computed 4e29566d wanted 692ffe1d)
+--6616--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/librt-2.19.so ..
+--6616--   .. CRC is valid
+--6616-- REDIR: 0x5b50d60 (libc.so.6:strcasecmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b53050 (libc.so.6:strncasecmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b50530 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4e7c0 (libc.so.6:rindex) redirected to 0x4c2da30 (rindex)
+--6616-- REDIR: 0x5b4cac0 (libc.so.6:strlen) redirected to 0x4c2e0e0 (strlen)
+--6616-- REDIR: 0x5b505c0 (libc.so.6:memset) redirected to 0x4c31350 (memset)
+--6616-- REDIR: 0x5b46750 (libc.so.6:malloc) redirected to 0x4c2ab10 (malloc)
+--6616-- REDIR: 0x5b4ffa0 (libc.so.6:__GI_memcmp) redirected to 0x4c30b80 (__GI_memcmp)
+--6616-- REDIR: 0x5b4b070 (libc.so.6:strcmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5c04200 (libc.so.6:__strcmp_ssse3) redirected to 0x4c2f1b0 (strcmp)
+--6616-- REDIR: 0x5302d90 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c2b070 (operator new(unsigned long))
+--6616-- REDIR: 0x5b55730 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b5bfd0 (libc.so.6:__memcpy_sse2_unaligned) redirected to 0x4c2f6b0 (memcpy@@GLIBC_2.14)
+--6616-- REDIR: 0x5b4f410 (libc.so.6:__GI_strstr) redirected to 0x4c32030 (__strstr_sse2)
+--6616-- REDIR: 0x5302ea0 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c2b790 (operator new[](unsigned long))
+--6616-- REDIR: 0x5b47220 (libc.so.6:calloc) redirected to 0x4c2cbf0 (calloc)
+--6616-- REDIR: 0x5b46df0 (libc.so.6:free) redirected to 0x4c2bd80 (free)
+--6616-- REDIR: 0x5b55780 (libc.so.6:__GI_memcpy) redirected to 0x4c2fc90 (__GI_memcpy)
+--6616-- REDIR: 0x5b4ff60 (libc.so.6:bcmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5c24060 (libc.so.6:__memcmp_sse4_1) redirected to 0x4c30c00 (__memcmp_sse4_1)
+--6616-- REDIR: 0xffffffffff600000 (???:???) redirected to 0x38076493 (???)
+--6616-- REDIR: 0x5c14090 (libc.so.6:__memmove_ssse3_back) redirected to 0x4c2f450 (memcpy@GLIBC_2.2.5)
+--6616-- REDIR: 0x53010f0 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c2c250 (operator delete(void*))
+--6616-- REDIR: 0x5b57ac0 (libc.so.6:strchrnul) redirected to 0x4c319b0 (strchrnul)
+--6616-- REDIR: 0x5b4fc10 (libc.so.6:memchr) redirected to 0x4c2f390 (memchr)
+--6616-- REDIR: 0x5b46ef0 (libc.so.6:realloc) redirected to 0x4c2ce10 (realloc)
+--6616-- Reading syms from /usr/lib/x86_64-linux-gnu/libcuda.so.352.39
+--6616--    object doesn't have a symbol table
+--6616-- REDIR: 0x5b4f9d0 (libc.so.6:strstr) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4ae20 (libc.so.6:index) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4cee0 (libc.so.6:strncmp) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4e780 (libc.so.6:strncpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4cea0 (libc.so.6:strncat) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4c500 (libc.so.6:strcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b50bb0 (libc.so.6:stpcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5b4ac20 (libc.so.6:strcat) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0xffffffffff600400 (???:???) redirected to 0x3807649d (???)
+--6616-- REDIR: 0x5b503a0 (libc.so.6:__GI_memmove) redirected to 0x4c31660 (__GI_memmove)
+--6616-- REDIR: 0x5b4ae50 (libc.so.6:__GI_strchr) redirected to 0x4c2db90 (__GI_strchr)
+--6616-- REDIR: 0x5b506c0 (libc.so.6:mempcpy) redirected to 0x4a25720 (_vgnU_ifunc_wrapper)
+--6616-- REDIR: 0x5c115c0 (libc.so.6:__mempcpy_ssse3_back) redirected to 0x4c31ad0 (mempcpy)
+--6616-- REDIR: 0x5b4cf30 (libc.so.6:__GI_strncmp) redirected to 0x4c2e930 (__GI_strncmp)
+--6616-- REDIR: 0x5b639b0 (libc.so.6:__strcat_sse2_unaligned) redirected to 0x4c2dd90 (strcat)
+--6616-- REDIR: 0x5b4cc80 (libc.so.6:strnlen) redirected to 0x4c2e080 (strnlen)
+--6616-- REDIR: 0x5b60b90 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4c2e1c0 (strcpy)
+--6616-- REDIR: 0x5b611c0 (libc.so.6:__strncpy_sse2_unaligned) redirected to 0x4c2e770 (__strncpy_sse2_unaligned)
+--6616-- REDIR: 0x5b578b0 (libc.so.6:rawmemchr) redirected to 0x4c319f0 (rawmemchr)
+--6616-- REDIR: 0x5b65230 (libc.so.6:__strstr_sse2_unaligned) redirected to 0x4c31fa0 (strstr)
+==6616== Warning: noted but unhandled ioctl 0x30000001 with no size/direction hints.
+==6616==    This could cause spurious value errors to appear.
+==6616==    See README_MISSING_SYSCALL_OR_IOCTL for guidance on writing a proper wrapper.
+==6616== Warning: set address range perms: large range [0x200000000, 0x500000000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x80c596000, 0xd0c596000) (noaccess)
+==6616== Warning: set address range perms: large range [0x900000000, 0xe00000000) (noaccess)
+==6616== Warning: set address range perms: large range [0x1000000000, 0x1500000000) (noaccess)
+--6616-- REDIR: 0x5b642a0 (libc.so.6:__strncat_sse2_unaligned) redirected to 0x4c2df70 (strncat)
+--6616-- memcheck GC: 1000 nodes, 985 survivors ( 98.5%)
+--6616-- memcheck GC: 1414 new table size (stepup)
+--6616-- memcheck GC: 1414 nodes, 1412 survivors ( 99.8%)
+--6616-- memcheck GC: 1999 new table size (stepup)
+--6616-- REDIR: 0x5301120 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c2c7d0 (operator delete[](void*))
+==6616== 
+==6616== HEAP SUMMARY:
+==6616==     in use at exit: 50,907,185 bytes in 244,375 blocks
+==6616==   total heap usage: 495,603,009 allocs, 495,358,634 frees, 46,756,138,262 bytes allocated
+==6616== 
+==6616== Searching for pointers to 244,375 not-freed blocks
+==6616== Checked 63,219,176 bytes
+==6616== 
+==6616== LEAK SUMMARY:
+==6616==    definitely lost: 0 bytes in 0 blocks
+==6616==    indirectly lost: 0 bytes in 0 blocks
+==6616==      possibly lost: 1,682 bytes in 4 blocks
+==6616==    still reachable: 43,735,356 bytes in 226,625 blocks
+==6616==         suppressed: 7,170,147 bytes in 17,746 blocks
+==6616== Rerun with --leak-check=full to see details of leaked memory
+==6616== 
+==6616== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--6616-- 
+--6616-- used_suppression:   1415 alloc_libcuda valgrind-cuda.supp:2 suppressed: 7,149,041 bytes in 17,523 blocks
+--6616-- used_suppression:     63 alloc_libcudaart valgrind-cuda.supp:22 suppressed: 21,106 bytes in 223 blocks
+==6616== 
+==6616== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

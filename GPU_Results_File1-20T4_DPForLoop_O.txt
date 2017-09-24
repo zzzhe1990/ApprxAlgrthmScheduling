@@ -1,0 +1,83 @@
+Reading File...
+File 5-1 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 268, UB: 294, OPT: 9
+Dynamic Programming Runtime: 0.627384
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 272, UB: 278, OPT: 9
+Dynamic Programming Runtime: 3.09601
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 2
+
+BKID: 0, LB: 272, UB: 272, OPT: 9
+Dynamic Programming Runtime: 2.43496
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 3
+********************************************************
+Total execution on UB and LB is: 3
+OUT of Bk while loop  
+UB    272
+LB    272
+T1    272
+T2    272
+OPT   9
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    272
+ck :   1
+AllProbData[ck].Ttable    277
+ck :   0
+AllProbData[ck].Ttable    293
+No Problem until here 1
+No Problem until here 2
+No Problem until here 3
+Final OptimalSchedule
+FinalMakespan691
+Main Scheduling is Done
+File 5-1 is Done.
+******************************
+Reading File...
+File 5-2 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************
+
+BKID: 0, LB: 218, UB: 244, OPT: 9
+Dynamic Programming Runtime: 1.13769
+Execution time between LB and UB is: 1
+By far, all LB UB calculation runtime: 1
+
+BKID: 0, LB: 218, UB: 222, OPT: 10
+Dynamic Programming Runtime: 7.84894
+Execution time between LB and UB is: 4
+By far, all LB UB calculation runtime: 5
+BKID: 0, LB: 221, UB: 221, OPT: 10
+Dynamic Programming Runtime: 16.1014
+Execution time between LB and UB is: 4
+By far, all LB UB calculation runtime: 9
+********************************************************
+Total execution on UB and LB is: 9
+OUT of Bk while loop  
+UB    221
+LB    221
+T1    221
+T2    221
+OPT   10
+nMachines   10
+BkID	0
+AllProbData.size()    3
+ck :   2
+AllProbData[ck].Ttable    221
+ck :   1
+AllProbData[ck].Ttable    221
+ck :   0
+AllProbData[ck].Ttable    243
+No Problem until here 1
+No Problem until here 2

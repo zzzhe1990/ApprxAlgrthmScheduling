@@ -1,0 +1,5 @@
+Reading File...
+File 4-1 is read.
+Number of Jobs : 21
+Number of Machines : 10
+******************************************************************

@@ -395,8 +395,24 @@ Sep 15
 Problem resolved:
 1. In function "FindOPT", instead of returning back to lock (FindOPT kernel thread) after lauching the "loopNS" kernel function, merging the sort operation into "loopNS" also to ensure 
    the coherence of memory update.
+   
+Problem:
+1. MPI code running on Grid is much slower than running on lab's desktop.
   
-TO DO:
+Optimization Have Tried:
 1. Some global arrays, like dev_optVector, dev_optVector_size, dev_Csubsets can be removed or replaced by shared memory. Even dev_NSsubsets can be removed, 
    if function "FindOPT" is merged to "gpu_generate2".																			(optVector, optVector_size, Csubsets are removed)
-2. The use of multiple streams for each block may not be necessary.
+2. The use of multiple streams for each block may not be necessary.                 (NONONONONONONO, DON'T DO THIS. KILL PERFORMANCE)
+3. NVCC -O2 gives the best performance, -O3 is much slower.
+
+To Do:
+1. Specificly split UB and LB.
+
+
+*****************************************************
+Sep 20
+*****************************************************
+Next dispatch:
+1. For the __shared__ lock[1] used by global function "LoopNS", it should be replaced by a global array. For large problem size, if a block is not big enough for all NS configurations, there is a 
+   problem with memory consistency between multiple blocks for updating "lock" and "optVector".
+   Current release: work around by using only one block for small system size.

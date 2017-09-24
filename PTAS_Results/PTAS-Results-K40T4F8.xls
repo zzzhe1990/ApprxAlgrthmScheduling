@@ -1,0 +1,21 @@
+ nFile  	f	 njobs 	 nMachines 	 Error  	 nThreads 	LB0	UB0	 Num Short	Num Long	OPT	makespan	 Total Wall Clock (ms)	Host Name
+8	1	30	10	0.3	31	50	11	19	9	146	1527	gomc-desktop
+8	2	30	10	0.3	30	49	13	17	9	99	1540	gomc-desktop
+8	3	30	10	0.3	32	51	10	20	9	35	1552	gomc-desktop
+8	4	30	10	0.3	27	46	12	18	9	109	999	gomc-desktop
+8	5	30	10	0.3	33	52	12	18	9	38	828	gomc-desktop
+8	6	30	10	0.3	29	48	12	18	9	131	751	gomc-desktop
+8	7	30	10	0.3	30	49	12	18	9	104	1587	gomc-desktop
+8	8	30	10	0.3	33	52	11	19	8	69	1799	gomc-desktop
+8	9	30	10	0.3	27	46	12	18	9	28	4367	gomc-desktop
+8	10	30	10	0.3	31	50	10	20	10	135	2045	gomc-desktop
+8	11	30	10	0.3	29	48	11	19	9	102	4493	gomc-desktop
+8	12	30	10	0.3	25	44	13	17	9	24	1287	gomc-desktop
+8	13	30	10	0.3	31	50	10	20	9	42	4146	gomc-desktop
+8	14	30	10	0.3	32	51	11	19	9	67	656	gomc-desktop
+8	15	30	10	0.3	27	45	12	18	9	61	872	gomc-desktop
+8	16	30	10	0.3	35	54	9	21	9	37	1704	gomc-desktop
+8	17	30	10	0.3	29	48	14	16	8	143	300	gomc-desktop
+8	18	30	10	0.3	33	52	12	18	9	63	599	gomc-desktop
+8	19	30	10	0.3	24	42	14	16	8	24	4928	gomc-desktop
+8	20	30	10	0.3	31	50	9	21	9	126	8994	gomc-desktop

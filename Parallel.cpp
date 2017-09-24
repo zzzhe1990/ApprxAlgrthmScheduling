@@ -75,7 +75,7 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 
 //int omp_get_num_threads();
 //int omp_get_thread_num();
-//int nthreads,nthreads0;
+int nthreads;
 
 //string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
 string str0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/UniformData/File";
@@ -87,11 +87,11 @@ string str2;
 string str3 ="-";
 string str4;
 string str5=".txt";
-
+string strr0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS_Results/PTAS-Results-K40T";
+string strr1;
+string strr2 = ".xls";
 
 //ofstream solution("AllInstances.xls");
-
-ofstream solution("/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS-Results-T4F308-5.xls");
 
 
 //ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
@@ -112,15 +112,27 @@ int main(int argc, char* argv[])
         error=atof(argv[1]);
         th=atoi(argv[2]);
         nFile=atoi(argv[3]);
+        nthreads = atoi(argv[4]);
     }
     
+    int maxFile = nFile + 1;
     //nFile=153;
     //error =0.3;
     //th=0;
 
     //nthreads0= Pow(2,th);
-     
-    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
+    
+    ostringstream convertt1, convertt2;
+    convertt1 << nthreads;
+    strr1 = strr0;
+    strr1.append( convertt1.str() );
+    strr1.append("F");
+    convertt2 << nFile;
+    strr1.append( convertt2.str() );
+    strr1.append(strr2);
+    
+	ofstream solution( strr1.c_str() ); 
+    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Wall Clock (ms)"<<   "\t" << "Host Name" << endl;
 
   char hostname[HOST_NAME_MAX];
     if (! gethostname(hostname, sizeof hostname) == 0)
@@ -130,7 +142,7 @@ int main(int argc, char* argv[])
 	long totaltime;
 	gettimeofday(&begin, NULL);
 	
-    while (nFile<4)
+    while (nFile < maxFile)
     {
         for (int f=1; f<21; f++)
         {
