@@ -313,7 +313,8 @@ __global__ void gpu_generate2(const int maxSubsetsSize, int *dev_ATE_elm, const 
 */
 
 __global__ void FindAllSub(const int powK, int *jN, int *dev_roundVec, const int T, int *jNSsubsets, 
-						   int *dev_lock, int *dev_ATE_NSsubsets_size, const int id, const int allSubSize,
+						   int *dev_lock, volatile int *dev_ATE_NSsubsets_size, const int id, const int allSubSize,
+
 						   int cpuId, int blockLvl, int blockIDInLvl)
 {
 	int thread = blockIdx.x * blockDim.x + threadIdx.x;
@@ -355,7 +356,10 @@ __global__ void FindAllSub(const int powK, int *jN, int *dev_roundVec, const int
 						{
 							jNSsubsets[dev_ATE_NSsubsets_size[id] * powK + i] = jNS[i];
 						}
-						atomicAdd(&dev_ATE_NSsubsets_size[id], 1);
+						__threadfence();
+						//atomicAdd(&dev_ATE_NSsubsets_size[id], 1);
+						dev_ATE_NSsubsets_size[id]+=1;
+						__threadfence();
 						leave = false;
 						
 						atomicExch(&dev_lock[id], 0);
@@ -470,54 +474,45 @@ __global__ void FindSubConfigOPT(int MemOffset, int *NS, int *dev_ATE_elm, int p
 	}
 }
 
-
 /*
-__global__ void ZeroVecNS(int *dev_ATE_NSsubsets_size, const int j, int *dev_ATE_NSsubsets, int NSOffset,
-						  int powK, int *dev_zeroVec, int *optVec, int *optIdx, int *lock, int *dev_ATE_myOPT,
-						  int *dev_ATE_myOptimalindex, const int configOffset, int *dev_ATE_myMinNSVector)
-{
-	int thread = blockIdx.x * blockDim.x + threadIdx.x;
-	
-	if (thread < dev_ATE_NSsubsets_size[j]){
-		int *NS = &dev_ATE_NSsubsets[(NSOffset + thread) * powK];
-		
-		if(gpu_sameVectors(NS, dev_zeroVec, powK))
-		{
-//			optVec[0] = 0;
-//			optIdx[0] = thread;
-//			dev_ATE_myOPT[configOffset + j] = optVec[0] + 1;
-//			dev_ATE_myOptimalindex[configOffset + j] = optIdx[0];	
-			lock[0] = 1;
-			dev_ATE_myOPT[configOffset + j] = 1;
-			dev_ATE_myOptimalindex[configOffset + j] = thread;			
-			
-			for (int i=0; i<powK; i++){
-				//dev_ATE_myMinNSVector[(j + configOffset) * powK + thread] = dev_ATE_NSsubsets[(NSOffset + optIdx[0]) * powK + thread];
-				dev_ATE_myMinNSVector[(j + configOffset) * powK + i] = dev_ATE_NSsubsets[(NSOffset + thread) * powK + i];
-			}
-		}
-		
-			
-	}
-}
-
 __global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
 							  int powK, int *dev_zeroVec, int *blockDimSize, int *divisorComp, int *divisor, 
-							  int divSize, int jobsPerBlock, int *dev_ATE_elm, int *dev_ATE_myOPT,
+							  int divSize, int jobsPerBlock, int *dev_ATE_elm, volatile int *dev_ATE_myOPT,
 							  const int j, const int cpuId, const int configOffset, int *dev_ATE_myMinNSVector,
-							  int *dev_ATE_myOptimalindex, int *optVec, int *optIdx, int *lock, 
-							  unsigned int *blockDone)
+							  int *dev_ATE_myOptimalindex, const int optOffset, int *dev_ATE_optVector)
+*/
+__global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
+							  int powK, int *dev_zeroVec, int *blockDimSize, int *divisorComp, int *divisor, 
+							  int divSize, int jobsPerBlock, int *dev_ATE_elm, volatile int *dev_ATE_myOPT,
+							  const int j, const int cpuId, const int configOffset, int *dev_ATE_myMinNSVector,
+							  int *dev_ATE_myOptimalindex)
 {
 	int thread = blockIdx.x * blockDim.x + threadIdx.x;
 	int *NS = &dev_ATE_NSsubsets[(NSOffset + thread) * powK];
-	int offset; 
+	const int MAXVAL = 128;	
 	
-	__shared__ volatile int opt[64];
-	__shared__ volatile int idx[64];
-	__shared__ bool lastBlock;
+	__shared__ int lock[1];
+	__shared__ int opt[MAXVAL];
+	__shared__ int idx[MAXVAL];
 	
-	opt[threadIdx.x] = 100000;
-	idx[threadIdx.x] = thread;
+	//dev_ATE_optVector[optOffset + thread] = 1000000;
+	opt[thread] = 100000;
+	idx[thread] = thread;
+	
+	if (thread == 0)
+		lock[0] = 0;
+	__syncthreads();
+	
+	if (thread < dev_ATE_NSsubsets_size[j]){
+			
+		if(gpu_sameVectors(NS, dev_zeroVec, powK))
+		{
+			//dev_ATE_optVector[optOffset + thread] = 0;
+			opt[thread] = 0;
+			lock[0] = 1;
+		}
+	}
+	__syncthreads();
 	
 	if (thread < dev_ATE_NSsubsets_size[j]){
 		int blockIndex[32];
@@ -539,157 +534,8 @@ __global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubset
 			{	
 				if (gpu_sameVectors(NS, &dev_ATE_elm[r * powK], powK))
 				{
-					opt[threadIdx.x] = dev_ATE_myOPT[r];
-					break;
-				}
-			} 
-		}
-	}
-	__syncthreads();
-			
-	if (thread < dev_ATE_NSsubsets_size[j]){
-		if (lock[0] == 0){
-			if (threadIdx.x < 32){
-				if (opt[threadIdx.x] > opt[threadIdx.x + 32]){
-					opt[threadIdx.x] = opt[threadIdx.x + 32];
-					idx[threadIdx.x] = idx[threadIdx.x + 32];
-				}
-			}
-			__syncthreads();
-			if (threadIdx.x < 16 ){
-				if (opt[threadIdx.x] > opt[threadIdx.x + 16]){
-					opt[threadIdx.x] = opt[threadIdx.x + 16];
-					idx[threadIdx.x] = idx[threadIdx.x + 16];
-				}
-			}			
-			__syncthreads();
-			if (threadIdx.x < 8 ){
-				if (opt[threadIdx.x] > opt[threadIdx.x + 8]){
-					opt[threadIdx.x] = opt[threadIdx.x + 8];
-					idx[threadIdx.x] = idx[threadIdx.x + 8];
-				}
-			}			
-			__syncthreads();
-			if (threadIdx.x < 4 ){
-				if (opt[threadIdx.x] > opt[threadIdx.x + 4]){
-					opt[threadIdx.x] = opt[threadIdx.x + 4];
-					idx[threadIdx.x] = idx[threadIdx.x + 4];
-				}
-			}			
-			__syncthreads();
-			if (threadIdx.x < 2 ){
-				if (opt[threadIdx.x] > opt[threadIdx.x + 2]){
-					opt[threadIdx.x] = opt[threadIdx.x + 2];
-					idx[threadIdx.x] = idx[threadIdx.x + 2];
-				}
-			}			
-			__syncthreads();
-					
-			if (threadIdx.x == 0){
-				if (opt[1] < opt[0]){
-					opt[0] = opt[1];
-					idx[0] = idx[1];
-				}
-				optVec[blockIdx.x] = opt[0];
-				optIdx[blockIdx.x] = idx[0];
-				
-				__threadfence();
-				
-				lastBlock = (atomicInc(blockDone, gridDim.x) == gridDim.x -1);
-			}
-			__syncthreads();
-		
-			if (lastBlock){
-				if (gridDim.x > 1){			
-					if (threadIdx.x == 0){
-						for (int i=0; i < gridDim.x; i++){
-							if (optVec[0] > optVec[i]){
-								optVec[0] = optVec[i];
-								optIdx[0] = optIdx[i];
-							}
-						}	
-					}
-				}
-				__syncthreads();
-				
-				if (threadIdx.x == 0){		
-					dev_ATE_myOPT[configOffset + j] = optVec[0] + 1;
-					dev_ATE_myOptimalindex[configOffset + j] = optIdx[0];
-				}
-				
-				if (threadIdx.x < powK){
-					dev_ATE_myMinNSVector[(j + configOffset) * powK + threadIdx.x] = dev_ATE_NSsubsets[(NSOffset + optIdx[0]) * powK + threadIdx.x];
-				}
-			}
-		}
-	}
-}
-*/
-
-
-/*
-__global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
-							  int powK, int *dev_zeroVec, int *blockDimSize, int *divisorComp, int *divisor, 
-							  int divSize, int jobsPerBlock, int *dev_ATE_elm, volatile int *dev_ATE_myOPT,
-							  const int j, const int cpuId, const int configOffset, int *dev_ATE_myMinNSVector,
-							  int *dev_ATE_myOptimalindex, const int optOffset, int *dev_ATE_optVector)
-*/
-__global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubsets, int NSOffset,
-							  int powK, int *dev_zeroVec, int *blockDimSize, int *divisorComp, int *divisor, 
-							  int divSize, int jobsPerBlock, int *dev_ATE_elm, volatile int *dev_ATE_myOPT,
-							  const int j, const int cpuId, const int configOffset, int *dev_ATE_myMinNSVector,
-							  int *dev_ATE_myOptimalindex)
-{
-	int thread = blockIdx.x * blockDim.x + threadIdx.x;
-	int *NS = &dev_ATE_NSsubsets[(NSOffset + thread) * powK];
-		
-	__shared__ int lock[1];
-	__shared__ int opt[128];
-	__shared__ int idx[128];
-	
-	int OPT, IDX;
-	
-	opt[thread] = OPT = 100000;
-	idx[thread] = IDX = thread;
-	
-	if (thread == 0)
-		lock[0] = 0;
-	__syncthreads();
-	
-	if (thread < dev_ATE_NSsubsets_size[j]){
-		
-		if(gpu_sameVectors(NS, dev_zeroVec, powK))
-		{
-			opt[thread] = OPT = 0;
-			lock[0] = 1;
-		}
-	}
-	__syncthreads();
-	
-	if (thread < dev_ATE_NSsubsets_size[j]){
-		int blockIndex[32];
-		
-		if (lock[0] == 0){
-			//Find in which block the sub-configuration is stored.
-			for (int i = 0; i < powK; i++)
-			{
-				if (blockDimSize[i] != 0)
-				{
-					blockIndex[i] = NS[i] / blockDimSize[i];
-				}
-			}
-
-			int blockOffset = gpu_blockOffset(&blockIndex[0], divisorComp, powK, divisor, divSize);
-			int MemOffset = blockOffset * jobsPerBlock;
-		
-			for (int r = MemOffset; r < MemOffset + jobsPerBlock; r++)
-			{	
-				int nosame = gpu_sameVectors(NS, &dev_ATE_elm[r * powK], powK);
-				if (nosame == 1)
-				{
 					//dev_ATE_optVector[optOffset + thread] = dev_ATE_myOPT[r];
 					opt[thread] = dev_ATE_myOPT[r];
-					//opt[thread] = OPT = dev_ATE_myOPT[r];
 					break;
 				}
 			} 
@@ -697,92 +543,104 @@ __global__ void LoopNSsubsets(int *dev_ATE_NSsubsets_size, int *dev_ATE_NSsubset
 	}
 	__syncthreads();
 			
-	if (thread < dev_ATE_NSsubsets_size[j]){	
+	if (thread < dev_ATE_NSsubsets_size[j]){
+/*		if (thread > 32){
+			if (dev_ATE_optVector[optOffset + thread] < dev_ATE_optVector[optOffset + thread - 32]){
+				dev_ATE_optVector[optOffset + thread - 32] = dev_ATE_optVector[optOffset + thread];
+				idx[thread-32] = idx[thread];
+			}
+		}
+		__syncthreads();
+		if (thread > 16 && thread <= 32 ){
+			if (dev_ATE_optVector[optOffset + thread] < dev_ATE_optVector[optOffset + thread - 16]){
+				dev_ATE_optVector[optOffset + thread - 16] = dev_ATE_optVector[optOffset + thread];
+				idx[thread-16] = idx[thread];
+			}
+		}			
+		__syncthreads();
+		if (thread > 8 && thread <= 16 ){
+			if (dev_ATE_optVector[optOffset + thread] < dev_ATE_optVector[optOffset + thread - 8]){
+				dev_ATE_optVector[optOffset + thread - 8] = dev_ATE_optVector[optOffset + thread];
+				idx[thread-8] = idx[thread];
+			}
+		}			
+		__syncthreads();
+		if (thread > 4 && thread <= 8 ){
+			if (dev_ATE_optVector[optOffset + thread] < dev_ATE_optVector[optOffset + thread - 4]){
+				dev_ATE_optVector[optOffset + thread - 4] = dev_ATE_optVector[optOffset + thread];
+				idx[thread-4] = idx[thread];
+			}
+		}			
+		__syncthreads();
+		if (thread > 2 && thread <= 4 ){
+			if (dev_ATE_optVector[optOffset + thread] < dev_ATE_optVector[optOffset + thread - 2]){
+				dev_ATE_optVector[optOffset + thread - 2] = dev_ATE_optVector[optOffset + thread];
+				idx[thread-2] = idx[thread];
+			}
+		}			
+		__syncthreads();
+		
+		if (thread == 0){
+			if (dev_ATE_optVector[optOffset + 1] < dev_ATE_optVector[optOffset]){
+				dev_ATE_optVector[optOffset] = dev_ATE_optVector[optOffset + 1];
+				idx[0] = idx[1];
+			}
+			
+			dev_ATE_myOPT[configOffset + j] = dev_ATE_optVector[optOffset] + 1;
+			dev_ATE_myOptimalindex[configOffset + j] = idx[0];
+		}
+		__syncthreads();
+*/		
 		if (thread < 64){
 			if (opt[thread] > opt[thread + 64]){
-				OPT = opt[thread] = opt[thread+64];
-				IDX = idx[thread] = idx[thread+64];
+				opt[thread] = opt[thread+64];
+				idx[thread] = idx[thread+64];
 			}
 		}
-		__syncthreads();
 		if (thread < 32){
 			if (opt[thread] > opt[thread + 32]){
-				OPT = opt[thread] = opt[thread+32];
-				IDX = idx[thread] = idx[thread+32];
+				opt[thread] = opt[thread+32];
+				idx[thread] = idx[thread+32];
 			}
 		}
 		__syncthreads();
-
 		if (thread < 16 ){
 			if (opt[thread] > opt[thread + 16]){
-				opt[thread] = opt[thread+16];
-				idx[thread] = idx[thread+16];
+				opt[thread] = opt[thread + 16];
+				idx[thread] = idx[thread + 16];
 			}
 		}			
 		//__syncthreads();
-		if (thread < 8 ){
+		if (thread < 8){
 			if (opt[thread] > opt[thread + 8]){
 				opt[thread] = opt[thread+8];
 				idx[thread] = idx[thread+8];
 			}
 		}			
-		//__syncthreads();
-		if (thread < 4 ){
+	//	__syncthreads();
+		if (thread < 4){
 			if (opt[thread] > opt[thread + 4]){
 				opt[thread] = opt[thread+4];
 				idx[thread] = idx[thread+4];
 			}
 		}			
-		//__syncthreads();
+	//	__syncthreads();
 		if (thread < 2 ){
 			if (opt[thread] > opt[thread + 2]){
 				opt[thread] = opt[thread+2];
 				idx[thread] = idx[thread+2];
 			}
 		}			
-		//__syncthreads();
-/*		
-			if (thread < 32 ){
-				if (opt[thread] > opt[thread + 16]){
-					OPT = __shfl_down(OPT, 16, 32);
-					IDX = __shfl_down(IDX, 16, 32);
-				}
-			
-				if (opt[thread] > opt[thread + 8]){
-					OPT = __shfl_down(OPT, 8, 16);
-					IDX = __shfl_down(IDX, 8, 16);
-				}
-						
-				if (opt[thread] > opt[thread + 4]){
-					OPT = __shfl_down(OPT, 4, 8);
-					IDX = __shfl_down(IDX, 4, 8);
-				}
-			
-				if (opt[thread] > opt[thread + 2]){
-					OPT = __shfl_down(OPT, 2, 4);
-					IDX = __shfl_down(IDX, 2, 4);
-				}
-			
-				if (opt[thread] > opt[thread + 1]){
-					OPT = __shfl_down(OPT, 1, 2);
-					IDX = __shfl_down(IDX, 1, 2);
-				}
-			}
-*/	
+	//	__syncthreads();
 		
-
 		if (thread == 0){
 			if (opt[1] < opt[0]){
 				opt[0] = opt[1];
 				idx[0] = idx[1];
 			}
+			
 			dev_ATE_myOPT[configOffset + j] = opt[0] + 1;
 			dev_ATE_myOptimalindex[configOffset + j] = idx[0];
-/*			opt[thread] = OPT;
-			idx[thread] = IDX;
-			dev_ATE_myOPT[configOffset + j] = OPT + 1;
-			dev_ATE_myOptimalindex[configOffset + j] = IDX;
-*/
 		}
 		__syncthreads();
 	
@@ -803,45 +661,6 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 						const int configOffset, const int blockLvl, const int blockIDInLvl,
 						int *dev_ATE_optVector, const int optVectorSize)
 */
-/*
-__global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int *dev_roundVec,
-						const int powK, const int AllTableElemets_size, int *dev_ATE_NSsubsets, 
-						int *dev_ATE_NSsubsets_size, int *dev_zeroVec, int *dev_ATE_myOPT, 
-						int *dev_ATE_myOptimalindex, int *dev_ATE_myMinNSVector, const int ii, 
-						const int maxSubsetsSize, int *blockDimSize, int *divisor, int *divisorComp, 
-						const int divSize, const int jobsPerBlock, const int cpuId, const int configOffset, 
-						const int blockLvl, const int blockIDInLvl, int *dev_ATE_optVector, int *dev_ATE_optIndex,
-						int *dev_lock, unsigned int *blockDone, const int optVectorSize)
-{
-	int thread = blockDim.x * blockIdx.x + threadIdx.x;
-
-	int j = thread + indexomp;
-	int NSOffset = j * maxSubsetsSize;
-	int optOffset = j * optVectorSize;
-
-	if (thread < dev_counterVec[ii]){
-		
-		int blockSize = 64;
-		int gridSize = (dev_ATE_NSsubsets_size[j] + blockSize - 1) / blockSize;
-
-		ZeroVecNS<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size, j, dev_ATE_NSsubsets, NSOffset,
-											powK, dev_zeroVec, &dev_ATE_optVector[optOffset], 
-											&dev_ATE_optIndex[optOffset], &dev_lock[j], dev_ATE_myOPT,
-											dev_ATE_myOptimalindex, configOffset, dev_ATE_myMinNSVector);
-		
-		__syncthreads();
-		
-		LoopNSsubsets<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size, dev_ATE_NSsubsets, NSOffset, 
-												powK, dev_zeroVec, blockDimSize, divisorComp, divisor, 
-												divSize, jobsPerBlock, dev_ATE_elm, dev_ATE_myOPT, j, 
-												cpuId, configOffset, dev_ATE_myMinNSVector, dev_ATE_myOptimalindex,
-												&dev_ATE_optVector[optOffset], &dev_ATE_optIndex[optOffset], 
-												&dev_lock[j], &blockDone[j]);
-		__syncthreads();
-	}
-}//end FindOPT()
-*/
-
 __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int *dev_roundVec,
 						const int powK, const int AllTableElemets_size, int *dev_ATE_NSsubsets, 
 						int *dev_ATE_NSsubsets_size, int *dev_zeroVec, int *dev_ATE_myOPT, 
@@ -860,12 +679,80 @@ __global__ void FindOPT(int *dev_ATE_elm, int *dev_counterVec, int indexomp, int
 		
 		int blockSize = 128;
 		int gridSize = (dev_ATE_NSsubsets_size[j] + blockSize - 1) / blockSize;
-
+/*				
+		LoopNSsubsets<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size, dev_ATE_NSsubsets, NSOffset, 
+												powK, dev_zeroVec, blockDimSize, divisorComp, divisor, 
+												divSize, jobsPerBlock, dev_ATE_elm, dev_ATE_myOPT, j, 
+												cpuId, configOffset, dev_ATE_myMinNSVector, 
+												dev_ATE_myOptimalindex, optOffset, dev_ATE_optVector);
+*/
 		LoopNSsubsets<<<gridSize, blockSize>>>(dev_ATE_NSsubsets_size, dev_ATE_NSsubsets, NSOffset, 
 												powK, dev_zeroVec, blockDimSize, divisorComp, divisor, 
 												divSize, jobsPerBlock, dev_ATE_elm, dev_ATE_myOPT, j, 
 												cpuId, configOffset, dev_ATE_myMinNSVector, dev_ATE_myOptimalindex);
+	__syncthreads();
 	}
+/*
+		int blockIndex[64];
+		for(int h=0; h < dev_ATE_NSsubsets_size[j]; h++)
+		{
+			//actually, h == optVectorIndex, and optVector_size = optVecIndex+1;			
+			int *NS = &dev_ATE_NSsubsets[(NSOffset + h) * powK];
+			if(gpu_sameVectors(NS, dev_zeroVec, powK))
+			{
+				dev_ATE_optVector[optOffset + h] = 0;
+				dev_ATE_optVector_size[j] = h+1;
+				break;
+			}
+
+			//Find in which block the sub-configuration is stored.
+			for (int i = 0; i < powK; i++)
+			{
+				if (blockDimSize[i] != 0)
+				{
+					blockIndex[i] = NS[i] / blockDimSize[i];
+				}
+			}
+
+			int blockOffset = gpu_blockOffset(&blockIndex[0], divisorComp, powK, divisor, divSize);
+			int MemOffset = blockOffset * jobsPerBlock;
+			bool nomatch = true;
+			for (int r = MemOffset; r < MemOffset + jobsPerBlock && nomatch; r++)
+			{	
+				if (gpu_sameVectors(NS, &dev_ATE_elm[r * powK], powK))
+				{
+					dev_ATE_optVector[optOffset + h] = dev_ATE_myOPT[r];
+					dev_ATE_optVector_size[j] = h+1;
+					nomatch = false;
+				}
+			} 
+		}
+
+	if (thread < dev_counterVec[ii]){
+		int minn = 100000;
+		int myOptimalindex = 0;
+		// find out the OPT from all dependencies.		
+		for (int pp = 0; pp < dev_ATE_optVector_size[j]; pp++)
+		{			
+			if (dev_ATE_optVector[optOffset + pp] < minn)
+			{
+				minn = dev_ATE_optVector[optOffset + pp];
+				myOptimalindex=pp;
+			}
+		}
+		
+		int optTemp=minn+1;
+		dev_ATE_myOPT[configOffset + j] = optTemp;
+		dev_ATE_myOptimalindex[configOffset + j] = myOptimalindex;
+
+		if (dev_ATE_NSsubsets_size[j] > 0)
+		{
+			for (int i = 0; i < powK; i++){
+				dev_ATE_myMinNSVector[(j + configOffset) * powK + i] = dev_ATE_NSsubsets[(NSOffset + myOptimalindex) * powK + i];
+			}
+		}
+	}//end if (j)
+*/
 }//end FindOPT()
 
 #else
@@ -959,17 +846,6 @@ __global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counter
 							int* NS, int *divisor, int *divisorComp, const int divSize, const int levelsPerBlock,
 							const int blockIDInLvl, int *dev_lock1, const int optVectorSize)
 */
-/*
-__global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counterVec, int *dev_roundVec,
-							const int powK, const int cpuId, const int AllTableElemets_size, 
-							int *dev_ATE_NSsubsets, int *dev_ATE_NSsubsets_size, int *dev_zeroVec, int *dev_ATE_myOPT,
-							int *dev_ATE_myOptimalindex, int *dev_ATE_myMinNSVector, const int blockLvl,
-							const int maxSubsetsSize, int jobsPerBlock, int *blockDimSize, const int configOffset, 
-							const int T, int *divisor, int *divisorComp, const int divSize, 
-							const int levelsPerBlock, const int blockIDInLvl, int *dev_lock1, int *dev_lock2,
-							int *dev_ATE_optVector, int *dev_ATE_optIndex, unsigned int *blockDone, 
-							const int optVectorSize)
-*/
 __global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counterVec, int *dev_roundVec,
 							const int powK, const int cpuId, const int AllTableElemets_size, 
 							int *dev_ATE_NSsubsets, int *dev_ATE_NSsubsets_size, int *dev_zeroVec, int *dev_ATE_myOPT,
@@ -985,7 +861,6 @@ __global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counter
 	int *bNS = &dev_ATE_NSsubsets[configOffset * maxSubsetsSize * powK];
 	int *bNS_size = &dev_ATE_NSsubsets_size[configOffset];
 	//int *bOptVec = &dev_ATE_optVector[configOffset * optVectorSize];
-	//int *bOptVecIdx = &dev_ATE_optIndex[configOffset * optVectorSize];
 	//int *bOptVec_size = &dev_ATE_optVector_size[configOffset];
 
 	while (ii < levelsPerBlock)		//number of levels = the sum of each block dimension size -1
@@ -1005,7 +880,7 @@ __global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counter
 										bNS_size, dev_counterVec, ii, indexomp, dev_lock1, 
 										cpuId, blockLvl, blockIDInLvl);
 
-		//cudaDeviceSynchronize();
+		cudaDeviceSynchronize();
 /*
 		FindOPT<<<bSize, tSize>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec,
 								powK, AllTableElemets_size, bC, bNS, bNS_size, dev_zeroVec,
@@ -1014,23 +889,15 @@ __global__ void LaunchBlocks(int blockOffset, int *dev_ATE_elm, int *dev_counter
 								jobsPerBlock, cpuId, configOffset, blockLvl, blockIDInLvl,
 								bOptVec, optVectorSize);
 */
-/*
-		FindOPT<<<bSize, tSize>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec,
-								powK, AllTableElemets_size, bNS, bNS_size, dev_zeroVec,
-								dev_ATE_myOPT, dev_ATE_myOptimalindex, dev_ATE_myMinNSVector, 
-								ii, maxSubsetsSize, blockDimSize, divisor, divisorComp, divSize, 
-								jobsPerBlock, cpuId, configOffset, blockLvl, blockIDInLvl, bOptVec,
-								bOptVecIdx, dev_lock2, &blockDone[configOffset], optVectorSize);
-*/
 		FindOPT<<<bSize, tSize>>>(dev_ATE_elm, dev_counterVec, indexomp, dev_roundVec,
 								powK, AllTableElemets_size, bNS, bNS_size, dev_zeroVec,
 								dev_ATE_myOPT, dev_ATE_myOptimalindex, dev_ATE_myMinNSVector, 
 								ii, maxSubsetsSize, blockDimSize, divisor, divisorComp, divSize, 
 								jobsPerBlock, cpuId, configOffset, blockLvl, blockIDInLvl);
-		
+
 		indexomp+=dev_counterVec[ii];
 		ii++;
-		//cudaDeviceSynchronize();
+		cudaDeviceSynchronize();
 	}
 }
 
@@ -1060,8 +927,7 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 	int *dev_ATE_elm = 0, *dev_ATE_myOPT = 0, *dev_ATE_myOptimalindex = 0, *dev_ATE_myMinNSVector = 0;
 	int *dev_ATE_NSsubsets = 0;
 	//int *dev_ATE_Csubsets = 0;
-	//int *dev_ATE_optVector = 0, *dev_ATE_optIndex = 0;
-	//unsigned int *blockDone = 0;
+	//int *dev_ATE_optVector = 0;
 	int *dev_counterVec = 0;
 	int *dev_ATE_NSsubsets_size = 0;
 	//int *dev_ATE_optVector_size = 0;
@@ -1073,8 +939,8 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 	
     int ii=0;
     int indexomp=0;
-    const int maxSubsetsSize = 128;
-    const int optVectorSize = 8;
+    const int maxSubsetsSize = 64;
+    //const int optVectorSize = 64;
 
 /*
 	int maxCounterVec = 0;
@@ -1127,8 +993,6 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOPT, AllTableElemets.size() * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_ATE_myOptimalindex, AllTableElemets.size() * sizeof(int)));
 	//gpuErrchk(cudaMalloc((void**)&dev_ATE_optVector, AllTableElemets.size() * optVectorSize * sizeof(int)));
-	//gpuErrchk(cudaMalloc((void**)&dev_ATE_optIndex, AllTableElemets.size() * optVectorSize * sizeof(int)));
-	//gpuErrchk(cudaMalloc((void**)&blockDone, AllTableElemets.size() * sizeof(unsigned int)));
 	gpuErrchk(cudaMalloc((void**)&dev_counterVec, counterVec.size() * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_zeroVec, (powK) * sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&dev_roundVec, (powK) * sizeof(int)));
@@ -1158,7 +1022,6 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 	//gpuErrchk(cudaMemcpyAsync(dev_zeroVec, zeroVec, powK*sizeof(int), cudaMemcpyHostToDevice));
 	
 	gpuErrchk(cudaMemsetAsync(dev_zeroVec, 0, powK*sizeof(int), streams[thread*batchSize]));
-	//gpuErrchk(cudaMemsetAsync(blockDone, 0, AllTableElemets.size() * sizeof(unsigned int), streams[thread*batchSize]));
 	gpuErrchk(cudaMemsetAsync(dev_lock1, 0, AllTableElemets.size() * sizeof(int), streams[thread*batchSize]));
 	//gpuErrchk(cudaMemsetAsync(dev_lock2, 0, AllTableElemets.size() * sizeof(int), streams[thread*batchSize]));
 	gpuErrchk(cudaMemsetAsync(dev_ATE_NSsubsets_size, 0, AllTableElemets.size()*sizeof(int), streams[thread*batchSize]));
@@ -1198,7 +1061,7 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 			if (allBlocks[b].mySUM == ii)
 			{
 #ifdef _DEVICE_DEBUG
-				if (thread == 0){
+				if (thread == 1){
 					cout << "thread: " << thread << ", allBlocks[" << b << "]: ";
 					for (int i=0; i<powK; i++)
 					{
@@ -1219,7 +1082,7 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 				//configOffset returns the number of jobs before the current block. This is not memory offset.
 				int configOffset = blockOffset * jobsPerBlock;
 
-				//cout << "cpu: " << thread << ", blockOffset: " << blockOffset << ", configOffset: " << configOffset << endl;
+	//		cout << "cpu: " << thread << ", block level: " << ii << ", block ID: " << tt << ", blockOffset: " << blockOffset << ", configOffset: " << configOffset << endl;
 
 				//allBlocks contains the block ID which is needed to calculate the beginning vector position in AllTableElemets.
 /*				LaunchBlocks<<<1, 1, 0, streams[thread*batchSize+subStream]>>>(blockOffset,
@@ -1231,23 +1094,14 @@ void gpu_BlockDP(vector<DynamicTable> &AllTableElemets, const int T, const int p
 						&NS[totalOffset], dev_divisor, dev_divisorComp, divisor.size(), 
 						counterVec.size(), tt, dev_lock1, optVectorSize);    
 */
-
-/*
-				LaunchBlocks<<<1, 1, 0, streams[thread*batchSize+subStream]>>>(blockOffset,
-						dev_ATE_elm, dev_counterVec, dev_roundVec, powK, thread,
-						AllTableElemets.size(), dev_ATE_NSsubsets, dev_ATE_NSsubsets_size, 
-						dev_zeroVec, dev_ATE_myOPT, dev_ATE_myOptimalindex, dev_ATE_myMinNSVector, 
-						ii, maxSubsetsSize, jobsPerBlock, dev_blockDimSize, configOffset, T, 
-						dev_divisor, dev_divisorComp, divisor.size(), counterVec.size(), tt, dev_lock1,
-						dev_lock2, dev_ATE_optVector, dev_ATE_optIndex, blockDone, optVectorSize);
-*/
 				LaunchBlocks<<<1, 1, 0, streams[thread*batchSize+subStream]>>>(blockOffset,
 						dev_ATE_elm, dev_counterVec, dev_roundVec, powK, thread,
 						AllTableElemets.size(), dev_ATE_NSsubsets, dev_ATE_NSsubsets_size, 
 						dev_zeroVec, dev_ATE_myOPT, dev_ATE_myOptimalindex, dev_ATE_myMinNSVector, 
 						ii, maxSubsetsSize, jobsPerBlock, dev_blockDimSize, configOffset, T, 
 						dev_divisor, dev_divisorComp, divisor.size(), counterVec.size(), tt, dev_lock1);
-				
+
+				//break;
 				b++;
 			}
 

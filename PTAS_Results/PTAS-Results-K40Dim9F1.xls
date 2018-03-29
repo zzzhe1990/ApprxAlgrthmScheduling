@@ -1,0 +1,16 @@
+ nFile  	f	 njobs 	 nMachines 	 Error  	LB0	UB0	 Num Short	Num Long	OPT	makespan	 Total Time getTimeofday	Host Name
+1	1	21	10	0.3	31	50	0	21	10	140	10788	gomc-desktop
+1	2	21	10	0.3	33	52	0	21	10	135	3562	gomc-desktop
+1	3	21	10	0.3	31	50	0	21	10	107	7213	gomc-desktop
+1	4	21	10	0.3	31	50	0	21	10	56	10611	gomc-desktop
+1	5	21	10	0.3	30	48	0	21	10	34	4901	gomc-desktop
+1	6	21	10	0.3	31	50	0	21	10	147	6757	gomc-desktop
+1	7	21	10	0.3	30	49	0	21	10	86	12527	gomc-desktop
+1	8	21	10	0.3	30	49	0	21	10	31	41144	gomc-desktop
+1	9	21	10	0.3	32	51	0	21	10	34	3702	gomc-desktop
+1	10	21	10	0.3	32	51	0	21	10	33	3414	gomc-desktop
+1	11	21	10	0.3	29	48	0	21	10	101	59029	gomc-desktop
+1	12	21	10	0.3	30	49	0	21	10	49	3527	gomc-desktop
+1	13	21	10	0.3	30	49	0	21	10	35	21096	gomc-desktop
+1	14	21	10	0.3	33	52	0	21	10	32	2480	gomc-desktop
+1	15	21	10	0.3	33	52	0	21	10	70	3145	gomc-desktop

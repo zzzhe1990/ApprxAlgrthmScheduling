@@ -8,6 +8,11 @@ NSTableElement: This is basically the same as NStemp.
 SumVec: This includes the total # of jobs for each single sub-configuration. After sorting this container, we are able to find configurations that have the same total # jobs, which are in same level.
 counterVec: This includes the # of configurations that have the same total # of jobs. Size is the same as the # of levels. Indicates number of configurations in each level.
 
+
+nvcc -Xcompiler -fopenmp --default-stream per-thread -rdc=true -arch=sm_35 -O2 DPCUDA.cu sameVector.cu Parallel.cpp -lcuda -lgomp -lcudart -o run
+
+Find the latest version at grid.wayne.edu
+
 ****************************************
 Nov 27 2016
 ****************************************
@@ -416,3 +421,27 @@ Next dispatch:
 1. For the __shared__ lock[1] used by global function "LoopNS", it should be replaced by a global array. For large problem size, if a block is not big enough for all NS configurations, there is a 
    problem with memory consistency between multiple blocks for updating "lock" and "optVector".
    Current release: work around by using only one block for small system size.
+   
+*****************************************************
+Oct 2
+******************************************************
+Bug fixed:
+1. In function "FindAllSub", instead of using atomicAdd to increase global memory NS_size, now using volatile to declare the global memory pointer and have __threadfence() after the increase to
+   ensure the change to global array "NS_size" by one thread can be seen by all other threads. Also, it ensures the order of the global memory update that later read cannot happen before the write
+   with __threadfence().
+   
+   
+*****************************************************
+Oct 8
+******************************************************
+Complete the branch of no table split.
+
+
+
+
+#####################################################
+Oct 20
+#####################################################
+NSsubsets is not necessary to be allocated to the entire table. Instead, just allocate to each small block.
+
+It is not necessary to copy NSsubsets from the GPU memory back to the host memory.

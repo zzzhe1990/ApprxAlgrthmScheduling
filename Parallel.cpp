@@ -29,7 +29,7 @@ int optIndex,FinalMakespan;
 int k,T,OPT,LB,UB,s,LB0,UB0;
 double error;
 long Elapsed_total, secondsT, MicroSecondsT;
-int nJobs,nMachines,nFile;
+int nJobs,nMachines,nFile,nDim;
 int iwhile;
 int roundCriteria;
 int f,th;
@@ -75,26 +75,30 @@ void printFinalSchedule(vector<vector<int> >& optimalSchedule,vector<int>& Machi
 
 //int omp_get_num_threads();
 //int omp_get_thread_num();
-int nthreads;
+//int nthreads,nthreads0;
 
 //string str0=  "/Users/lalehghalami/Desktop/parallelCode/File";
 string str0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/UniformData/File";
 //string str0=  "/wsu/home/ff/ff96/ff9687/ParetoData/File";
-//string str0=  "/wsu/home/ff/ff96/ff9687/UniformData/File";
+//string str0=  "/wsu/home/et/et80/et8023/ApproxAlgorithm/gpu/UniformData/File";
 //string str0=  "/Users/lalehghalami/Dropbox/Scheduling/UniformData/File";
 string str1;
 string str2;
 string str3 ="-";
 string str4;
 string str5=".txt";
-string strr0 = "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS_Results/PTAS-Results-K40T";
+//string strr0= "/wsu/home/et/et80/et8023/ApproxAlgorithm/gpu/Results_Uniform_4Segt_16Stream/PTAS_Results/PTAS-Results-K40Dim";
+string strr0= "/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS_Results/PTAS-Results-K40Dim";
 string strr1;
-string strr2 = ".xls";
+string strr2="F";
+string strr3=".xls";
 
 //ofstream solution("AllInstances.xls");
 
+//ofstream solution("/home/gomc/Desktop/ApproxAlgorthim/Git/ApprxAlgrthmScheduling/PTAS-Results-T4F308-5.xls");
 
-//ofstream solution("/wsu/home/ff/ff96/ff9687/Results-Pareto-22Sep/PTAS-Results-T4F308-5.xls");
+
+//ofstream solution("/wsu/home/et/et80/et8023/ApproxAlgorithm/gpu/Results-Pareto/PTAS-Results-K40F.xls");
 //ofstream scheduleFile("/wsu/home/ff/ff96/ff9687/Results-8Sep/PTAS-Schedule-T16F40.xls");
 //ofstream output("/wsu/home/ff/ff96/ff9687/Results-9Aug/Par-Output-File300.xls");
 
@@ -112,27 +116,27 @@ int main(int argc, char* argv[])
         error=atof(argv[1]);
         th=atoi(argv[2]);
         nFile=atoi(argv[3]);
-        nthreads = atoi(argv[4]);
+	nDim=atoi(argv[4]);
     }
     
     int maxFile = nFile + 1;
     //nFile=153;
     //error =0.3;
     //th=0;
-
+    
     //nthreads0= Pow(2,th);
-    
-    ostringstream convertt1, convertt2;
-    convertt1 << nthreads;
+    ostringstream convertt,convertt1;
+    convertt1 << nDim;
+    convertt << nFile;
     strr1 = strr0;
-    strr1.append( convertt1.str() );
-    strr1.append("F");
-    convertt2 << nFile;
-    strr1.append( convertt2.str() );
+    strr1.append(convertt1.str());
     strr1.append(strr2);
-    
-	ofstream solution( strr1.c_str() ); 
-    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << " nThreads " << "\t"<< "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Wall Clock (ms)"<<   "\t" << "Host Name" << endl;
+    strr1.append(convertt.str());
+    strr1.append(strr3);
+    ofstream solution(strr1.c_str());    
+
+ 
+    solution << " nFile " << " \t" << "f" << "\t" << " njobs " << "\t" << " nMachines " << "\t" <<" Error  "  << "\t"  << "LB0"<<"\t"<<"UB0"<<"\t " << "Num Short"<<"\t"<<"Num Long"<<"\t"<<"OPT"<<"\t"<<"makespan" << "\t" <<" Total Time getTimeofday"<<   "\t" << "Host Name" << endl;
 
   char hostname[HOST_NAME_MAX];
     if (! gethostname(hostname, sizeof hostname) == 0)
@@ -142,7 +146,7 @@ int main(int argc, char* argv[])
 	long totaltime;
 	gettimeofday(&begin, NULL);
 	
-    while (nFile < maxFile)
+    while (nFile<maxFile)
     {
         for (int f=1; f<21; f++)
         {
@@ -244,7 +248,7 @@ int mainScheduling()
     int BkID;
 	
     struct timeval tempt, lt, st;
-    long iterT, wallClockT;
+    long iterSec, iterMic, wallClockSec,  wallClockMic;
     clock_t t;
 	gettimeofday(&st, NULL);
 	
@@ -496,14 +500,16 @@ int mainScheduling()
 		
 		gettimeofday(&lt, NULL);
 		
-		iterT = lt.tv_sec - tempt.tv_sec;
-		wallClockT = lt.tv_sec - st.tv_sec;
+		iterSec = lt.tv_sec - tempt.tv_sec;
+		iterMic = lt.tv_usec - tempt.tv_usec;
+		wallClockSec = lt.tv_sec - st.tv_sec;
+		wallClockMic = lt.tv_usec - st.tv_usec;
 		t = clock() - t;
 
 		cout << "BKID: " << BkID << ", LB: " << LB << ", UB: " << UB << ", OPT: " << OPT << endl;
-		cout << "Dynamic Programming Runtime: " << (float)t / CLOCKS_PER_SEC << endl;
-		cout << "Execution time between LB and UB is: " << iterT << endl;
-		cout << "By far, all LB UB calculation runtime: " << wallClockT << endl;
+		//cout << "Dynamic Programming Runtime: " << (float)t / CLOCKS_PER_SEC << endl;
+		cout << "Execution time between LB and UB is: " << (iterSec*1000+iterMic/1000.0)+0.5 << endl;
+		cout << "By far, all LB UB calculation runtime: " << (wallClockSec*1000+wallClockMic/1000.0)+0.5 << endl;
 		iwhile++;
 		
 		MlclearFun(seg, MulAllProbData);
@@ -1044,6 +1050,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 		tempInst.elm=NMinusStemp[i];
 		MulNSTableElements.push_back(tempInst);
 	}
+	cout << "thread: " << thread << ", MulDPTable size: " << Cwhole.size() << " " << MulDispTableElemets.size() << endl;
 #ifdef _HOST_DEBUG
 	cout << "thread: " << thread << ", NSTable size: " << MulNSTableElements.size() << endl;
 #endif
@@ -1073,24 +1080,27 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	block largestBlockVec(0);
 	block largestNoZeroBlockVec(0);
 
-	int N = 3;
+	int N = nDim;
 	int jobsPerBlock = 1;
 	int levelsPerBlock = 0;
 	int blocksPerConfig = 1;
     int maxJob = 0;
     int maxIndex = MulAllTableElemets.size() - 1;
-
+//#ifdef _HOST_DEBUG
+	cout << "thread: " << thread << ", AllTableElemets Max Configuration: ";
+//#endif	
 	for (int i=0; i<MulAllTableElemets[maxIndex].elm.size();i++)
 	{
-#ifdef _HOST_DEBUG
-		cout << "thread: " << thread << ", i: " << i << ", alltableelemets[maxindex].elm[i]: " << MulAllTableElemets[maxIndex].elm[i] << endl;
-#endif
+//#ifdef _HOST_DEBUG
+		cout << MulAllTableElemets[maxIndex].elm[i] << " ";
+//#endif
 		if (MulAllTableElemets[maxIndex].elm[i] != 0)
 		{
 			maxConfig.push_back(MulAllTableElemets[maxIndex].elm[i]);
 		}
 	}
-
+	cout << endl;
+	cout << "thread: " << thread << ", none-zero dim: " << maxConfig.size() << endl;
 //Second, Split AllTableElemets according to the maxConfig.
 //Split the multi-dimension table from the highest 3 dimensions. (This value can vary)
 //It is better to have a prime number list count from 1 to the max value in maxConfig.
@@ -1132,6 +1142,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	for (int i=0; i<N; i++)
 	{
 		div = (int)sqrt( (float)maxN[i].weit );
+		div = maxN[i].weit;
 		//cout << "thread: " << thread << ", i: " << i << ", maxN[i]: " << maxN[i].weit << ", div: " << div << endl;
 		while (div!=0)
 		{
@@ -1141,12 +1152,16 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 				continue;
 			}
 			//cout << "thread: " << thread << ", i: " << i << ", maxN[i].index: " << maxN[i].index << ", div: " << div << endl;
+#ifdef MultiSplit			
 			if (div == 1){
 				divisor[maxN[i].index] = maxN[i].weit;
 			}
 			else{
 				divisor[maxN[i].index] = div;
 			}
+#else
+			divisor[maxN[i].index] = 1;
+#endif
 			blockDimSize[maxN[i].index] /= divisor[maxN[i].index];
 			break;
 		}
@@ -1275,13 +1290,13 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 	sort(allBlocksNoZero.begin(), allBlocksNoZero.end());
 
 #ifdef _HOST_DEBUG
-		cout << "thread: " << thread << ", allBlocks: ";
+/*		cout << "thread: " << thread << ", allBlocks: ";
 		for (int i = 0; i < allBlocks.size(); i++)
 		{
 			for (int j=0; j<powK; j++)
 				cout << allBlocks[i].elm[j] << " ";
 			cout << ", mySum: " << allBlocks[i].mySUM << endl;
-		}
+		} */
 #endif
 
 	for (int i = 0; i < allBlocks.size(); i++)
@@ -1424,7 +1439,7 @@ int MlDPFunction2(vector<int>& Ntemp, int roundCriteria, const int MlT, vector<D
 //					cout << MulNSTableElements[i].elm[tt] << " ";
 //				cout << ", NSTable.myOPT: " << MulNSTableElements[i].myOPT << ", DispTable.myOPT: " << MulDispTableElemets[j].myOPT;
 //				cout << endl;
-				break;
+//				break;
 			}
 		}
 
